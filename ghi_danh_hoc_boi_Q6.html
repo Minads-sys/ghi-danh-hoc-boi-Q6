@@ -501,6 +501,7 @@
                 <div class="space-y-4">
                     <div>
                         <label for="qrBankName" class="block text-sm font-medium text-gray-700">Tên Ngân hàng (Vd: Vietinbank)</label>
+
                         <input type="text" id="qrBankName" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
                     </div>
                     <div>
@@ -622,6 +623,9 @@
 
         // (MỚI) DANH SÁCH ADMIN (Dựa trên UserID anh cung cấp)
         const ADMIN_USER_ID_LIST = ["16603782104995605825"];
+        // (MỚI) Chìa khóa bí mật để test quyền Admin
+        // QUAN TRỌNG: Hãy thay đổi "BI_MAT_CUA_BAN_NHAP_VAO_DAY" thành một chuỗi của riêng bạn
+        const ADMIN_SECRET_KEY = "BI_MAT_CUA_BAN_NHAP_VAO_DAY"; 
 
         /* ===== 2. CÀI ĐẶT CỐ ĐỊNH (từ file HuongDan_HeThong_HBA.md) ===== */
         
@@ -649,19 +653,31 @@
         let currentReportCache = []; // Cache cho Report print
         let dailyReportCache = []; // (MỚI) Cache cho Lễ tân export
 
+        // (MỚI) Dán trực tiếp config của bạn vào đây
+        const firebaseConfig = {
+          apiKey: "AIzaSyB_a8W1Qc0aEmKFILX3IZGjnTsYoEVjKGI",
+          authDomain: "ghi-danh-hoc-boi-q6.firebaseapp.com",
+          projectId: "ghi-danh-hoc-boi-q6",
+          storageBucket: "ghi-danh-hoc-boi-q6.firebasestorage.app",
+          messagingSenderId: "32346881439",
+          appId: "1:32346881439:web:b7b60da3cf510ec7a291aa",
+          measurementId: "G-B43NG2KHD1"
+        };
+
         // Lấy thông tin config từ Canvas (hoặc dùng default)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'hba-default-app';
-        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+        // const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}'; // (SỬA) Không cần dòng này
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
-        // Đường dẫn collection trên Firestore (dùng chung cho admin/lễ tân)
-        const hocVienCollectionPath = `/artifacts/${appId}/public/data/hoc_vien_db`;
-        // (MỚI) Đường dẫn settings
-        const hlvCollectionPath = `/artifacts/${appId}/public/data/hlv_settings`;
-        const paymentSettingsDocPath = `/artifacts/${appId}/public/data/app_settings/payment_info`;
+        // (SỬA) Đường dẫn collection trên Firestore
+        // Thay đổi để trỏ trực tiếp vào collection gốc, vì đang dùng config riêng
+        const hocVienCollectionPath = `hoc_vien_db`;
+        const hlvCollectionPath = `hlv_settings`;
+        const paymentSettingsDocPath = `app_settings/payment_info`; // (Doc 'payment_info' trong collection 'app_settings')
 
         try {
-            const firebaseConfig = JSON.parse(firebaseConfigStr);
+            // (SỬA) Không cần parse, dùng config trực tiếp
+            // const firebaseConfig = JSON.parse(firebaseConfigStr);
             if (!firebaseConfig.apiKey) {
                 throw new Error("Firebase config không hợp lệ.");
             }
@@ -683,12 +699,18 @@
                     currentUserId = user.uid;
                     document.getElementById('userIdDisplay').textContent = user.uid;
                     
-                    // (MỚI) Kiểm tra quyền Admin
-                    if (ADMIN_USER_ID_LIST.includes(currentUserId)) {
+                    // (SỬA) Khôi phục logic kiểm tra bảo mật
+                    // Kiểm tra xem UserID có trong danh sách Admin không
+                    // HOẶC URL có chứa chìa khóa bí mật không
+                    
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const adminKey = urlParams.get('admin_key');
+
+                    if (ADMIN_USER_ID_LIST.includes(currentUserId) || (adminKey === ADMIN_SECRET_KEY)) {
                         isAdmin = true;
                         // Hiển thị nút gạt Role cho Admin
                         document.getElementById('roleSwitcherWrapper').classList.remove('hidden');
-                        console.log("Quyền Admin được cấp.");
+                        console.log("Quyền Admin được cấp (UserID hoặc Secret Key hợp lệ).");
                     } else {
                         isAdmin = false;
                         // Ẩn nút gạt (an toàn, mặc định là hidden)
@@ -715,13 +737,15 @@
 
         async function signInUser() {
             try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                    console.log("Đăng nhập thành công với Custom Token.");
-                } else {
+                // (SỬA) Bỏ qua initialAuthToken và luôn dùng signInAnonymously
+                // vì chúng ta đang dùng config tùy chỉnh (dán cứng)
+                // if (initialAuthToken) {
+                //     await signInWithCustomToken(auth, initialAuthToken);
+                //     console.log("Đăng nhập thành công với Custom Token.");
+                // } else {
                     await signInAnonymously(auth);
                     console.log("Đăng nhập ẩn danh thành công.");
-                }
+                // }
             } catch (error) {
                 console.error("Lỗi đăng nhập:", error);
                 showMessage("Lỗi xác thực người dùng.", "error");
@@ -1262,6 +1286,61 @@
             }
         }
         
+        // (MỚI) Hàm render bảng báo cáo
+        function renderReportTable(reportArray) {
+            reportTableBody.innerHTML = "";
+            const formatter = new Intl.NumberFormat('vi-VN');
+
+            let total_HV = 0;
+            let total_Revenue = 0;
+            let total_HBA = 0;
+            let total_HLV_Gross = 0;
+            let total_Tax = 0;
+            let total_HLV_Net = 0;
+
+            reportArray.forEach(hlv => {
+                if (hlv.count === 0) return; // Bỏ qua HLV không có doanh thu
+
+                const revenue = hlv.totalRevenue;
+                const hbaShare = revenue * 0.6;
+                const hlvGross = revenue * 0.4;
+                const tax = hlvGross * 0.1;
+                const hlvNet = hlvGross - tax;
+
+                total_HV += hlv.count;
+                total_Revenue += revenue;
+                total_HBA += hbaShare;
+                total_HLV_Gross += hlvGross;
+                total_Tax += tax;
+                total_HLV_Net += hlvNet;
+
+                const row = `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${hlv.ten}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${hlv.count}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">${formatter.format(revenue)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatter.format(hbaShare)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatter.format(hlvGross)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">(${formatter.format(tax)})</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-bold">${formatter.format(hlvNet)}</td>
+                    </tr>
+                `;
+                reportTableBody.innerHTML += row;
+            });
+
+            // Render Footer
+            reportTableFooter.innerHTML = `
+                <td class="px-6 py-3 text-left">TỔNG CỘNG</td>
+                <td class="px-6 py-3 text-left">${total_HV}</td>
+                <td class="px-6 py-3 text-left">${formatter.format(total_Revenue)}</td>
+                <td class="px-6 py-3 text-left">${formatter.format(total_HBA)}</td>
+                <td class="px-6 py-3 text-left">${formatter.format(total_HLV_Gross)}</td>
+                <td class="px-6 py-3 text-left text-red-600">(${formatter.format(total_Tax)})</td>
+                <td class="px-6 py-3 text-left text-green-700">${formatter.format(total_HLV_Net)}</td>
+            `;
+            reportTableFooter.classList.remove('hidden');
+        }
+        
         /* ===== 7. LẮNG NGHE REALTIME (DATABASE HISTORY) ===== */
         
         function startRealtimeListener() {
@@ -1305,7 +1384,7 @@
             const formatter = new Intl.NumberFormat('vi-VN');
 
             if (data.length === 0) {
-                historyTableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Chưa có dữ liệu.</td></tr>`;
+                historyTableBody.innerHTML = `<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">Chưa có dữ liệu.</td></tr>`;
                 return;
             }
 
@@ -1435,7 +1514,10 @@
                 dailyReportTableBody.innerHTML = `<tr><td colspan="3" class="px-4 py-3 text-center text-gray-500">Chưa có HV mới hôm nay.</td></tr>`;
                 return;
             }
-            todayDocs.forEach(item => { // Sắp xếp theo thời gian mới nhất
+            // Sắp xếp theo thứ tự mới nhất lên đầu cho bảng Lễ tân
+            todayDocs.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+            
+            todayDocs.forEach(item => { 
                 const row = `
                     <tr>
                         <td class="px-4 py-3 text-sm font-medium text-gray-900">${item.tenHV}</td>
@@ -1455,26 +1537,6 @@
             const now = new Date().toLocaleString('vi-VN');
 
             // (MỚI) Tạo VietQR String
-            // Chuẩn 000201 (QR tĩnh) 010212 (QR động)
-            // 000201
-            // 010211 (QR động 1 lần)
-            // 38 (GUID)
-            //   00 (GUID VN) 0010A000000727
-            //   01 (Service) 0006970415
-            //   02 (Account) 00080938099675
-            // 53 (Currency) 0003704
-            // 54 (Amount) 00(len)(amount) -> 5406150000
-            // 62 (Add Info)
-            //   01 (len)(Ma GD) -> 01(len)HBA(id)
-            //   08 (len)(Noi dung) -> 08(len)Thanh toan
-            // 63 (CRC) 0004(CRC)
-            
-            // TẠM THỜI: Dùng QR đơn giản chỉ chứa STK + Tên + Bank để tương thích nhiều app
-            // Hoặc dùng link của Google Charts API
-            
-            // Tạm thời dùng QR đơn giản nhất: Chỉ STK
-            // const qrData = PAYMENT_SETTINGS.accountNumber; 
-            
             // Dùng chuẩn VietQR (compact) để nhiều app ngân hàng quét được
             const qrText = `https://api.vietqr.io/image/${PAYMENT_SETTINGS.bankBin}-${PAYMENT_SETTINGS.accountNumber}-compact.png?amount=${regData.hocPhi}&addInfo=HBA Q6 ${regData.tenHV.split(' ').pop()}`;
             
@@ -1483,8 +1545,76 @@
                 <head>
                     <title>Phiếu Ghi Danh ${regData.tenHV}</title>
                     <style>
-                        ${document.querySelector('style[media="print"]').innerHTML} /* Copy style in */
-                        #qr-code-placeholder { width: 200px; height: 200px; margin: 10px auto; }
+                        /* Lấy style từ thẻ <style> trong document chính */
+                        ${Array.from(document.styleSheets)
+                            .filter(sheet => sheet.href === null)
+                            .map(sheet => Array.from(sheet.cssRules)
+                                .map(rule => rule.cssText)
+                                .join('\n'))
+                            .join('\n')}
+                        
+                        /* Ghi đè style cho bản in */
+                        body { 
+                            background-color: #fff; 
+                            font-family: 'Arial', sans-serif;
+                        }
+                        .print-container {
+                            display: block;
+                        }
+                        .no-print {
+                            display: none !important;
+                        }
+                        /* Đảm bảo style in từ CSS chính được áp dụng */
+                         @media print {
+                            body {
+                                margin: 0;
+                                padding: 0;
+                            }
+                            .print-container {
+                                padding: 20px;
+                                max-width: 800px;
+                                margin: 0 auto;
+                            }
+                            .print-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-top: 20px;
+                            }
+                            .print-table th, .print-table td {
+                                border: 1px solid #ccc;
+                                padding: 8px;
+                                text-align: left;
+                            }
+                            .print-table th {
+                                background-color: #f4f4f4;
+                            }
+                            .print-header {
+                                text-align: center;
+                                margin-bottom: 30px;
+                            }
+                            .print-header h1 {
+                                margin: 0;
+                                font-size: 24px;
+                            }
+                            .print-header p {
+                                margin: 5px 0;
+                                font-size: 14px;
+                            }
+                            .print-qr {
+                                text-align: center;
+                                margin-top: 20px;
+                            }
+                            .print-qr img {
+                                width: 150px;
+                                height: 150px;
+                            }
+                            .print-footer {
+                                margin-top: 50px;
+                                display: flex;
+                                justify-content: space-between;
+                                font-size: 14px;
+                            }
+                        }
                     </style>
                 </head>
                 <body class="print-container">
@@ -1506,7 +1636,6 @@
                     <div class="print-qr">
                         <p>Quét mã QR để thanh toán (App Ngân hàng)</p>
                         <img src="${qrText}" alt="QR Code Thanh toán" style="width: 200px; height: 200px;" />
-                        <div id="qr-code-placeholder"></div>
                         <p style="font-size: 14px; margin-top: 10px;">
                             Ngân hàng: <strong>${PAYMENT_SETTINGS.bankName}</strong><br>
                             STK: <strong>${PAYMENT_SETTINGS.accountNumber}</strong><br>
@@ -1526,18 +1655,6 @@
             
             printWindow.document.write(content);
             
-            // (MỚI) Dùng qrcode.js để tạo QR (ổn định hơn dùng link api.vietqr.io)
-            // if (regData.thanhToan === 'Chuyển khoản') {
-            //    Tạo chuỗi VietQR
-            //    const vietQRString = `00020101021238570010A00000072701${PAYMENT_SETTINGS.bankBin.length}${PAYMENT_SETTINGS.bankBin}02${String(PAYMENT_SETTINGS.accountNumber).length}${PAYMENT_SETTINGS.accountNumber}5303704540${String(regData.hocPhi).length}${regData.hocPhi}5802VN62150811HBA ${regData.tenHV}6304`;
-            //    const qrPlaceholder = printWindow.document.getElementById('qr-code-placeholder');
-            //    new QRCode(qrPlaceholder, {
-            //        text: vietQRString, // "00020101021238570010A0000007270110970415020809380996755303704540715000005802VN62150811HBA Test6304" + Dùng hàm tính CRC16
-            //        width: 180,
-            //        height: 180
-            //    });
-            // }
-
             printWindow.document.close(); // Bắt buộc cho IE
             printWindow.focus(); // Bắt buộc cho Safari
             
@@ -1606,12 +1723,6 @@
 
         async function handleDeleteStudent(docId, tenHV) {
             // (QUAN TRỌNG) Không dùng window.confirm
-            // Tạo 1 message box tùy chỉnh (tuy nhiên để đơn giản, admin nên cẩn thận)
-            // Tạm thời, chúng ta sẽ xóa trực tiếp (admin đã được cảnh báo)
-            // if (prompt(`Gõ 'XOA' để xác nhận xóa học viên ${tenHV}`) !== 'XOA') {
-            //     showMessage("Hủy xóa.", "warning");
-            //     return;
-            // }
             // Tạm thời bỏ qua confirm() vì quy định
             
             try {
@@ -1630,21 +1741,84 @@
                 return;
             }
             
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
             const title = currentReportCache.title || "Báo Cáo Doanh Thu";
             const reportHtml = document.getElementById('reportTableBody').innerHTML;
             const footerHtml = document.getElementById('reportTableFooter').innerHTML;
-            const headerHtml = document.querySelector('#adminView .bg-white thead').innerHTML;
+            const headerHtml = document.querySelector('#adminView table thead').innerHTML;
 
             const content = `
-                <html><head><title>Báo Cáo Doanh Thu ${month}/${year}</title>
+                <html><head><title>Báo Cáo Doanh Thu HBA</title>
                 <style>
-                    ${document.querySelector('style[media="print"]').innerHTML}
+                    /* Lấy style từ thẻ <style> trong document chính */
+                    ${Array.from(document.styleSheets)
+                        .filter(sheet => sheet.href === null)
+                        .map(sheet => Array.from(sheet.cssRules)
+                            .map(rule => rule.cssText)
+                            .join('\n'))
+                        .join('\n')}
+                    
+                    /* Ghi đè style cho bản in */
+                    body { background-color: #fff; font-family: 'Arial', sans-serif; }
+                    .print-container { display: block; }
+                    .no-print { display: none !important; }
                     .print-table th, .print-table td { font-size: 12px; }
+                     @media print {
+                        body {
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .print-container {
+                            padding: 20px;
+                            max-width: 800px;
+                            margin: 0 auto;
+                        }
+                        .print-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                        }
+                        .print-table th, .print-table td {
+                            border: 1px solid #ccc;
+                            padding: 8px;
+                            text-align: left;
+                        }
+                        .print-table th {
+                            background-color: #f4f4f4;
+                        }
+                        .print-header {
+                            text-align: center;
+                            margin-bottom: 30px;
+                        }
+                        .print-header h1 {
+                            margin: 0;
+                            font-size: 24px;
+                        }
+                        .print-header p {
+                            margin: 5px 0;
+                            font-size: 14px;
+                        }
+                        .print-qr {
+                            text-align: center;
+                            margin-top: 20px;
+                        }
+                        .print-qr img {
+                            width: 150px;
+                            height: 150px;
+                        }
+                        .print-footer {
+                            margin-top: 50px;
+                            display: flex;
+                            justify-content: space-between;
+                            font-size: 14px;
+                        }
+                    }
                 </style>
                 </head>
                 <body class="print-container">
                     <div class="print-header">
-                        <h1>${title}</h1>
+                        <h1>Báo Cáo Doanh Thu</h1>
+                        <p>Thời gian: ${title}</p>
                     </div>
                     <table class="print-table">
                         <thead>${headerHtml}</thead>
@@ -1787,6 +1961,9 @@
         // ----- Chức năng Quản lý HLV & Settings -----
         function renderHlvSettingsTable() {
             hlvSettingsTableBody.innerHTML = "";
+            // Sắp xếp lại list HLV (phòng khi nó bị thay đổi)
+            HLV_SETTINGS_LIST.sort((a, b) => a.ca.localeCompare(b.ca) || a.uuTien - b.uuTien);
+            
             HLV_SETTINGS_LIST.forEach(hlv => {
                 const row = `
                     <tr>
@@ -1894,3 +2071,8 @@
     </script>
 </body>
 </html>
+
+
+
+
+
