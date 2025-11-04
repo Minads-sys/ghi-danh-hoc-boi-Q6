@@ -103,31 +103,31 @@
 </head>
 <body class="bg-gray-100 font-sans min-h-screen no-print">
 
-    <!-- Thanh Header -->
-    <header class="bg-white shadow-md no-print">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-blue-700">Hệ thống Quản lý Học viên BƠI HBA Q6</h1>
-            <!-- (MỚI) Doanh thu hôm nay (Real-time) -->
-            <div class="text-center">
-                <span class="text-sm text-gray-500 uppercase">Doanh thu hôm nay</span>
-                <p id="todayRevenueHeader" class="text-2xl font-bold text-green-600">0 VNĐ</p>
-            </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-600">UserID: <code id="userIdDisplay" class="font-mono">...</code></span>
-                <!-- (MỚI) Thêm ID và class 'hidden' cho wrapper của nút gạt -->
-                <div id="roleSwitcherWrapper" class="relative hidden">
-                    <select id="roleSwitcher" class="appearance-none w-full bg-blue-600 text-white py-2 px-4 pr-8 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer">
-                        <option value="leTan">View: Lễ Tân</option>
-                        <option value="admin">View: Quản Lý</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
-                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-                    </div>
+    <!-- (MỚI) Màn hình đăng nhập -->
+    <div id="loginView" class="fixed inset-0 bg-gray-100 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">HBA Q6 Login</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="loginEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="loginEmail" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
+                <div>
+                    <label for="loginPassword" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
+                    <input type="password" id="loginPassword" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button id="loginButton" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
+                    Đăng Nhập
+                </button>
             </div>
-        </nav>
-    </header>
+        </div>
+    </div>
 
+    <!-- (MỚI) Wrapper cho nội dung chính của App (ẩn khi chưa login) -->
+    <div id="appWrapper" class="hidden">
+        <!-- Thanh Header -->
+        <header class="bg-white shadow-md no-print">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
     <!-- Nội dung chính -->
     <main class="container mx-auto p-6">
 
@@ -152,9 +152,20 @@
                                 <div>
                                     <label for="goiHoc" class="block text-sm font-medium text-gray-700">Gói Học</label>
                                     <select id="goiHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="">-- Chọn gói học --</option>
-                                    </select>
-                                </div>
+                        <option value="leTan">View: Lễ Tân</option>
+                        <option value="admin">View: Quản Lý</option>
+                    </select>
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    </div>
+                </div>
+                <!-- (MỚI) Nút Đăng xuất -->
+                <button id="logoutButton" class="ml-4 bg-red-500 text-white py-2 px-4 rounded-lg shadow-md text-sm font-semibold hover:bg-red-600">
+                    Đăng Xuất
+                </button>
+            </div>
+        </nav>
+    </header>
+
                                 <div>
                                     <label for="caHoc" class="block text-sm font-medium text-gray-700">Ca Học</label>
                                     <select id="caHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -602,7 +613,9 @@
             getAuth, 
             signInAnonymously, 
             signInWithCustomToken, 
-            onAuthStateChanged 
+            onAuthStateChanged,
+            signInWithEmailAndPassword, // (MỚI) Thêm
+            signOut // (MỚI) Thêm
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { 
             getFirestore, 
@@ -623,9 +636,8 @@
 
         // (MỚI) DANH SÁCH ADMIN (Dựa trên UserID anh cung cấp)
         const ADMIN_USER_ID_LIST = ["16603782104995605825"];
-        // (MỚI) Chìa khóa bí mật để test quyền Admin
-        // QUAN TRỌNG: Hãy thay đổi "BI_MAT_CUA_BAN_NHAP_VAO_DAY" thành một chuỗi của riêng bạn
-        const ADMIN_SECRET_KEY = "BI_MAT_CUA_BAN_NHAP_VAO_DAY"; 
+        // (SỬA) Xóa Chìa khóa bí mật, không cần nữa
+        // const ADMIN_SECRET_KEY = "BI_MAT_CUA_BAN_NHAP_VAO_DAY"; 
 
         /* ===== 2. CÀI ĐẶT CỐ ĐỊNH (từ file HuongDan_HeThong_HBA.md) ===== */
         
@@ -695,28 +707,28 @@
             // Xác thực người dùng
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    console.log("User đã đăng nhập:", user.uid);
+                    // (SỬA) User đã đăng nhập (bằng Email/Pass)
+                    console.log("User đã đăng nhập:", user.uid, user.email);
                     currentUserId = user.uid;
-                    document.getElementById('userIdDisplay').textContent = user.uid;
+                    document.getElementById('userIdDisplay').textContent = user.email; // Hiển thị Email thay vì UID
                     
-                    // (SỬA) Khôi phục logic kiểm tra bảo mật
-                    // Kiểm tra xem UserID có trong danh sách Admin không
-                    // HOẶC URL có chứa chìa khóa bí mật không
-                    
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const adminKey = urlParams.get('admin_key');
-
-                    if (ADMIN_USER_ID_LIST.includes(currentUserId) || (adminKey === ADMIN_SECRET_KEY)) {
+                    // (SỬA) Logic kiểm tra Admin bảo mật
+                    // Chỉ kiểm tra UserID (đã cố định) với danh sách
+                    if (ADMIN_USER_ID_LIST.includes(currentUserId)) {
                         isAdmin = true;
                         // Hiển thị nút gạt Role cho Admin
                         document.getElementById('roleSwitcherWrapper').classList.remove('hidden');
-                        console.log("Quyền Admin được cấp (UserID hoặc Secret Key hợp lệ).");
+                        console.log("Quyền Admin được cấp (UserID hợp lệ).");
                     } else {
                         isAdmin = false;
                         // Ẩn nút gạt (an toàn, mặc định là hidden)
                         document.getElementById('roleSwitcherWrapper').classList.add('hidden');
                         console.log("Quyền Lễ tân (tiêu chuẩn).");
                     }
+                    
+                    // (MỚI) Hiển thị App, Ẩn Login
+                    document.getElementById('appWrapper').classList.remove('hidden');
+                    document.getElementById('loginView').classList.add('hidden');
 
                     // (MỚI) Thiết lập giao diện ban đầu (lễ tân hay admin)
                     setupInitialView();
@@ -725,8 +737,14 @@
                     // (MỚI) Phải load settings trước
                     loadAppSettings();
                 } else {
-                    console.log("User chưa đăng nhập. Đang thử đăng nhập...");
-                    signInUser();
+                    // (SỬA) User chưa đăng nhập
+                    console.log("User chưa đăng nhập. Hiển thị màn hình Login.");
+                    // (MỚI) Hiển thị Login, Ẩn App
+                    document.getElementById('appWrapper').classList.add('hidden');
+                    document.getElementById('loginView').classList.remove('hidden');
+                    
+                    // (SỬA) Xóa signInUser(), không tự động đăng nhập ẩn danh nữa
+                    // signInUser();
                 }
             });
 
@@ -749,8 +767,18 @@
             } catch (error) {
                 console.error("Lỗi đăng nhập:", error);
                 showMessage("Lỗi xác thực người dùng.", "error");
+        }
+
+        // (SỬA) Xóa hàm signInUser()
+        /*
+        async function signInUser() {
+            try {
+                // ...
+            } catch (error) {
+                // ...
             }
         }
+        */
 
         // (MỚI) Hàm load settings (HLV + QR) từ Firestore
         async function loadAppSettings() {
@@ -817,6 +845,10 @@
         const adminHlvChonSelect = document.getElementById('adminHlvChon');
         const adminAddButton = document.getElementById('adminAddButton');
         const adminThanhToan = document.getElementById('adminThanhToan'); // (MỚI)
+
+        // (MỚI) Login/Logout
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
 
         // (MỚI) Lễ Tân Stats
         const todayRevenueHeader = document.getElementById('todayRevenueHeader');
@@ -943,6 +975,10 @@
             cancelEditButton.addEventListener('click', () => editStudentModal.classList.add('hidden'));
             reportFilterType.addEventListener('change', toggleReportFilter); // (MỚI)
 
+            // (MỚI) Thêm listener cho Login/Logout
+            loginButton.addEventListener('click', handleLogin);
+            logoutButton.addEventListener('click', handleLogout);
+
             // (MỚI) Lắng nghe sự kiện click trên bảng (Event Delegation)
             historyTableBody.addEventListener('click', (e) => {
                 const target = e.target.closest('button');
@@ -968,6 +1004,41 @@
                     handleDeleteHlv(id);
                 }
             });
+        }
+
+        // (MỚI) Các hàm xử lý Đăng nhập / Đăng xuất
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showMessage("Vui lòng nhập Email và Mật khẩu.", "warning");
+                return;
+            }
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // onAuthStateChanged sẽ tự động xử lý việc hiển thị app
+                showMessage("Đăng nhập thành công!", "success");
+            } catch (error) {
+                console.error("Lỗi đăng nhập:", error.code);
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                    showMessage("Sai Email hoặc Mật khẩu.", "error");
+                } else {
+                    showMessage("Lỗi đăng nhập: " + error.message, "error");
+                }
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                // onAuthStateChanged sẽ tự động xử lý việc hiển thị màn hình login
+                showMessage("Đã đăng xuất.", "success");
+            } catch (error) {
+                console.error("Lỗi đăng xuất:", error);
+                showMessage("Lỗi khi đăng xuất.", "error");
+            }
         }
 
         // (MỚI) Hàm thiết lập View (thay thế toggleView)
@@ -2071,6 +2142,7 @@
     </script>
 </body>
 </html>
+
 
 
 
