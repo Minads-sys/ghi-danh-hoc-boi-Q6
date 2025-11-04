@@ -128,414 +128,431 @@
         <!-- Thanh Header -->
         <header class="bg-white shadow-md no-print">
             <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-    <!-- Nội dung chính -->
-    <main class="container mx-auto p-6">
-
-        <!-- ===== VIEW LỄ TÂN (INPUT_FORM) ===== -->
-        <div id="leTanView">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                <!-- Cột 1: Form Ghi Danh -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white p-8 rounded-xl shadow-lg">
-                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Phiếu Ghi Danh Học Viên Mới</h2>
-                        
-                        <!-- Form nhập liệu -->
-                        <!-- (SỬA) Bổ sung lại form bị thiếu -->
-                        <div class="space-y-4 mb-6">
-                            <div>
-                                <label for="tenHV" class="block text-sm font-medium text-gray-700">Tên Học Viên</label>
-                                <input type="text" id="tenHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-blue-600">HBA Q6 Booking</h1>
+                    <div class="ml-6 hidden" id="roleSwitcherWrapper">
+                        <span class="text-sm font-medium text-gray-700 mr-2">View:</span>
+                        <div class="relative inline-block w-40">
+                            <select id="roleSwitcher" class="block appearance-none w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500">
+                                <option value="leTan">View: Lễ Tân</option>
+                                <option value="admin">View: Quản Lý</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                             </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="goiHoc" class="block text-sm font-medium text-gray-700">Gói Học</label>
-                                    <select id="goiHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="leTan">View: Lễ Tân</option>
-                        <option value="admin">View: Quản Lý</option>
-                    </select>
-                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                        </div>
                     </div>
                 </div>
-                <!-- (MỚI) Nút Đăng xuất -->
-                <button id="logoutButton" class="ml-4 bg-red-500 text-white py-2 px-4 rounded-lg shadow-md text-sm font-semibold hover:bg-red-600">
-                    Đăng Xuất
-                </button>
-            </div>
-        </nav>
-    </header>
+                <div class="flex items-center">
+                    <span class="text-sm text-gray-600 mr-3 hidden md:block">User: <span id="userIdDisplay" class="font-medium">Loading...</span></span>
+                    <!-- (MỚI) Nút Đăng xuất -->
+                    <button id="logoutButton" class="ml-4 bg-red-500 text-white py-2 px-4 rounded-lg shadow-md text-sm font-semibold hover:bg-red-600">
+                        Đăng Xuất
+                    </button>
+                </div>
+            </nav>
+        </header>
 
+        <!-- Nội dung chính -->
+        <main class="container mx-auto p-6">
+
+            <!-- ===== VIEW LỄ TÂN (INPUT_FORM) ===== -->
+            <div id="leTanView">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Cột 1: Form Ghi Danh -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white p-8 rounded-xl shadow-lg">
+                            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Phiếu Ghi Danh Học Viên Mới</h2>
+                            
+                            <!-- Form nhập liệu -->
+                            <div class="space-y-4 mb-6">
                                 <div>
-                                    <label for="caHoc" class="block text-sm font-medium text-gray-700">Ca Học</label>
-                                    <select id="caHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="">-- Chọn ca học --</option>
+                                    <label for="tenHV" class="block text-sm font-medium text-gray-700">Tên Học Viên</label>
+                                    <input type="text" id="tenHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="goiHoc" class="block text-sm font-medium text-gray-700">Gói Học</label>
+                                        <select id="goiHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <!-- JS load options -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="caHoc" class="block text-sm font-medium text-gray-700">Ca Học</label>
+                                        <select id="caHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">-- Chọn ca học --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="bg-blue-50 p-4 rounded-lg">
+                                        <label class="block text-sm font-medium text-blue-700">HLV Được Gán (Tự động)</label>
+                                        <span id="hlvDuocGan" class="mt-1 block text-lg font-bold text-blue-900">Vui lòng chọn Ca Học</span>
+                                    </div>
+                                    <div class="bg-green-50 p-4 rounded-lg">
+                                        <label class="block text-sm font-medium text-green-700">Học Phí (Tự động)</label>
+                                        <span id="hocPhiTuDong" class="mt-1 block text-lg font-bold text-green-900">0 VNĐ</span>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="thanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
+                                    <select id="thanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">-- Chọn hình thức --</option>
+                                        <option value="Tiền mặt">Tiền mặt</option>
+                                        <option value="Chuyển khoản">Chuyển khoản</option>
                                     </select>
                                 </div>
                             </div>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="bg-blue-50 p-4 rounded-lg">
-                                    <label class="block text-sm font-medium text-blue-700">HLV Được Gán (Tự động)</label>
-                                    <span id="hlvDuocGan" class="mt-1 block text-lg font-bold text-blue-900">Vui lòng chọn Ca Học</span>
+                            <button id="ghiDanhButton" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
+                                <span id="ghiDanhText">Ghi Danh & In Phiếu</span>
+                                <span id="ghiDanhLoading" class="hidden">Đang xử lý...</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Thống kê (Lễ Tân) -->
+                    <div class="space-y-6">
+                        <!-- (MỚI) Thống Kê Nhanh -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Thống Kê Nhanh (Real-time)</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
+                                    <span class="text-sm font-medium text-blue-700">HV Mới Hôm Nay:</span>
+                                    <span id="statTodayCount" class="text-lg font-bold text-blue-800">0</span>
                                 </div>
-                                <div class="bg-green-50 p-4 rounded-lg">
-                                    <label class="block text-sm font-medium text-green-700">Học Phí (Tự động)</label>
-                                    <span id="hocPhiTuDong" class="mt-1 block text-lg font-bold text-green-900">0 VNĐ</span>
+                                <div class="flex justify-between items-center bg-green-50 p-3 rounded-lg">
+                                    <span class="text-sm font-medium text-green-700">HV Mới Tuần Này:</span>
+                                    <span id="statWeekCount" class="text-lg font-bold text-green-800">0</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-indigo-50 p-3 rounded-lg">
+                                    <span class="text-sm font-medium text-indigo-700">HV Mới Tháng Này:</span>
+                                    <span id="statMonthCount" class="text-lg font-bold text-indigo-800">0</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-purple-50 p-3 rounded-lg">
+                                    <span class="text-sm font-medium text-purple-700">Doanh Thu Hôm Nay:</span>
+                                    <span id="todayRevenueHeader" class="text-lg font-bold text-purple-800">0 VNĐ</span>
                                 </div>
                             </div>
-                            
+                        </div>
+
+                        <!-- (MỚI) Báo Cáo Trong Ngày (Lễ Tân) -->
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800">Ghi Danh Trong Ngày</h3>
+                                <button id="exportDailyExcelButton" class="bg-emerald-500 text-white py-2 px-3 rounded-lg shadow-md text-sm font-semibold hover:bg-emerald-600">
+                                    Export Excel
+                                </button>
+                            </div>
+                            <div class="overflow-y-auto max-h-[300px]">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50 sticky top-0">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên HV</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Học Phí</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dailyReportTableBody" class="bg-white divide-y divide-gray-200">
+                                        <!-- Dữ liệu real-time -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ===== VIEW QUẢN LÝ (ADMIN) ===== -->
+            <div id="adminView" class="hidden space-y-8">
+                
+                <!-- 1. Form Thêm HĐ Chỉ Định -->
+                <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto">
+                    <h2 class="text-2xl font-semibold text-red-700 mb-6">Thêm Hợp Đồng (Admin Override)</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="adminTenHV" class="block text-sm font-medium text-gray-700">Tên Học Viên</label>
+                            <input type="text" id="adminTenHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="thanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
-                                <select id="thanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">-- Chọn hình thức --</option>
-                                    <option value="Tiền mặt">Tiền mặt</option>
-                                    <option value="Chuyển khoản">Chuyển khoản</option>
-                                </select>
+                                <label for="adminGoiHoc" class="block text-sm font-medium text-gray-700">Gói Học</label>
+                                <select id="adminGoiHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"></select>
+                            </div>
+                            <div>
+                                <label for="adminCaHoc" class="block text-sm font-medium text-gray-700">Ca Học</label>
+                                <select id="adminCaHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"></select>
                             </div>
                         </div>
                         
-                        <button id="ghiDanhButton" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
-                            <span id="ghiDanhText">Ghi Danh & In Phiếu</span>
-                            <span id="ghiDanhLoading" class="hidden">Đang xử lý...</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Cột 2: Thống kê (Lễ Tân) -->
-                <div class="space-y-6">
-                    <!-- (MỚI) Thống Kê Nhanh -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Thống Kê Nhanh (Real-time)</h3>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
-                                <span class="text-sm font-medium text-blue-700">HV Mới Hôm Nay:</span>
-                                <span id="statTodayCount" class="text-lg font-bold text-blue-800">0</span>
-                            </div>
-                            <div class="flex justify-between items-center bg-green-50 p-3 rounded-lg">
-                                <span class="text-sm font-medium text-green-700">HV Mới Tuần Này:</span>
-                                <span id="statWeekCount" class="text-lg font-bold text-green-800">0</span>
-                            </div>
-                            <div class="flex justify-between items-center bg-indigo-50 p-3 rounded-lg">
-                                <span class="text-sm font-medium text-indigo-700">HV Mới Tháng Này:</span>
-                                <span id="statMonthCount" class="text-lg font-bold text-indigo-800">0</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- (MỚI) Báo Cáo Trong Ngày (Lễ Tân) -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800">Ghi Danh Trong Ngày</h3>
-                            <button id="exportDailyExcelButton" class="bg-emerald-500 text-white py-2 px-3 rounded-lg shadow-md text-sm font-semibold hover:bg-emerald-600">
-                                Export Excel
-                            </button>
-                        </div>
-                        <div class="overflow-y-auto max-h-[300px]">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50 sticky top-0">
-                                    <tr>
-                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên HV</th>
-                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Học Phí</th>
-                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="dailyReportTableBody" class="bg-white divide-y divide-gray-200">
-                                    <!-- Dữ liệu real-time -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- ===== VIEW QUẢN LÝ (ADMIN) ===== -->
-        <div id="adminView" class="hidden space-y-8">
-            
-            <!-- 1. Form Thêm HĐ Chỉ Định -->
-            <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto">
-                <h2 class="text-2xl font-semibold text-red-700 mb-6">Thêm Hợp Đồng (Admin Override)</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label for="adminTenHV" class="block text-sm font-medium text-gray-700">Tên Học Viên</label>
-                        <input type="text" id="adminTenHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="adminGoiHoc" class="block text-sm font-medium text-gray-700">Gói Học</label>
-                            <select id="adminGoiHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"></select>
-                        </div>
-                        <div>
-                            <label for="adminCaHoc" class="block text-sm font-medium text-gray-700">Ca Học</label>
-                            <select id="adminCaHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"></select>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="adminHlvChon" class="block text-sm font-medium text-gray-700">Chỉ định HLV</label>
-                            <select id="adminHlvChon" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"></select>
-                        </div>
-                        <div>
-                            <label for="adminLoaiHD" class="block text-sm font-medium text-gray-700">Loại Hợp Đồng</label>
-                            <select id="adminLoaiHD" class="mt-1 block w-full px-4 py-3 border border-red-500 bg-red-50 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                                <option value="Chỉ Định">Chỉ Định</option>
-                                <option value="Thường">Thường (Admin)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="adminThanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
-                        <select id="adminThanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                            <option value="Tiền mặt">Tiền mặt</option>
-                            <option value="Chuyển khoản">Chuyển khoản</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="adminGhiChu" class="block text-sm font-medium text-gray-700">Ghi Chú</label>
-                        <input type="text" id="adminGhiChu" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="HĐ chỉ định Thầy Ngọc...">
-                    </div>
-                    
-                    <button id="adminAddButton" class="w-full bg-red-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200">
-                        Thêm Hợp Đồng (Admin)
-                    </button>
-                </div>
-            </div>
-
-            <!-- 2. Báo Cáo Doanh Thu (REPORT) -->
-            <div class="bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Báo Cáo Doanh Thu (Admin)</h2>
-                
-                <!-- (MỚI) Bộ lọc Nâng cao -->
-                <div class="flex flex-wrap items-end space-x-4 mb-6">
-                    <!-- Chọn loại lọc -->
-                    <div>
-                        <label for="reportFilterType" class="block text-sm font-medium text-gray-700">Loại Báo Cáo</label>
-                        <select id="reportFilterType" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="month">Theo Tháng</option>
-                            <option value="today">Hôm Nay</option>
-                            <option value="date">Theo Ngày Cụ Thể</option>
-                            <option value="range">Theo Khoảng Thời Gian</option>
-                        </select>
-                    </div>
-
-                    <!-- Lọc theo tháng -->
-                    <div id="filterMonthControls">
-                        <div class="flex space-x-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="reportMonth" class="block text-sm font-medium text-gray-700">Tháng</label>
-                                <select id="reportMonth" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <!-- JS sẽ điền các tháng -->
+                                <label for="adminHlvChon" class="block text-sm font-medium text-gray-700">Chỉ định HLV</label>
+                                <select id="adminHlvChon" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"></select>
+                            </div>
+                            <div>
+                                <label for="adminLoaiHD" class="block text-sm font-medium text-gray-700">Loại Hợp Đồng</label>
+                                <select id="adminLoaiHD" class="mt-1 block w-full px-4 py-3 border border-red-500 bg-red-50 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                                    <option value="Chỉ Định">Chỉ Định</option>
+                                    <option value="Thường">Thường (Admin)</option>
                                 </select>
                             </div>
-                            <div>
-                                <label for="reportYear" class="block text-sm font-medium text-gray-700">Năm</label>
-                                <input type="number" id="reportYear" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" min="2020" max="2030">
-                            </div>
                         </div>
-                    </div>
 
-                    <!-- Lọc theo ngày cụ thể -->
-                    <div id="filterDateControls" class="hidden">
                         <div>
-                            <label for="reportDate" class="block text-sm font-medium text-gray-700">Chọn Ngày</label>
-                            <input type="date" id="reportDate" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <label for="adminThanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
+                            <select id="adminThanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="Tiền mặt">Tiền mặt</option>
+                                <option value="Chuyển khoản">Chuyển khoản</option>
+                            </select>
                         </div>
-                    </div>
 
-                    <!-- Lọc theo khoảng thời gian -->
-                    <div id="filterRangeControls" class="hidden">
-                        <div class="flex space-x-4">
-                            <div>
-                                <label for="reportDateStart" class="block text-sm font-medium text-gray-700">Từ Ngày</label>
-                                <input type="date" id="reportDateStart" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label for="reportDateEnd" class="block text-sm font-medium text-gray-700">Đến Ngày</label>
-                                <input type="date" id="reportDateEnd" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
+                        <div>
+                            <label for="adminGhiChu" class="block text-sm font-medium text-gray-700">Ghi Chú</label>
+                            <input type="text" id="adminGhiChu" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="HĐ chỉ định Thầy Ngọc...">
                         </div>
-                    </div>
-
-                    <!-- Nút Xem Báo Cáo -->
-                    <button id="viewReportButton" class="self-end bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        Xem Báo Cáo
-                    </button>
-
-                    <!-- (MỚI) Menu Dropdown cho các nút In/Export -->
-                    <div class="relative inline-block text-left self-end group">
-                        <button class="bg-gray-700 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                            <span>Tác vụ khác...</span>
-                            <svg class="inline w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        
+                        <button id="adminAddButton" class="w-full bg-red-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200">
+                            Thêm Hợp Đồng (Admin)
                         </button>
-                        <div class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
-                            <div class="py-1" role="menu" aria-orientation="vertical">
-                                <a href="#" id="printReportButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">In Báo Cáo (Đang xem)</a>
-                                <a href="#" id="exportExcelButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Export Excel (Toàn bộ)</a>
+                    </div>
+                </div>
+
+                <!-- 2. Báo Cáo Doanh Thu (REPORT) -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Báo Cáo Doanh Thu (Admin)</h2>
+                    
+                    <!-- (MỚI) Bộ lọc Nâng cao -->
+                    <div class="flex flex-wrap items-end space-x-0 sm:space-x-4 mb-6">
+                        <!-- Chọn loại lọc -->
+                        <div class="w-full sm:w-auto mb-4 sm:mb-0">
+                            <label for="reportFilterType" class="block text-sm font-medium text-gray-700">Loại Báo Cáo</label>
+                            <select id="reportFilterType" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="month">Theo Tháng</option>
+                                <option value="today">Hôm Nay</option>
+                                <option value="date">Theo Ngày Cụ Thể</option>
+                                <option value="range">Theo Khoảng Thời Gian</option>
+                            </select>
+                        </div>
+
+                        <!-- Lọc theo tháng -->
+                        <div id="filterMonthControls" class="w-full sm:w-auto mb-4 sm:mb-0">
+                            <div class="flex space-x-4">
+                                <div class="flex-1">
+                                    <label for="reportMonth" class="block text-sm font-medium text-gray-700">Tháng</label>
+                                    <select id="reportMonth" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <!-- JS sẽ điền các tháng -->
+                                    </select>
+                                </div>
+                                <div class="flex-1">
+                                    <label for="reportYear" class="block text-sm font-medium text-gray-700">Năm</label>
+                                    <input type="number" id="reportYear" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" min="2020" max="2030">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lọc theo ngày cụ thể -->
+                        <div id="filterDateControls" class="hidden w-full sm:w-auto mb-4 sm:mb-0">
+                            <div>
+                                <label for="reportDate" class="block text-sm font-medium text-gray-700">Chọn Ngày</label>
+                                <input type="date" id="reportDate" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <!-- Lọc theo khoảng thời gian -->
+                        <div id="filterRangeControls" class="hidden w-full sm:w-auto mb-4 sm:mb-0">
+                            <div class="flex space-x-4">
+                                <div class="flex-1">
+                                    <label for="reportDateStart" class="block text-sm font-medium text-gray-700">Từ Ngày</label>
+                                    <input type="date" id="reportDateStart" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="flex-1">
+                                    <label for="reportDateEnd" class="block text-sm font-medium text-gray-700">Đến Ngày</label>
+                                    <input type="date" id="reportDateEnd" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nút Xem Báo Cáo -->
+                        <button id="viewReportButton" class="self-end bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 w-full sm:w-auto mb-4 sm:mb-0">
+                            Xem Báo Cáo
+                        </button>
+
+                        <!-- (MỚI) Menu Dropdown cho các nút In/Export -->
+                        <div class="relative inline-block text-left self-end group w-full sm:w-auto">
+                            <button class="w-full bg-gray-700 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                <span>Tác vụ khác...</span>
+                                <svg class="inline w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
+                                <div class="py-1" role="menu" aria-orientation="vertical">
+                                    <a href="#" id="printReportButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">In Báo Cáo (Đang xem)</a>
+                                    <a href="#" id="exportExcelButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Export Excel (Toàn bộ)</a>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Bảng Báo Cáo -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Phụ Trách</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng HV Mới</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng Doanh Thu (100%)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HBA Nhận (60%)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng Hoa Hồng HLV (40%)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuế TNCN (10%)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Thực Nhận</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Dữ liệu báo cáo sẽ được chèn vào đây -->
+                                <tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Chưa có dữ liệu. Vui lòng chọn tháng/năm và nhấn xem.</td></tr>
+                            </tbody>
+                            <tfoot class="bg-gray-100 font-bold">
+                                <tr id="reportTableFooter" class="hidden">
+                                    <!-- Dữ liệu tổng cộng sẽ được chèn vào đây -->
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. Lịch sử Ghi Danh (DATABASE) -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Lịch sử Ghi Danh (Real-time)</h2>
+                    <div class="overflow-x-auto max-h-[600px]">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Học Viên</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Phụ Trách</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gói Học</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Học Phí</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại HĐ</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thanh Toán</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ghi Chú</th>
+                                    <!-- (MỚI) Thêm class 'admin-only' và 'hidden' -->
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider admin-only">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Dữ liệu lịch sử sẽ được chèn vào đây -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 4. Quản lý HLV (SETTINGS) -->
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Quản lý HLV (Settings)</h2>
+                    
+                    <!-- Form thêm HLV -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-4 border rounded-lg">
+                        <div>
+                            <label for="hlvTen" class="block text-sm font-medium text-gray-700">Tên HLV</label>
+                            <input type="text" id="hlvTen" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="Thầy Nguyễn Văn A">
+                        </div>
+                        <div>
+                            <label for="hlvCa" class="block text-sm font-medium text-gray-700">Ca Dạy</label>
+                            <select id="hlvCa" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+                                <option>Sáng</option>
+                                <option>Chiều</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="hlvUuTien" class="block text-sm font-medium text-gray-700">Thứ tự Ưu tiên</label>
+                            <input type="number" id="hlvUuTien" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="1">
+                        </div>
+                        <button id="saveHlvButton" class="self-end bg-green-600 text-white py-2 px-4 rounded-lg shadow font-semibold hover:bg-green-700">
+                            Thêm/Cập nhật HLV
+                        </button>
+                        <input type="hidden" id="hlvEditId">
+                    </div>
+
+                    <!-- Bảng danh sách HLV -->
+                    <div class="overflow-x-auto max-h-[400px]">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên HLV</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ca Dạy</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ưu Tiên</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hlvSettingsTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- HLV settings list -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 
-                <!-- Bảng Báo Cáo -->
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Phụ Trách</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng HV Mới</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng Doanh Thu (100%)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HBA Nhận (60%)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng Hoa Hồng HLV (40%)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuế TNCN (10%)</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Thực Nhận</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reportTableBody" class="bg-white divide-y divide-gray-200">
-                            <!-- Dữ liệu báo cáo sẽ được chèn vào đây -->
-                            <tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Chưa có dữ liệu. Vui lòng chọn tháng/năm và nhấn xem.</td></tr>
-                        </tbody>
-                        <tfoot class="bg-gray-100 font-bold">
-                            <tr id="reportTableFooter" class="hidden">
-                                <!-- Dữ liệu tổng cộng sẽ được chèn vào đây -->
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 3. Lịch sử Ghi Danh (DATABASE) -->
-            <div class="bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Lịch sử Ghi Danh (Real-time)</h2>
-                <div class="overflow-x-auto max-h-[600px]">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50 sticky top-0">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Học Viên</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Phụ Trách</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gói Học</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Học Phí</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại HĐ</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thanh Toán</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ghi Chú</th>
-                                <!-- (MỚI) Thêm class 'admin-only' và 'hidden' -->
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider admin-only">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTableBody" class="bg-white divide-y divide-gray-200">
-                            <!-- Dữ liệu lịch sử sẽ được chèn vào đây -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 4. Quản lý HLV (SETTINGS) -->
-            <div class="bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Quản lý HLV (Settings)</h2>
-                
-                <!-- Form thêm HLV -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-4 border rounded-lg">
-                    <div>
-                        <label for="hlvTen" class="block text-sm font-medium text-gray-700">Tên HLV</label>
-                        <input type="text" id="hlvTen" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="Thầy Nguyễn Văn A">
+                <!-- (MỚI) 6. Import Excel (Admin) -->
+                <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Import Dữ Liệu (Admin)</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="excelImportFile" class="block text-sm font-medium text-gray-700">Chọn file Excel (.xlsx, .xls)</label>
+                            <input type="file" id="excelImportFile" class="mt-1 block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100"
+                                accept=".xlsx, .xls">
+                        </div>
+                        <p class="text-xs text-gray-600">
+                            <strong>Lưu ý:</strong> Dữ liệu import sẽ bỏ qua luật chia lượt.
+                            Các cột bắt buộc: <strong>tenHV, goiHoc, hocPhi, caHoc, hlvPhuTrach, loaiHD, thanhToan</strong>.
+                            Cột <strong>ghiChu</strong> là tùy chọn.
+                        </p>
+                        <button id="importExcelButton" class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-purple-700">
+                            <span id="importExcelText">Bắt đầu Import</span>
+                            <span id="importExcelLoading" class="hidden">Đang xử lý, vui lòng chờ...</span>
+                        </button>
                     </div>
-                    <div>
-                        <label for="hlvCa" class="block text-sm font-medium text-gray-700">Ca Dạy</label>
-                        <select id="hlvCa" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                            <option>Sáng</option>
-                            <option>Chiều</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="hlvUuTien" class="block text-sm font-medium text-gray-700">Thứ tự Ưu tiên</label>
-                        <input type="number" id="hlvUuTien" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" placeholder="1">
-                    </div>
-                    <button id="saveHlvButton" class_exists="self-end bg-green-600 text-white py-2 px-4 rounded-lg shadow font-semibold hover:bg-green-700">
-                        Thêm/Cập nhật HLV
-                    </button>
-                    <input type="hidden" id="hlvEditId">
                 </div>
 
-                <!-- Bảng danh sách HLV -->
-                <div class="overflow-x-auto max-h-[400px]">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50 sticky top-0">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên HLV</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ca Dạy</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ưu Tiên</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="hlvSettingsTableBody" class="bg-white divide-y divide-gray-200">
-                            <!-- HLV settings list -->
-                        </tbody>
-                    </table>
+                <!-- 5. Cài đặt Thanh toán QR (SETTINGS) -->
+                <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Cài đặt Thanh toán QR (Admin)</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="qrBankName" class="block text-sm font-medium text-gray-700">Tên Ngân hàng (Vd: Vietinbank)</label>
+                            <input type="text" id="qrBankName" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
+                        </div>
+                        <div>
+                            <label for="qrBankBin" class="block text-sm font-medium text-gray-700">Bank BIN/Code (Vd: 970415 cho Vietinbank)</label>
+                            <input type="text" id="qrBankBin" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
+                        </div>
+                        <div>
+                            <label for="qrAccountNumber" class="block text-sm font-medium text-gray-700">Số Tài Khoản</label>
+                            <input type="text" id="qrAccountNumber" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
+                        </div>
+                        <div>
+                            <label for="qrAccountName" class="block text-sm font-medium text-gray-700">Tên Chủ Tài Khoản</label>
+                            <input type="text" id="qrAccountName" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
+                        </div>
+                        <button id="saveQrButton" class="w-full bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-green-700">
+                            Lưu Cài đặt QR
+                        </button>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- (MỚI) 6. Import Excel (Admin) -->
-            <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Import Dữ Liệu (Admin)</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label for="excelImportFile" class="block text-sm font-medium text-gray-700">Chọn file Excel (.xlsx, .xls)</label>
-                        <input type="file" id="excelImportFile" class="mt-1 block w-full text-sm text-gray-500
-                            file:mr-4 file:py-2 file:px-4
-                            file:rounded-full file:border-0
-                            file:text-sm file:font-semibold
-                            file:bg-blue-50 file:text-blue-700
-                            hover:file:bg-blue-100"
-                            accept=".xlsx, .xls">
-                    </div>
-                    <p class="text-xs text-gray-600">
-                        <strong>Lưu ý:</strong> Dữ liệu import sẽ bỏ qua luật chia lượt.
-                        Các cột bắt buộc: <strong>tenHV, goiHoc, hocPhi, caHoc, hlvPhuTrach, loaiHD, thanhToan</strong>.
-                        Cột <strong>ghiChu</strong> là tùy chọn.
-                    </p>
-                    <button id="importExcelButton" class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-purple-700">
-                        <span id="importExcelText">Bắt đầu Import</span>
-                        <span id="importExcelLoading" class="hidden">Đang xử lý, vui lòng chờ...</span>
-                    </button>
-                </div>
-            </div>
 
-            <!-- 5. Cài đặt Thanh toán QR (SETTINGS) -->
-            <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Cài đặt Thanh toán QR (Admin)</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label for="qrBankName" class="block text-sm font-medium text-gray-700">Tên Ngân hàng (Vd: Vietinbank)</label>
+            </div> <!-- Kết thúc adminView -->
 
-                        <input type="text" id="qrBankName" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
-                    </div>
-                    <div>
-                        <label for="qrBankBin" class="block text-sm font-medium text-gray-700">Bank BIN/Code (Vd: 970415 cho Vietinbank)</label>
-                        <input type="text" id="qrBankBin" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
-                    </div>
-                    <div>
-                        <label for="qrAccountNumber" class="block text-sm font-medium text-gray-700">Số Tài Khoản</label>
-                        <input type="text" id="qrAccountNumber" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
-                    </div>
-                    <div>
-                        <label for="qrAccountName" class="block text-sm font-medium text-gray-700">Tên Chủ Tài Khoản</Elabel>
-                        <input type="text" id="qrAccountName" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
-                    </div>
-                    <button id="saveQrButton" class="w-full bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-green-700">
-                        Lưu Cài đặt QR
-                    </button>
-                </div>
-            </div>
-
-        </div> <!-- Kết thúc adminView -->
-
-    </main>
+        </main>
+    </div> <!-- Kết thúc App Wrapper -->
 
     <!-- Modal Sửa Học Viên -->
     <div id="editStudentModal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden" style="z-index: 100;">
@@ -570,6 +587,7 @@
                         <select id="editLoaiHD" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
                             <option value="Chỉ Định">Chỉ Định</option>
                             <option value="Thường">Thường</option>
+                            <option value="Thường (Admin)">Thường (Admin)</option>
                         </select>
                     </div>
                 </div>
@@ -636,13 +654,9 @@
 
         // (MỚI) DANH SÁCH ADMIN (Dựa trên UserID anh cung cấp)
         const ADMIN_USER_ID_LIST = ["EQ2omFVthCXieS6VzfzdZ13fWwX2"]; // (SỬA) Cập nhật UID Admin của bạn
-        // (SỬA) Xóa Chìa khóa bí mật, không cần nữa
-        // const ADMIN_SECRET_KEY = "BI_MAT_CUA_BAN_NHAP_VAO_DAY"; 
-
+        
         /* ===== 2. CÀI ĐẶT CỐ ĐỊNH (từ file HuongDan_HeThong_HBA.md) ===== */
         
-        // Bảng HLV (SETTINGS) - SẼ ĐƯỢC LOAD TỪ FIRESTORE
-        // const HLV_SETTINGS = [ ... ]; // Xóa const này
         let HLV_SETTINGS_LIST = []; // Biến global để cache
         let PAYMENT_SETTINGS = {}; // Biến global để cache QR info
 
@@ -650,6 +664,7 @@
         const GOI_HOC_SETTINGS = [
             { ten: "12 buổi (1.500.000)", hocPhi: 1500000 },
             { ten: "24 buổi (3.000.000)", hocPhi: 3000000 }
+            // (MỚI) Thêm các gói khác nếu cần
         ];
 
         // Danh sách Ca Học (SETTINGS)
@@ -678,18 +693,14 @@
 
         // Lấy thông tin config từ Canvas (hoặc dùng default)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'hba-default-app';
-        // const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}'; // (SỬA) Không cần dòng này
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
         // (SỬA) Đường dẫn collection trên Firestore
-        // Thay đổi để trỏ trực tiếp vào collection gốc, vì đang dùng config riêng
         const hocVienCollectionPath = `hoc_vien_db`;
         const hlvCollectionPath = `hlv_settings`;
         const paymentSettingsDocPath = `app_settings/payment_info`; // (Doc 'payment_info' trong collection 'app_settings')
 
         try {
-            // (SỬA) Không cần parse, dùng config trực tiếp
-            // const firebaseConfig = JSON.parse(firebaseConfigStr);
             if (!firebaseConfig.apiKey) {
                 throw new Error("Firebase config không hợp lệ.");
             }
@@ -707,44 +718,37 @@
             // Xác thực người dùng
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // (SỬA) User đã đăng nhập (bằng Email/Pass)
                     console.log("User đã đăng nhập:", user.uid, user.email);
                     currentUserId = user.uid;
-                    document.getElementById('userIdDisplay').textContent = user.email; // Hiển thị Email thay vì UID
+                    document.getElementById('userIdDisplay').textContent = user.email || user.uid; // Hiển thị Email
                     
-                    // (SỬA) Logic kiểm tra Admin bảo mật
-                    // Chỉ kiểm tra UserID (đã cố định) với danh sách
                     if (ADMIN_USER_ID_LIST.includes(currentUserId)) {
                         isAdmin = true;
-                        // Hiển thị nút gạt Role cho Admin
                         document.getElementById('roleSwitcherWrapper').classList.remove('hidden');
                         console.log("Quyền Admin được cấp (UserID hợp lệ).");
                     } else {
                         isAdmin = false;
-                        // Ẩn nút gạt (an toàn, mặc định là hidden)
                         document.getElementById('roleSwitcherWrapper').classList.add('hidden');
                         console.log("Quyền Lễ tân (tiêu chuẩn).");
                     }
                     
-                    // (MỚI) Hiển thị App, Ẩn Login
                     document.getElementById('appWrapper').classList.remove('hidden');
                     document.getElementById('loginView').classList.add('hidden');
 
-                    // (MỚI) Thiết lập giao diện ban đầu (lễ tân hay admin)
                     setupInitialView();
                     
-                    // Bắt đầu lắng nghe dữ liệu
-                    // (MỚI) Phải load settings trước
-                    loadAppSettings();
+                    loadAppSettings(); // Load settings và bắt đầu listeners
                 } else {
-                    // (SỬA) User chưa đăng nhập
                     console.log("User chưa đăng nhập. Hiển thị màn hình Login.");
-                    // (MỚI) Hiển thị Login, Ẩn App
                     document.getElementById('appWrapper').classList.add('hidden');
                     document.getElementById('loginView').classList.remove('hidden');
                     
-                    // (SỬA) Xóa signInUser(), không tự động đăng nhập ẩn danh nữa
-                    // signInUser();
+                    // (SỬA) Gắn listener cho nút Đăng Nhập ngay tại đây
+                    // Vì initializeUI() chưa được gọi
+                    if (loginButton) {
+                        loginButton.removeEventListener('click', handleLogin); // Xóa listener cũ (nếu có)
+                        loginButton.addEventListener('click', handleLogin);
+                    }
                 }
             });
 
@@ -752,33 +756,6 @@
             console.error("Lỗi khởi tạo Firebase:", error);
             showMessage("Lỗi khởi tạo hệ thống. Vui lòng tải lại trang.", "error");
         }
-
-        async function signInUser() {
-            try {
-                // (SỬA) Bỏ qua initialAuthToken và luôn dùng signInAnonymously
-                // vì chúng ta đang dùng config tùy chỉnh (dán cứng)
-                // if (initialAuthToken) {
-                //     await signInWithCustomToken(auth, initialAuthToken);
-                //     console.log("Đăng nhập thành công với Custom Token.");
-                // } else {
-                    await signInAnonymously(auth);
-                    console.log("Đăng nhập ẩn danh thành công.");
-                // }
-            } catch (error) {
-                console.error("Lỗi đăng nhập:", error);
-                showMessage("Lỗi xác thực người dùng.", "error");
-        }
-
-        // (SỬA) Xóa hàm signInUser()
-        /*
-        async function signInUser() {
-            try {
-                // ...
-            } catch (error) {
-                // ...
-            }
-        }
-        */
 
         // (MỚI) Hàm load settings (HLV + QR) từ Firestore
         async function loadAppSettings() {
@@ -790,7 +767,6 @@
                     HLV_SETTINGS_LIST.push({ id: doc.id, ...doc.data() });
                 });
                 console.log("Loaded HLV Settings:", HLV_SETTINGS_LIST);
-                // Sắp xếp theo ưu tiên
                 HLV_SETTINGS_LIST.sort((a, b) => a.ca.localeCompare(b.ca) || a.uuTien - b.uuTien);
 
                 // 2. Load Payment Settings
@@ -800,7 +776,6 @@
                     console.log("Loaded Payment Settings:", PAYMENT_SETTINGS);
                 } else {
                     console.log("Không tìm thấy payment settings, dùng default.");
-                    // (MỚI) Nếu không có, tạo 1 cái default
                     PAYMENT_SETTINGS = {
                         bankName: "Vietinbank",
                         bankBin: "970415",
@@ -844,13 +819,13 @@
         const adminCaHocSelect = document.getElementById('adminCaHoc');
         const adminHlvChonSelect = document.getElementById('adminHlvChon');
         const adminAddButton = document.getElementById('adminAddButton');
-        const adminThanhToan = document.getElementById('adminThanhToan'); // (MỚI)
+        const adminThanhToan = document.getElementById('adminThanhToan');
 
-        // (MỚI) Login/Logout
+        // Login/Logout
         const loginButton = document.getElementById('loginButton');
         const logoutButton = document.getElementById('logoutButton');
 
-        // (MỚI) Lễ Tân Stats
+        // Lễ Tân Stats
         const todayRevenueHeader = document.getElementById('todayRevenueHeader');
         const statTodayCount = document.getElementById('statTodayCount');
         const statWeekCount = document.getElementById('statWeekCount');
@@ -862,11 +837,11 @@
         const reportMonthSelect = document.getElementById('reportMonth');
         const reportYearInput = document.getElementById('reportYear');
         const viewReportButton = document.getElementById('viewReportButton');
-        const printReportButton = document.getElementById('printReportButton'); // (MỚI)
-        const exportExcelButton = document.getElementById('exportExcelButton'); // (MỚI)
+        const printReportButton = document.getElementById('printReportButton');
+        const exportExcelButton = document.getElementById('exportExcelButton');
         const reportTableBody = document.getElementById('reportTableBody');
         const reportTableFooter = document.getElementById('reportTableFooter');
-        // (MỚI) Report Filters
+        // Report Filters
         const reportFilterType = document.getElementById('reportFilterType');
         const filterMonthControls = document.getElementById('filterMonthControls');
         const filterDateControls = document.getElementById('filterDateControls');
@@ -878,18 +853,18 @@
         // History
         const historyTableBody = document.getElementById('historyTableBody');
         
-        // (MỚI) HLV Settings form
+        // HLV Settings form
         const hlvSettingsTableBody = document.getElementById('hlvSettingsTableBody');
         const saveHlvButton = document.getElementById('saveHlvButton');
         
-        // (MỚI) QR Settings form
+        // QR Settings form
         const saveQrButton = document.getElementById('saveQrButton');
         
-        // (MỚI) Excel Import
+        // Excel Import
         const excelImportFile = document.getElementById('excelImportFile');
         const importExcelButton = document.getElementById('importExcelButton');
         
-        // (MỚI) Edit Modal
+        // Edit Modal
         const editStudentModal = document.getElementById('editStudentModal');
         const updateStudentButton = document.getElementById('updateStudentButton');
         const cancelEditButton = document.getElementById('cancelEditButton');
@@ -904,44 +879,28 @@
 
         // Hàm khởi tạo: Điền các dropdowns
         function initializeUI() {
-            // Xóa dropdowns cũ (phòng khi init lại)
-            goiHocSelect.innerHTML = '<option value="">-- Chọn gói học --</option>';
-            adminGoiHocSelect.innerHTML = '<option value="">-- Chọn gói học --</option>';
-            editGoiHocSelect.innerHTML = '<option value="">-- Chọn gói học --</option>';
-
-            // Điền Gói Học (Lễ Tân + Admin + Edit)
+            // Xóa dropdowns cũ
+            [goiHocSelect, adminGoiHocSelect, editGoiHocSelect].forEach(sel => sel.innerHTML = '<option value="">-- Chọn gói học --</option>');
             GOI_HOC_SETTINGS.forEach(goi => {
                 const option = `<option value="${goi.ten}" data-hocphi="${goi.hocPhi}">${goi.ten}</option>`;
-                goiHocSelect.innerHTML += option;
-                adminGoiHocSelect.innerHTML += option;
-                editGoiHocSelect.innerHTML += option;
+                [goiHocSelect, adminGoiHocSelect, editGoiHocSelect].forEach(sel => sel.innerHTML += option);
             });
 
             // Xóa dropdowns cũ
-            caHocSelect.innerHTML = '<option value="">-- Chọn ca học --</option>';
-            adminCaHocSelect.innerHTML = '<option value="">-- Chọn ca học --</option>';
-            editCaHocSelect.innerHTML = '<option value="">-- Chọn ca học --</option>';
-
-            // Điền Ca Học (Lễ Tân + Admin + Edit)
+            [caHocSelect, adminCaHocSelect, editCaHocSelect].forEach(sel => sel.innerHTML = '<option value="">-- Chọn ca học --</option>');
             CA_HOC_SETTINGS.forEach(ca => {
                 const option = `<option value="${ca}">${ca}</option>`;
-                caHocSelect.innerHTML += option;
-                adminCaHocSelect.innerHTML += option;
-                editCaHocSelect.innerHTML += option;
+                [caHocSelect, adminCaHocSelect, editCaHocSelect].forEach(sel => sel.innerHTML += option);
             });
 
             // Xóa dropdowns cũ
-            adminHlvChonSelect.innerHTML = '<option value="">-- Chọn HLV --</option>';
-            editHlvChonSelect.innerHTML = '<option value="">-- Chọn HLV --</option>';
-
-            // Điền HLV (Admin + Edit) - (MỚI) Từ HLV_SETTINGS_LIST
+            [adminHlvChonSelect, editHlvChonSelect].forEach(sel => sel.innerHTML = '<option value="">-- Chọn HLV --</option>');
             HLV_SETTINGS_LIST.forEach(hlv => {
                 const option = `<option value="${hlv.ten}">${hlv.ten}</option>`;
-                adminHlvChonSelect.innerHTML += option;
-                editHlvChonSelect.innerHTML += option;
+                [adminHlvChonSelect, editHlvChonSelect].forEach(sel => sel.innerHTML += option);
             });
 
-            // (MỚI) Điền QR Settings
+            // Điền QR Settings
             document.getElementById('qrBankName').value = PAYMENT_SETTINGS.bankName || "";
             document.getElementById('qrBankBin').value = PAYMENT_SETTINGS.bankBin || "";
             document.getElementById('qrAccountNumber').value = PAYMENT_SETTINGS.accountNumber || "";
@@ -950,66 +909,60 @@
             // Điền Tháng/Năm cho Report
             const currentMonth = new Date().getMonth() + 1;
             const currentYear = new Date().getFullYear();
+            reportMonthSelect.innerHTML = "";
             for (let i = 1; i <= 12; i++) {
                 reportMonthSelect.innerHTML += `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>Tháng ${i}</option>`;
             }
             reportYearInput.value = currentYear;
 
-            // Lắng nghe sự kiện
-            roleSwitcher.addEventListener('change', toggleView);
-            goiHocSelect.addEventListener('change', updateHocPhi);
-            caHocSelect.addEventListener('change', updateHocPhi); // updateHocPhi cũng gọi updateAutoAssignment
-            ghiDanhButton.addEventListener('click', handleGhiDanhAndPrint); // (MỚI) Đổi tên hàm
-            adminAddButton.addEventListener('click', handleAdminAdd);
-            viewReportButton.addEventListener('click', handleViewReport);
-            closeMessage.addEventListener('click', () => messageBox.classList.add('hide'));
+            // Lắng nghe sự kiện (chỉ gán 1 lần)
+            // (Xóa các listener cũ nếu có để tránh gán đè)
+            const removeListeners = (el, event, handler) => {
+                el.removeEventListener(event, handler);
+                el.addEventListener(event, handler);
+            };
+            
+            removeListeners(roleSwitcher, 'change', toggleView);
+            removeListeners(goiHocSelect, 'change', updateHocPhi);
+            removeListeners(caHocSelect, 'change', updateHocPhi);
+            removeListeners(ghiDanhButton, 'click', handleGhiDanhAndPrint);
+            removeListeners(adminAddButton, 'click', handleAdminAdd);
+            removeListeners(viewReportButton, 'click', handleViewReport);
+            removeListeners(closeMessage, 'click', () => messageBox.classList.add('hide'));
+            removeListeners(printReportButton, 'click', handlePrintReport);
+            removeListeners(exportExcelButton, 'click', handleExportExcel);
+            removeListeners(exportDailyExcelButton, 'click', handleExportDailyExcel);
+            removeListeners(saveHlvButton, 'click', handleSaveHlv);
+            removeListeners(saveQrButton, 'click', handleSaveQr);
+            removeListeners(importExcelButton, 'click', handleImportExcel);
+            removeListeners(updateStudentButton, 'click', handleUpdateStudent);
+            removeListeners(cancelEditButton, 'click', () => editStudentModal.classList.add('hidden'));
+            removeListeners(reportFilterType, 'change', toggleReportFilter);
+            // removeListeners(loginButton, 'click', handleLogin); // (SỬA) Xóa dòng này, đã chuyển vào onAuthStateChanged
+            removeListeners(logoutButton, 'click', handleLogout);
 
-            // (MỚI) Lắng nghe sự kiện mới
-            printReportButton.addEventListener('click', handlePrintReport);
-            exportExcelButton.addEventListener('click', handleExportExcel);
-            exportDailyExcelButton.addEventListener('click', handleExportDailyExcel); // (MỚI)
-            saveHlvButton.addEventListener('click', handleSaveHlv);
-            saveQrButton.addEventListener('click', handleSaveQr);
-            importExcelButton.addEventListener('click', handleImportExcel); // (MỚI)
-            updateStudentButton.addEventListener('click', handleUpdateStudent);
-            cancelEditButton.addEventListener('click', () => editStudentModal.classList.add('hidden'));
-            reportFilterType.addEventListener('change', toggleReportFilter); // (MỚI)
-
-            // (MỚI) Thêm listener cho Login/Logout
-            loginButton.addEventListener('click', handleLogin);
-            logoutButton.addEventListener('click', handleLogout);
-
-            // (MỚI) Lắng nghe sự kiện click trên bảng (Event Delegation)
-            historyTableBody.addEventListener('click', (e) => {
+            // Event Delegation (gán 1 lần)
+            historyTableBody.onclick = (e) => {
                 const target = e.target.closest('button');
                 if (!target) return;
-
                 const id = target.dataset.id;
-                if (target.classList.contains('edit-btn')) {
-                    handleShowEditModal(id);
-                } else if (target.classList.contains('delete-btn')) {
-                    const name = target.dataset.name;
-                    handleDeleteStudent(id, name);
-                }
-            });
+                if (target.classList.contains('edit-btn')) handleShowEditModal(id);
+                else if (target.classList.contains('delete-btn')) handleDeleteStudent(id, target.dataset.name);
+            };
 
-            hlvSettingsTableBody.addEventListener('click', (e) => {
+            hlvSettingsTableBody.onclick = (e) => {
                 const target = e.target.closest('button');
                 if (!target) return;
-
                 const id = target.dataset.id;
-                if (target.classList.contains('edit-hlv-btn')) {
-                    handleEditHlv(id);
-                } else if (target.classList.contains('delete-hlv-btn')) {
-                    handleDeleteHlv(id);
-                }
-            });
+                if (target.classList.contains('edit-hlv-btn')) handleEditHlv(id);
+                else if (target.classList.contains('delete-hlv-btn')) handleDeleteHlv(id);
+            };
         }
 
         // (MỚI) Các hàm xử lý Đăng nhập / Đăng xuất
         async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+            const email = document.getElementById('loginEmail').value.trim(); // (SỬA) Thêm .trim()
+            const password = document.getElementById('loginPassword').value.trim(); // (SỬA) Thêm .trim()
 
             if (!email || !password) {
                 showMessage("Vui lòng nhập Email và Mật khẩu.", "warning");
@@ -1017,16 +970,30 @@
             }
 
             try {
+                loginButton.disabled = true;
+                loginButton.textContent = "Đang đăng nhập...";
                 await signInWithEmailAndPassword(auth, email, password);
-                // onAuthStateChanged sẽ tự động xử lý việc hiển thị app
                 showMessage("Đăng nhập thành công!", "success");
             } catch (error) {
-                console.error("Lỗi đăng nhập:", error.code);
+                // (SỬA) Ghi log chi tiết hơn để debug
+                console.error("--- LỖI ĐĂNG NHẬP CHI TIẾT ---");
+                console.error("Error Code:", error.code);
+                console.error("Error Message:", error.message);
+                console.error("Full Error Object:", error);
+                
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
                     showMessage("Sai Email hoặc Mật khẩu.", "error");
+                } else if (error.code === 'auth/network-request-failed') {
+                    showMessage("Lỗi mạng. Vui lòng kiểm tra kết nối internet.", "error");
+                } else if (error.code === 'auth/too-many-requests') {
+                    showMessage("Quá nhiều lần thử. Vui lòng thử lại sau.", "error");
                 } else {
-                    showMessage("Lỗi đăng nhập: " + error.message, "error");
+                    // Hiển thị lỗi chung cho các trường hợp khác
+                    showMessage("Lỗi: " + error.code, "error");
                 }
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = "Đăng Nhập";
             }
         }
 
@@ -1044,37 +1011,32 @@
         // (MỚI) Hàm thiết lập View (thay thế toggleView)
         function setupInitialView() {
             let currentRole = 'leTan'; // Mặc định là Lễ tân
-
             if (isAdmin) {
-                // Nếu là Admin, đọc giá trị từ nút gạt
-                currentRole = roleSwitcher.value;
+                currentRole = roleSwitcher.value; // Đọc giá trị từ nút gạt
             }
 
             if (currentRole === 'admin') {
                 leTanView.classList.add('hidden');
                 adminView.classList.remove('hidden');
-                document.body.classList.add('admin-view'); // (MỚI) Thêm class vào body
+                document.body.classList.add('admin-view');
                 document.body.classList.remove('le-tan-view');
             } else {
                 leTanView.classList.remove('hidden');
                 adminView.classList.add('hidden');
                 document.body.classList.remove('admin-view');
-                document.body.classList.add('le-tan-view'); // (MỚI) Thêm class vào body
+                document.body.classList.add('le-tan-view');
             }
             
-            // (MỚI) Gán ngày mặc định cho các bộ lọc
             const todayISO = new Date().toISOString().split('T')[0];
             reportDate.value = todayISO;
             reportDateStart.value = todayISO;
             reportDateEnd.value = todayISO;
         }
 
-        // Chuyển đổi view Admin/Lễ Tân (MỚI: chỉ gọi setupInitialView)
         function toggleView() {
             setupInitialView();
         }
 
-        // (SỬA) Bổ sung hàm updateHocPhi
         function updateHocPhi() {
             const selectedGoiOption = goiHocSelect.options[goiHocSelect.selectedIndex];
             let hocPhi = 0;
@@ -1085,53 +1047,34 @@
             const formatter = new Intl.NumberFormat('vi-VN');
             hocPhiTuDongSpan.textContent = `${formatter.format(hocPhi)} VNĐ`;
             
-            // Gọi gán HLV
-            updateAutoAssignment();
+            updateAutoAssignment(); // Gọi gán HLV
         }
 
         /* ===== 5. LOGIC NGHIỆP VỤ CHÍNH (GÁN HLV) ===== */
 
-        // Hàm tìm HLV tiếp theo
         async function getNextHlv(caHoc) {
-            if (!caHoc) {
-                return "Vui lòng chọn Ca Học";
-            }
+            if (!caHoc) return "Vui lòng chọn Ca Học";
+            if (HLV_SETTINGS_LIST.length === 0) return "Chưa có HLV nào được cài đặt.";
 
             try {
-                // 1. Lọc HLV trong ca (MỚI: Dùng HLV_SETTINGS_LIST)
                 const hlvInCa = HLV_SETTINGS_LIST.filter(hlv => hlv.ca === caHoc);
                 if (hlvInCa.length === 0) return "Không có HLV cho ca này";
 
-                // 2. Lấy tất cả HĐ "Thường" trong ca này từ Firestore
                 const q = query(dbHocVienCollection, where("loaiHD", "==", "Thường"), where("caHoc", "==", caHoc));
                 const querySnapshot = await getDocs(q);
                 const thuongRegistrations = querySnapshot.docs.map(doc => doc.data());
 
-                // 3. Đếm số lượt của mỗi HLV
-                let hlvCounts = hlvInCa.map(hlv => ({
-                    ...hlv,
-                    count: 0
-                }));
-
+                let hlvCounts = hlvInCa.map(hlv => ({ ...hlv, count: 0 }));
                 thuongRegistrations.forEach(reg => {
                     const hlvIndex = hlvCounts.findIndex(hlv => hlv.ten === reg.hlvPhuTrach);
-                    if (hlvIndex > -1) {
-                        hlvCounts[hlvIndex].count++;
-                    }
+                    if (hlvIndex > -1) hlvCounts[hlvIndex].count++;
                 });
 
-                // 4. Tìm số lượt ít nhất (MIN)
                 const minCount = Math.min(...hlvCounts.map(hlv => hlv.count));
-
-                // 5. Lọc ra các HLV có số lượt = MIN
                 const candidates = hlvCounts.filter(hlv => hlv.count === minCount);
-
-                // 6. Sắp xếp các HLV này theo "Ưu tiên" (Tie-break)
                 candidates.sort((a, b) => a.uuTien - b.uuTien);
 
-                // 7. Người thắng là người đầu tiên
                 return candidates[0].ten;
-
             } catch (error) {
                 console.error("Lỗi khi lấy HLV tiếp theo:", error);
                 showMessage("Lỗi khi tính toán HLV. Vui lòng thử lại.", "error");
@@ -1139,7 +1082,6 @@
             }
         }
 
-        // Cập nhật UI HLV tự động
         async function updateAutoAssignment() {
             const selectedCa = caHocSelect.value;
             hlvDuocGanSpan.textContent = "Đang tính toán...";
@@ -1147,34 +1089,29 @@
             hlvDuocGanSpan.textContent = nextHlv;
         }
 
-        // Xử lý Ghi Danh (Lễ Tân) (MỚI: Đổi tên + In phiếu)
         async function handleGhiDanhAndPrint() {
             if (!currentUserId) {
                 showMessage("Lỗi xác thực. Vui lòng tải lại trang.", "error");
                 return;
             }
 
-            // Lấy dữ liệu
-            const tenHV = tenHVInput.value;
+            const tenHV = tenHVInput.value.trim();
             const selectedGoiOption = goiHocSelect.options[goiHocSelect.selectedIndex];
             const goiHoc = selectedGoiOption.value;
             const hocPhi = Number(selectedGoiOption.dataset.hocphi);
             const caHoc = caHocSelect.value;
             const hlvDuocGan = hlvDuocGanSpan.textContent;
-            const thanhToan = document.getElementById('thanhToan').value; // (MỚI)
+            const thanhToan = document.getElementById('thanhToan').value;
 
-            // Kiểm tra
-            if (!tenHV || !goiHoc || !caHoc || !thanhToan || hlvDuocGan.includes("Vui lòng") || hlvDuocGan.includes("Lỗi")) {
-                showMessage("Vui lòng nhập đầy đủ thông tin (Tên, Gói, Ca, Thanh toán).", "warning");
+            if (!tenHV || !goiHoc || !caHoc || !thanhToan || hlvDuocGan.includes("Vui lòng") || hlvDuocGan.includes("Lỗi") || hlvDuocGan.includes("Chưa có")) {
+                showMessage("Vui lòng nhập đầy đủ thông tin (Tên, Gói, Ca, Thanh toán) và đảm bảo HLV đã được gán.", "warning");
                 return;
             }
 
-            // Hiển thị loading
             ghiDanhButton.disabled = true;
             document.getElementById('ghiDanhText').classList.add('hidden');
             document.getElementById('ghiDanhLoading').classList.remove('hidden');
 
-            // Tạo object
             const newRegistration = {
                 timestamp: Timestamp.now(),
                 tenHV: tenHV,
@@ -1184,29 +1121,27 @@
                 loaiHD: "Thường",
                 ghiChu: "",
                 hocPhi: hocPhi,
-                thanhToan: thanhToan, // (MỚI)
-                addedByUserId: currentUserId
+                thanhToan: thanhToan,
+                addedByUserId: currentUserId,
+                addedByEmail: auth.currentUser.email // (MỚI) Lưu email người thêm
             };
 
-            // Lưu vào Firestore
             try {
                 const docRef = await addDoc(dbHocVienCollection, newRegistration);
                 showMessage("Ghi danh thành công! Đang chuẩn bị phiếu...", "success");
                 
-                // (MỚI) In phiếu
                 printRegistrationSlip({ ...newRegistration, id: docRef.id });
 
-                // Xóa form
                 tenHVInput.value = "";
                 goiHocSelect.selectedIndex = 0;
                 caHocSelect.selectedIndex = 0;
+                document.getElementById('thanhToan').selectedIndex = 0;
                 hlvDuocGanSpan.textContent = "Vui lòng chọn Ca Học";
                 hocPhiTuDongSpan.textContent = "0 VNĐ";
             } catch (error) {
                 console.error("Lỗi ghi danh:", error);
                 showMessage("Lỗi khi lưu dữ liệu. Vui lòng thử lại.", "error");
             } finally {
-                // Tắt loading
                 ghiDanhButton.disabled = false;
                 document.getElementById('ghiDanhText').classList.remove('hidden');
                 document.getElementById('ghiDanhLoading').classList.add('hidden');
@@ -1215,25 +1150,22 @@
         
         /* ===== 6. LOGIC ADMIN (GHI ĐÈ & BÁO CÁO) ===== */
 
-        // Xử lý Thêm HĐ (Admin)
         async function handleAdminAdd() {
             if (!currentUserId) {
                 showMessage("Lỗi xác thực. Vui lòng tải lại trang.", "error");
                 return;
             }
             
-            // Lấy dữ liệu
-            const tenHV = document.getElementById('adminTenHV').value;
+            const tenHV = document.getElementById('adminTenHV').value.trim();
             const selectedGoiOption = adminGoiHocSelect.options[adminGoiHocSelect.selectedIndex];
             const goiHoc = selectedGoiOption.value;
             const hocPhi = Number(selectedGoiOption.dataset.hocphi);
             const caHoc = adminCaHocSelect.value;
             const hlvPhuTrach = adminHlvChonSelect.value;
             const loaiHD = document.getElementById('adminLoaiHD').value;
-            const ghiChu = document.getElementById('adminGhiChu').value;
-            const thanhToan = document.getElementById('adminThanhToan').value; // (MỚI)
+            const ghiChu = document.getElementById('adminGhiChu').value.trim();
+            const thanhToan = document.getElementById('adminThanhToan').value;
 
-            // Kiểm tra
             if (!tenHV || !goiHoc || !caHoc || !hlvPhuTrach || !thanhToan) {
                 showMessage("Vui lòng nhập đầy đủ thông tin (Tên, Gói, Ca, HLV, Thanh toán).", "warning");
                 return;
@@ -1248,28 +1180,26 @@
                 loaiHD: loaiHD,
                 ghiChu: ghiChu,
                 hocPhi: hocPhi,
-                thanhToan: thanhToan, // (MỚI)
-                addedByUserId: currentUserId
+                thanhToan: thanhToan,
+                addedByUserId: currentUserId,
+                addedByEmail: auth.currentUser.email // (MỚI) Lưu email người thêm
             };
             
-            // Lưu vào Firestore
             try {
-                // (SỬA) Sửa dbCollection thành dbHocVienCollection
                 await addDoc(dbHocVienCollection, newRegistration);
                 showMessage("Admin đã thêm HĐ thành công!", "success");
-                // Xóa form
                 document.getElementById('adminTenHV').value = "";
                 adminGoiHocSelect.selectedIndex = 0;
                 adminCaHocSelect.selectedIndex = 0;
                 adminHlvChonSelect.selectedIndex = 0;
                 document.getElementById('adminGhiChu').value = "";
+                document.getElementById('adminThanhToan').selectedIndex = 0;
             } catch (error) {
                 console.error("Lỗi admin thêm HĐ:", error);
                 showMessage("Lỗi khi lưu dữ liệu. Vui lòng thử lại.", "error");
             }
         }
 
-        // (MỚI) Hàm chuyển đổi UI bộ lọc báo cáo
         function toggleReportFilter() {
             const filterType = reportFilterType.value;
             filterMonthControls.classList.toggle('hidden', filterType !== 'month');
@@ -1277,47 +1207,43 @@
             filterRangeControls.classList.toggle('hidden', filterType !== 'range');
         }
 
-        // Xử lý Xem Báo Cáo (MỚI: Nâng cấp)
         async function handleViewReport() {
             const filterType = reportFilterType.value;
             let startOfPeriod, endOfPeriod;
             let reportTitle = "";
 
             try {
-                // (MỚI) Tính toán khoảng thời gian dựa trên bộ lọc
                 if (filterType === 'month') {
                     const month = parseInt(reportMonthSelect.value);
                     const year = parseInt(reportYearInput.value);
                     if (!month || !year) throw new Error("Tháng hoặc Năm không hợp lệ.");
-                    
                     startOfPeriod = Timestamp.fromDate(new Date(year, month - 1, 1, 0, 0, 0));
-                    endOfPeriod = Timestamp.fromDate(new Date(new Date(year, month, 1).getTime() - 1));
+                    endOfPeriod = Timestamp.fromDate(new Date(year, month, 0, 23, 59, 59, 999)); // Lấy ngày cuối cùng của tháng
                     reportTitle = `Tháng ${month}/${year}`;
-
                 } else if (filterType === 'today') {
                     const now = new Date();
                     startOfPeriod = Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0));
                     endOfPeriod = Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
                     reportTitle = `Hôm Nay (${now.toLocaleDateString('vi-VN')})`;
-
                 } else if (filterType === 'date') {
                     if (!reportDate.value) throw new Error("Vui lòng chọn ngày.");
                     const date = new Date(reportDate.value);
+                    date.setHours(date.getHours() + 7); // (FIX) Chuyển sang múi giờ VN
                     startOfPeriod = Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0));
                     endOfPeriod = Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999));
                     reportTitle = `Ngày ${date.toLocaleDateString('vi-VN')}`;
-
                 } else if (filterType === 'range') {
                     if (!reportDateStart.value || !reportDateEnd.value) throw new Error("Vui lòng chọn ngày bắt đầu và kết thúc.");
                     const start = new Date(reportDateStart.value);
                     const end = new Date(reportDateEnd.value);
+                    start.setHours(start.getHours() + 7); // (FIX)
+                    end.setHours(end.getHours() + 7); // (FIX)
                     
                     startOfPeriod = Timestamp.fromDate(new Date(start.getFullYear(), start.getMonth(), start.getDate(), 0, 0, 0));
                     endOfPeriod = Timestamp.fromDate(new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999));
                     reportTitle = `Từ ${start.toLocaleDateString('vi-VN')} đến ${end.toLocaleDateString('vi-VN')}`;
                 }
 
-                // Query
                 const q = query(dbHocVienCollection, 
                     where("timestamp", ">=", startOfPeriod), 
                     where("timestamp", "<=", endOfPeriod)
@@ -1329,26 +1255,27 @@
                 if (registrations.length === 0) {
                     reportTableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Không tìm thấy dữ liệu cho: ${reportTitle}.</td></tr>`;
                     reportTableFooter.classList.add('hidden');
-                    currentReportCache = []; // Xóa cache
+                    currentReportCache = [];
                     return;
                 }
                 
-                // ... (Phần còn lại của hàm xử lý và render)
                 let reportData = {};
                 HLV_SETTINGS_LIST.forEach(hlv => {
                     reportData[hlv.ten] = { ten: hlv.ten, count: 0, totalRevenue: 0 };
                 });
                 
                 registrations.forEach(reg => {
-                    if (reportData[reg.hlvPhuTrach]) {
-                        reportData[reg.hlvPhuTrach].count++;
-                        reportData[reg.hlvPhuTrach].totalRevenue += reg.hocPhi;
+                    if (!reportData[reg.hlvPhuTrach]) {
+                        // (MỚI) Xử lý HLV đã bị xóa nhưng vẫn còn HĐ
+                        reportData[reg.hlvPhuTrach] = { ten: reg.hlvPhuTrach + " (Đã xóa)", count: 0, totalRevenue: 0 };
                     }
+                    reportData[reg.hlvPhuTrach].count++;
+                    reportData[reg.hlvPhuTrach].totalRevenue += reg.hocPhi;
                 });
 
                 let reportArray = Object.values(reportData).sort((a, b) => b.totalRevenue - a.totalRevenue);
                 
-                currentReportCache = { title: reportTitle, data: reportArray }; // (MỚI) Lưu cache để in
+                currentReportCache = { title: reportTitle, data: reportArray };
                 renderReportTable(reportArray);
 
             } catch (error) {
@@ -1357,20 +1284,14 @@
             }
         }
         
-        // (MỚI) Hàm render bảng báo cáo
         function renderReportTable(reportArray) {
             reportTableBody.innerHTML = "";
             const formatter = new Intl.NumberFormat('vi-VN');
 
-            let total_HV = 0;
-            let total_Revenue = 0;
-            let total_HBA = 0;
-            let total_HLV_Gross = 0;
-            let total_Tax = 0;
-            let total_HLV_Net = 0;
+            let totals = { hv: 0, revenue: 0, hba: 0, hlvGross: 0, tax: 0, hlvNet: 0 };
 
             reportArray.forEach(hlv => {
-                if (hlv.count === 0) return; // Bỏ qua HLV không có doanh thu
+                if (hlv.count === 0) return;
 
                 const revenue = hlv.totalRevenue;
                 const hbaShare = revenue * 0.6;
@@ -1378,12 +1299,12 @@
                 const tax = hlvGross * 0.1;
                 const hlvNet = hlvGross - tax;
 
-                total_HV += hlv.count;
-                total_Revenue += revenue;
-                total_HBA += hbaShare;
-                total_HLV_Gross += hlvGross;
-                total_Tax += tax;
-                total_HLV_Net += hlvNet;
+                totals.hv += hlv.count;
+                totals.revenue += revenue;
+                totals.hba += hbaShare;
+                totals.hlvGross += hlvGross;
+                totals.tax += tax;
+                totals.hlvNet += hlvNet;
 
                 const row = `
                     <tr>
@@ -1399,48 +1320,46 @@
                 reportTableBody.innerHTML += row;
             });
 
-            // Render Footer
             reportTableFooter.innerHTML = `
                 <td class="px-6 py-3 text-left">TỔNG CỘNG</td>
-                <td class="px-6 py-3 text-left">${total_HV}</td>
-                <td class="px-6 py-3 text-left">${formatter.format(total_Revenue)}</td>
-                <td class="px-6 py-3 text-left">${formatter.format(total_HBA)}</td>
-                <td class="px-6 py-3 text-left">${formatter.format(total_HLV_Gross)}</td>
-                <td class="px-6 py-3 text-left text-red-600">(${formatter.format(total_Tax)})</td>
-                <td class="px-6 py-3 text-left text-green-700">${formatter.format(total_HLV_Net)}</td>
+                <td class="px-6 py-3 text-left">${totals.hv}</td>
+                <td class="px-6 py-3 text-left">${formatter.format(totals.revenue)}</td>
+                <td class="px-6 py-3 text-left">${formatter.format(totals.hba)}</td>
+                <td class="px-6 py-3 text-left">${formatter.format(totals.hlvGross)}</td>
+                <td class="px-6 py-3 text-left text-red-600">(${formatter.format(totals.tax)})</td>
+                <td class="px-6 py-3 text-left text-green-700">${formatter.format(totals.hlvNet)}</td>
             `;
             reportTableFooter.classList.remove('hidden');
         }
         
         /* ===== 7. LẮNG NGHE REALTIME (DATABASE HISTORY) ===== */
         
+        let unsubscribeListener = null; // Biến để giữ hàm unsub
         function startRealtimeListener() {
+            if (unsubscribeListener) {
+                unsubscribeListener(); // Hủy listener cũ
+                console.log("Hủy listener cũ.");
+            }
             if (!dbHocVienCollection) return;
             
-            // Theo hướng dẫn, không dùng orderBy để tránh lỗi index
-            // Sẽ sort trong memory
+            console.log("Bắt đầu listener mới...");
             const q = query(dbHocVienCollection); 
 
-            onSnapshot(q, (querySnapshot) => {
+            unsubscribeListener = onSnapshot(q, (querySnapshot) => {
+                console.log("Nhận dữ liệu realtime...");
                 let allDocs = [];
                 querySnapshot.forEach((doc) => {
-                    allDocs.push({ id: doc.id, ...doc.data() }); // (MỚI) Lưu cả ID
+                    allDocs.push({ id: doc.id, ...doc.data() });
                 });
 
-                // Sắp xếp trong memory (mới nhất lên đầu)
                 allDocs.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
                 
-                allStudentsCache = allDocs; // (MỚI) Lưu cache cho Excel
+                allStudentsCache = allDocs; 
 
-                // (MỚI) Tính toán Stats và Doanh thu
                 updateDashboardStats(allDocs);
-
-                // Render lịch sử
                 renderHistoryTable(allDocs);
                 
-                // Cập nhật lại HLV (nếu đang ở view Lễ Tân)
-                // Điều này đảm bảo HLV được gán luôn là HLV mới nhất
-                if (leTanView.offsetParent !== null) { // Kiểm tra xem view Lễ Tân có đang hiển thị không
+                if (leTanView.offsetParent !== null) {
                     updateAutoAssignment();
                 }
 
@@ -1460,27 +1379,24 @@
             }
 
             data.forEach(item => {
-                const timestamp = item.timestamp.toDate().toLocaleString('vi-VN', { 
-                    day: '2-digit', 
-                    month: '2-digit', 
-                    year: 'numeric', 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
+                // (FIX) Đảm bảo item.timestamp tồn tại trước khi gọi toDate()
+                const timestampStr = item.timestamp ? item.timestamp.toDate().toLocaleString('vi-VN', { 
+                    day: '2-digit', month: '2-digit', year: 'numeric', 
+                    hour: '2-digit', minute: '2-digit' 
+                }) : "Không rõ";
                 
                 const loaiHDClass = item.loaiHD === 'Chỉ Định' ? 'text-red-600 font-bold' : 'text-gray-500';
 
                 const row = `
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestampStr}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.tenHV}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.hlvPhuTrach}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.goiHoc}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatter.format(item.hocPhi)}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm ${loaiHDClass}">${item.loaiHD}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.thanhToan || ''}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.ghiChu}</td>
-                        <!-- (MỚI) Thêm class 'admin-only' -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" title="${item.addedByEmail || ''}">${item.ghiChu}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium admin-only">
                             <button class="text-blue-600 hover:text-blue-900 edit-btn" data-id="${item.id}">Sửa</button>
                             <button class="text-red-600 hover:text-red-900 ml-4 delete-btn" data-id="${item.id}" data-name="${item.tenHV}">Xóa</button>
@@ -1497,87 +1413,61 @@
         function showMessage(text, type = 'success') {
             messageText.textContent = text;
             
-            // Xóa các class màu cũ
-            messageBox.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-400', 'text-white', 'text-gray-800');
-            messageBox.classList.add('hide'); // Reset animation
+            messageBox.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-400', 'text-white', 'text-gray-800', 'hide');
 
-            if (type === 'success') {
-                messageBox.classList.add('bg-green-500', 'text-white');
-            } else if (type === 'error') {
-                messageBox.classList.add('bg-red-500', 'text-white');
-            } else if (type === 'warning') {
-                messageBox.classList.add('bg-yellow-400', 'text-gray-800');
-            }
+            if (type === 'success') messageBox.classList.add('bg-green-500', 'text-white');
+            else if (type === 'error') messageBox.classList.add('bg-red-500', 'text-white');
+            else if (type === 'warning') messageBox.classList.add('bg-yellow-400', 'text-gray-800');
 
-            messageBox.classList.remove('hidden', 'hide');
+            messageBox.classList.remove('hidden');
 
-            // Tự động ẩn sau 3 giây
             clearTimeout(messageTimer);
             messageTimer = setTimeout(() => {
                 messageBox.classList.add('hide');
             }, 3000);
         }
 
-        /* ===== 9. CHẠY KHỞI TẠO ===== */
-        // (MỚI) Đã chuyển hàm initializeUI() vào sau khi loadAppSettings() thành công
-        // initializeUI(); // Xóa dòng này
-
         /* ===== 10. (MỚI) CÁC HÀM CRUD (SỬA/XÓA) VÀ IN ẤN ===== */
 
-        // (MỚI) Tính toán Stats Bảng điều khiển
         function updateDashboardStats(allDocs) {
             const now = new Date();
             const formatter = new Intl.NumberFormat('vi-VN');
 
-            // Xác định các mốc thời gian
             const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
             const endToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
             
-            // Tính ngày đầu tuần (Chủ Nhật là 0)
             const firstDayOfWeek = new Date(now);
             firstDayOfWeek.setDate(now.getDate() - now.getDay());
             firstDayOfWeek.setHours(0, 0, 0, 0);
             
             const startMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
             
-            let todayRevenue = 0;
-            let todayCount = 0;
-            let weekCount = 0;
-            let monthCount = 0;
+            let todayRevenue = 0, todayCount = 0, weekCount = 0, monthCount = 0;
             let todayDocs = [];
 
-            // Lọc dữ liệu (dùng array filter nhanh hơn)
             for (const doc of allDocs) {
+                // (FIX) Đảm bảo timestamp tồn tại
+                if (!doc.timestamp) continue; 
                 const docTime = doc.timestamp.toDate();
                 
-                // Tính cho hôm nay
                 if (docTime >= startToday && docTime <= endToday) {
                     todayRevenue += doc.hocPhi;
                     todayCount++;
-                    todayDocs.push(doc); // Thêm vào báo cáo Lễ tân
+                    todayDocs.push(doc);
                 }
-                // Tính cho tuần
-                if (docTime >= firstDayOfWeek) {
-                    weekCount++;
-                }
-                // Tính cho tháng
-                if (docTime >= startMonth) {
-                    monthCount++;
-                }
+                if (docTime >= firstDayOfWeek) weekCount++;
+                if (docTime >= startMonth) monthCount++;
             }
             
-            // Cập nhật UI
             todayRevenueHeader.textContent = `${formatter.format(todayRevenue)} VNĐ`;
             statTodayCount.textContent = todayCount;
             statWeekCount.textContent = weekCount;
             statMonthCount.textContent = monthCount;
 
-            // Cập nhật Báo cáo Lễ tân
             renderDailyReportTable(todayDocs);
-            dailyReportCache = todayDocs; // Lưu cache cho Lễ tân export
+            dailyReportCache = todayDocs;
         }
         
-        // (MỚI) Render Báo cáo Lễ Tân
         function renderDailyReportTable(todayDocs) {
             dailyReportTableBody.innerHTML = "";
             const formatter = new Intl.NumberFormat('vi-VN');
@@ -1585,7 +1475,6 @@
                 dailyReportTableBody.innerHTML = `<tr><td colspan="3" class="px-4 py-3 text-center text-gray-500">Chưa có HV mới hôm nay.</td></tr>`;
                 return;
             }
-            // Sắp xếp theo thứ tự mới nhất lên đầu cho bảng Lễ tân
             todayDocs.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
             
             todayDocs.forEach(item => { 
@@ -1600,16 +1489,14 @@
             });
         }
 
-
-        // ----- Chức năng In Phiếu Ghi Danh -----
         function printRegistrationSlip(regData) {
             const printWindow = window.open('', '_blank', 'width=800,height=600');
             const formatter = new Intl.NumberFormat('vi-VN');
             const now = new Date().toLocaleString('vi-VN');
 
             // (MỚI) Tạo VietQR String
-            // Dùng chuẩn VietQR (compact) để nhiều app ngân hàng quét được
-            const qrText = `https://api.vietqr.io/image/${PAYMENT_SETTINGS.bankBin}-${PAYMENT_SETTINGS.accountNumber}-compact.png?amount=${regData.hocPhi}&addInfo=HBA Q6 ${regData.tenHV.split(' ').pop()}`;
+            const tenHVRutGon = regData.tenHV.split(' ').pop();
+            const qrText = `https://api.vietqr.io/image/${PAYMENT_SETTINGS.bankBin}-${PAYMENT_SETTINGS.accountNumber}-compact.png?amount=${regData.hocPhi}&addInfo=HBA Q6 ${tenHVRutGon}`;
             
             const content = `
                 <html>
@@ -1625,66 +1512,21 @@
                             .join('\n')}
                         
                         /* Ghi đè style cho bản in */
-                        body { 
-                            background-color: #fff; 
-                            font-family: 'Arial', sans-serif;
-                        }
-                        .print-container {
-                            display: block;
-                        }
-                        .no-print {
-                            display: none !important;
-                        }
-                        /* Đảm bảo style in từ CSS chính được áp dụng */
+                        body { background-color: #fff; font-family: 'Arial', sans-serif; }
+                        .print-container { display: block; }
+                        .no-print { display: none !important; }
                          @media print {
-                            body {
-                                margin: 0;
-                                padding: 0;
-                            }
-                            .print-container {
-                                padding: 20px;
-                                max-width: 800px;
-                                margin: 0 auto;
-                            }
-                            .print-table {
-                                width: 100%;
-                                border-collapse: collapse;
-                                margin-top: 20px;
-                            }
-                            .print-table th, .print-table td {
-                                border: 1px solid #ccc;
-                                padding: 8px;
-                                text-align: left;
-                            }
-                            .print-table th {
-                                background-color: #f4f4f4;
-                            }
-                            .print-header {
-                                text-align: center;
-                                margin-bottom: 30px;
-                            }
-                            .print-header h1 {
-                                margin: 0;
-                                font-size: 24px;
-                            }
-                            .print-header p {
-                                margin: 5px 0;
-                                font-size: 14px;
-                            }
-                            .print-qr {
-                                text-align: center;
-                                margin-top: 20px;
-                            }
-                            .print-qr img {
-                                width: 150px;
-                                height: 150px;
-                            }
-                            .print-footer {
-                                margin-top: 50px;
-                                display: flex;
-                                justify-content: space-between;
-                                font-size: 14px;
-                            }
+                            body { margin: 0; padding: 0; }
+                            .print-container { padding: 20px; max-width: 800px; margin: 0 auto; }
+                            .print-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                            .print-table th, .print-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                            .print-table th { background-color: #f4f4f4; }
+                            .print-header { text-align: center; margin-bottom: 30px; }
+                            .print-header h1 { margin: 0; font-size: 24px; }
+                            .print-header p { margin: 5px 0; font-size: 14px; }
+                            .print-qr { text-align: center; margin-top: 20px; }
+                            .print-qr img { width: 200px; height: 200px; }
+                            .print-footer { margin-top: 50px; display: flex; justify-content: space-between; font-size: 14px; }
                         }
                     </style>
                 </head>
@@ -1694,7 +1536,6 @@
                         <p>Phiếu Ghi Danh & Thu Phí</p>
                         <p>Ngày giờ: ${now}</p>
                     </div>
-
                     <table class="print-table">
                         <tr><td style="width: 200px;">Học viên:</td><td><strong>${regData.tenHV}</strong></td></tr>
                         <tr><td>Gói học:</td><td>${regData.goiHoc}</td></tr>
@@ -1702,20 +1543,18 @@
                         <tr><td>HLV Phụ trách:</td><td>${regData.hlvPhuTrach}</td></tr>
                         <tr><td>Hình thức:</td><td>${regData.thanhToan}</td></tr>
                     </table>
-
                     ${regData.thanhToan === 'Chuyển khoản' ? `
                     <div class="print-qr">
                         <p>Quét mã QR để thanh toán (App Ngân hàng)</p>
-                        <img src="${qrText}" alt="QR Code Thanh toán" style="width: 200px; height: 200px;" />
+                        <img src="${qrText}" alt="QR Code Thanh toán" />
                         <p style="font-size: 14px; margin-top: 10px;">
                             Ngân hàng: <strong>${PAYMENT_SETTINGS.bankName}</strong><br>
                             STK: <strong>${PAYMENT_SETTINGS.accountNumber}</strong><br>
                             Chủ TK: <strong>${PAYMENT_SETTINGS.accountName}</strong><br>
-                            Nội dung: (Tên HV) - (SĐT)
+                            Nội dung: <strong>HBA Q6 ${tenHVRutGon}</strong>
                         </p>
                     </div>
                     ` : '<p style="margin-top: 20px;">Vui lòng thu tiền mặt.</p>'}
-
                     <div class="print-footer">
                         <span>Người lập phiếu</span>
                         <span>Học viên / Phụ huynh</span>
@@ -1725,18 +1564,15 @@
             `;
             
             printWindow.document.write(content);
+            printWindow.document.close();
+            printWindow.focus();
             
-            printWindow.document.close(); // Bắt buộc cho IE
-            printWindow.focus(); // Bắt buộc cho Safari
-            
-            // Chờ ảnh QR tải xong (nếu dùng link)
             setTimeout(() => {
                 printWindow.print();
                 printWindow.close();
-            }, 500); // Đợi 0.5 giây
+            }, 500);
         }
 
-        // ----- Chức năng Sửa/Xóa Học viên -----
         async function handleShowEditModal(docId) {
             try {
                 const docRef = doc(dbHocVienCollection, docId);
@@ -1766,19 +1602,18 @@
             const docId = document.getElementById('editStudentId').value;
             if (!docId) return;
 
-            // Lấy học phí mới
             const selectedGoiOption = editGoiHocSelect.options[editGoiHocSelect.selectedIndex];
             const hocPhi = Number(selectedGoiOption.dataset.hocphi);
 
             const updatedData = {
-                tenHV: document.getElementById('editTenHV').value,
+                tenHV: document.getElementById('editTenHV').value.trim(),
                 goiHoc: document.getElementById('editGoiHoc').value,
+                hocPhi: hocPhi, // (FIX) Cập nhật học phí khi gói thay đổi
                 caHoc: document.getElementById('editCaHoc').value,
                 hlvPhuTrach: document.getElementById('editHlvChon').value,
                 loaiHD: document.getElementById('editLoaiHD').value,
                 thanhToan: document.getElementById('editThanhToan').value,
-                ghiChu: document.getElementById('editGhiChu').value,
-                hocPhi: hocPhi
+                ghiChu: document.getElementById('editGhiChu').value.trim()
             };
 
             try {
@@ -1793,8 +1628,9 @@
         }
 
         async function handleDeleteStudent(docId, tenHV) {
-            // (QUAN TRỌNG) Không dùng window.confirm
-            // Tạm thời bỏ qua confirm() vì quy định
+            // (FIX) Vì không dùng confirm, ta hiển thị tên trong thông báo
+            // Trong một app thực tế, nên dùng modal confirm tùy chỉnh
+            showMessage(`Đang xóa ${tenHV}...`, 'warning');
             
             try {
                 await deleteDoc(doc(dbHocVienCollection, docId));
@@ -1805,14 +1641,13 @@
             }
         }
 
-        // ----- Chức năng In/Export Báo Cáo -----
         function handlePrintReport() {
             if (!currentReportCache.data || currentReportCache.data.length === 0) {
                 showMessage("Không có dữ liệu báo cáo để in.", "warning");
                 return;
             }
             
-            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            const printWindow = window.open('', '_blank', 'width=1000,height=700');
             const title = currentReportCache.title || "Báo Cáo Doanh Thu";
             const reportHtml = document.getElementById('reportTableBody').innerHTML;
             const footerHtml = document.getElementById('reportTableFooter').innerHTML;
@@ -1833,62 +1668,22 @@
                     body { background-color: #fff; font-family: 'Arial', sans-serif; }
                     .print-container { display: block; }
                     .no-print { display: none !important; }
-                    .print-table th, .print-table td { font-size: 12px; }
+                    .print-table th, .print-table td { font-size: 11px; padding: 6px; }
                      @media print {
-                        body {
-                            margin: 0;
-                            padding: 0;
-                        }
-                        .print-container {
-                            padding: 20px;
-                            max-width: 800px;
-                            margin: 0 auto;
-                        }
-                        .print-table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin-top: 20px;
-                        }
-                        .print-table th, .print-table td {
-                            border: 1px solid #ccc;
-                            padding: 8px;
-                            text-align: left;
-                        }
-                        .print-table th {
-                            background-color: #f4f4f4;
-                        }
-                        .print-header {
-                            text-align: center;
-                            margin-bottom: 30px;
-                        }
-                        .print-header h1 {
-                            margin: 0;
-                            font-size: 24px;
-                        }
-                        .print-header p {
-                            margin: 5px 0;
-                            font-size: 14px;
-                        }
-                        .print-qr {
-                            text-align: center;
-                            margin-top: 20px;
-                        }
-                        .print-qr img {
-                            width: 150px;
-                            height: 150px;
-                        }
-                        .print-footer {
-                            margin-top: 50px;
-                            display: flex;
-                            justify-content: space-between;
-                            font-size: 14px;
-                        }
+                        body { margin: 0; padding: 0; }
+                        .print-container { padding: 20px; max-width: 1000px; margin: 0 auto; }
+                        .print-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        .print-table th, .print-table td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+                        .print-table th { background-color: #f4f4f4; }
+                        .print-header { text-align: center; margin-bottom: 20px; }
+                        .print-header h1 { margin: 0; font-size: 22px; }
+                        .print-header p { margin: 5px 0; font-size: 14px; }
                     }
                 </style>
                 </head>
                 <body class="print-container">
                     <div class="print-header">
-                        <h1>Báo Cáo Doanh Thu</h1>
+                        <h1>Báo Cáo Doanh Thu HBA Q6</h1>
                         <p>Thời gian: ${title}</p>
                     </div>
                     <table class="print-table">
@@ -1914,9 +1709,8 @@
                 return;
             }
 
-            // Dọn dẹp dữ liệu (chỉ export các cột cần thiết)
             const dataToExport = allStudentsCache.map(item => ({
-                'Thời gian': item.timestamp.toDate().toLocaleString('vi-VN'),
+                'Thời gian': item.timestamp ? item.timestamp.toDate().toLocaleString('vi-VN') : "",
                 'Tên Học Viên': item.tenHV,
                 'HLV Phụ Trách': item.hlvPhuTrach,
                 'Gói Học': item.goiHoc,
@@ -1924,7 +1718,8 @@
                 'Loại HĐ': item.loaiHD,
                 'Thanh Toán': item.thanhToan,
                 'Ghi Chú': item.ghiChu,
-                'Ca Học': item.caHoc
+                'Ca Học': item.caHoc,
+                'Người Ghi Danh': item.addedByEmail || item.addedByUserId
             }));
 
             const ws = XLSX.utils.json_to_sheet(dataToExport);
@@ -1934,7 +1729,6 @@
             showMessage("Đang tải file Excel...", "success");
         }
         
-        // (MỚI) Export Excel (Lễ Tân - Hàng ngày)
         function handleExportDailyExcel() {
             if (dailyReportCache.length === 0) {
                 showMessage("Không có dữ liệu hôm nay để export.", "warning");
@@ -1949,6 +1743,7 @@
                 'Học Phí': item.hocPhi,
                 'Loại HĐ': item.loaiHD,
                 'Thanh Toán': item.thanhToan,
+                'Người Ghi Danh': item.addedByEmail || item.addedByUserId
             }));
 
             const ws = XLSX.utils.json_to_sheet(dataToExport);
@@ -1958,7 +1753,6 @@
             showMessage("Đang tải file Excel (Hôm nay)...", "success");
         }
         
-        // (MỚI) Import Excel (Admin)
         async function handleImportExcel() {
             const file = excelImportFile.files[0];
             if (!file) {
@@ -1977,54 +1771,65 @@
             try {
                 const reader = new FileReader();
                 reader.onload = async (e) => {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[sheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-                    if (jsonData.length === 0) {
-                        throw new Error("File Excel rỗng hoặc sai định dạng.");
-                    }
+                        if (jsonData.length === 0) throw new Error("File Excel rỗng hoặc sai định dạng.");
 
-                    let importedCount = 0;
-                    for (const row of jsonData) {
-                        // Kiểm tra các cột tối thiểu
-                        if (!row.tenHV || !row.hlvPhuTrach || !row.hocPhi || !row.caHoc || !row.goiHoc || !row.loaiHD || !row.thanhToan) {
-                            console.warn("Bỏ qua dòng (thiếu dữ liệu):", row);
-                            continue;
+                        let importedCount = 0;
+                        for (const row of jsonData) {
+                            if (!row.tenHV || !row.hlvPhuTrach || !row.hocPhi || !row.caHoc || !row.goiHoc || !row.loaiHD || !row.thanhToan) {
+                                console.warn("Bỏ qua dòng (thiếu dữ liệu):", row);
+                                continue;
+                            }
+
+                            const newRegistration = {
+                                timestamp: Timestamp.now(), // (MỚI) Dùng ngày import
+                                tenHV: row.tenHV,
+                                goiHoc: row.goiHoc,
+                                caHoc: row.caHoc,
+                                hlvPhuTrach: row.hlvPhuTrach,
+                                loaiHD: row.loaiHD,
+                                ghiChu: row.ghiChu || "Imported",
+                                hocPhi: Number(row.hocPhi),
+                                thanhToan: row.thanhToan,
+                                addedByUserId: currentUserId,
+                                addedByEmail: auth.currentUser.email
+                            };
+
+                            await addDoc(dbHocVienCollection, newRegistration);
+                            importedCount++;
                         }
-
-                        const newRegistration = {
-                            timestamp: Timestamp.now(),
-                            tenHV: row.tenHV,
-                            goiHoc: row.goiHoc,
-                            caHoc: row.caHoc,
-                            hlvPhuTrach: row.hlvPhuTrach,
-                            loaiHD: row.loaiHD, // (Thường, Chỉ Định)
-                            ghiChu: row.ghiChu || "Imported",
-                            hocPhi: Number(row.hocPhi),
-                            thanhToan: row.thanhToan,
-                            addedByUserId: currentUserId
-                        };
-
-                        await addDoc(dbHocVienCollection, newRegistration);
-                        importedCount++;
+                        showMessage(`Import thành công ${importedCount}/${jsonData.length} học viên.`, "success");
+                    } catch (readError) {
+                        console.error("Lỗi khi đọc file Excel:", readError);
+                        showMessage(readError.message || "Lỗi khi đọc file.", "error");
+                    } finally {
+                        importButton.disabled = false;
+                        importText.classList.remove('hidden');
+                        importLoading.classList.add('hidden');
+                        excelImportFile.value = "";
                     }
-                    showMessage(`Import thành công ${importedCount}/${jsonData.length} học viên.`, "success");
                 };
                 
-                reader.onerror = (e) => { throw new Error("Không thể đọc file."); };
+                reader.onerror = (e) => { 
+                    showMessage("Không thể đọc file.", "error");
+                    importButton.disabled = false;
+                    importText.classList.remove('hidden');
+                    importLoading.classList.add('hidden');
+                };
                 reader.readAsArrayBuffer(file);
                 
             } catch (error) {
                 console.error("Lỗi khi import Excel:", error);
                 showMessage(error.message || "Lỗi khi import file.", "error");
-            } finally {
                 importButton.disabled = false;
                 importText.classList.remove('hidden');
                 importLoading.classList.add('hidden');
-                excelImportFile.value = ""; // Reset input
             }
         }
 
@@ -2032,9 +1837,12 @@
         // ----- Chức năng Quản lý HLV & Settings -----
         function renderHlvSettingsTable() {
             hlvSettingsTableBody.innerHTML = "";
-            // Sắp xếp lại list HLV (phòng khi nó bị thay đổi)
             HLV_SETTINGS_LIST.sort((a, b) => a.ca.localeCompare(b.ca) || a.uuTien - b.uuTien);
             
+            if (HLV_SETTINGS_LIST.length === 0) {
+                hlvSettingsTableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Chưa có HLV nào.</td></tr>`;
+            }
+
             HLV_SETTINGS_LIST.forEach(hlv => {
                 const row = `
                     <tr>
@@ -2049,19 +1857,23 @@
                 `;
                 hlvSettingsTableBody.innerHTML += row;
             });
-            // (MỚI) Sau khi render lại bảng, phải cập nhật lại các dropdown chọn HLV
             updateHlvDropdowns();
         }
         
-        // (MỚI) Hàm cập nhật lại các dropdown HLV (sau khi sửa HLV settings)
         function updateHlvDropdowns() {
-            adminHlvChonSelect.innerHTML = '<option value="">-- Chọn HLV --</option>';
-            editHlvChonSelect.innerHTML = '<option value="">-- Chọn HLV --</option>';
+            // (FIX) Lưu giá trị đang chọn
+            const adminSelected = adminHlvChonSelect.value;
+            const editSelected = editHlvChonSelect.value;
+            
+            [adminHlvChonSelect, editHlvChonSelect].forEach(sel => sel.innerHTML = '<option value="">-- Chọn HLV --</option>');
             HLV_SETTINGS_LIST.forEach(hlv => {
                 const option = `<option value="${hlv.ten}">${hlv.ten}</option>`;
-                adminHlvChonSelect.innerHTML += option;
-                editHlvChonSelect.innerHTML += option;
+                [adminHlvChonSelect, editHlvChonSelect].forEach(sel => sel.innerHTML += option);
             });
+
+            // (FIX) Khôi phục giá trị
+            adminHlvChonSelect.value = adminSelected;
+            editHlvChonSelect.value = editSelected;
         }
 
         function handleEditHlv(docId) {
@@ -2071,11 +1883,12 @@
                 document.getElementById('hlvTen').value = hlv.ten;
                 document.getElementById('hlvCa').value = hlv.ca;
                 document.getElementById('hlvUuTien').value = hlv.uuTien;
+                saveHlvButton.textContent = "Lưu Thay Đổi"; // (MỚI)
             }
         }
 
         async function handleSaveHlv() {
-            const ten = document.getElementById('hlvTen').value;
+            const ten = document.getElementById('hlvTen').value.trim();
             const ca = document.getElementById('hlvCa').value;
             const uuTien = parseInt(document.getElementById('hlvUuTien').value);
             const editId = document.getElementById('hlvEditId').value;
@@ -2089,11 +1902,9 @@
 
             try {
                 if (editId) {
-                    // Cập nhật
                     await updateDoc(doc(dbHlvCollection, editId), hlvData);
                     showMessage("Cập nhật HLV thành công!", "success");
                 } else {
-                    // Thêm mới
                     await addDoc(dbHlvCollection, hlvData);
                     showMessage("Thêm HLV mới thành công!", "success");
                 }
@@ -2101,9 +1912,11 @@
                 document.getElementById('hlvEditId').value = "";
                 document.getElementById('hlvTen').value = "";
                 document.getElementById('hlvUuTien').value = "";
+                saveHlvButton.textContent = "Thêm/Cập nhật HLV"; // (MỚI)
                 
-                // Tải lại settings (để refresh bảng và dropdowns)
-                loadAppSettings(); 
+                // (FIX) Tải lại settings thay vì cả trang
+                // Phải dùng await để đảm bảo dropdowns được cập nhật
+                await loadAppSettings(); 
             } catch (error) {
                 console.error("Lỗi lưu HLV:", error);
                 showMessage("Lỗi lưu HLV.", "error");
@@ -2114,7 +1927,8 @@
             try {
                 await deleteDoc(doc(dbHlvCollection, docId));
                 showMessage("Đã xóa HLV.", "success");
-                loadAppSettings(); // Tải lại settings
+                // (FIX) Tải lại settings
+                await loadAppSettings(); 
             } catch (error) {
                 console.error("Lỗi xóa HLV:", error);
                 showMessage("Lỗi xóa HLV.", "error");
@@ -2129,6 +1943,11 @@
                 accountName: document.getElementById('qrAccountName').value
             };
 
+            if (!qrData.bankName || !qrData.bankBin || !qrData.accountNumber || !qrData.accountName) {
+                showMessage("Vui lòng nhập đầy đủ thông tin QR.", "warning");
+                return;
+            }
+
             try {
                 await setDoc(dbPaymentSettingsDoc, qrData, { merge: true });
                 PAYMENT_SETTINGS = qrData; // Cập nhật cache
@@ -2142,5 +1961,7 @@
     </script>
 </body>
 </html>
+
+
 
 
