@@ -480,9 +480,10 @@
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Phụ Trách</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng HV Mới</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng Doanh Thu (100%)</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HBA Nhận (60%)</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng Hoa Hồng HLV (40%)</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuế TNCN (10%)</th>
+                                    <!-- (SỬA) Thêm ID cho các tiêu đề tỉ lệ -->
+                                    <th scope="col" id="hbaPercentHeader" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HBA Nhận (60%)</th>
+                                    <th scope="col" id="hlvPercentHeader" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tổng Hoa Hồng HLV (40%)</th>
+                                    <th scope="col" id="taxPercentHeader" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuế TNCN (10%)</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Thực Nhận</th>
                                 </tr>
                             </thead>
@@ -620,6 +621,25 @@
                         </div>
                         <button id="saveQrButton" class="w-full bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-green-700">
                             Lưu Cài đặt QR
+                        </button>
+                    </div>
+                </div>
+
+                <!-- (MỚI) 7. Cài đặt Tỉ lệ Doanh thu (Admin) -->
+                <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Cài đặt Tỉ lệ Doanh thu (Admin)</h2>
+                    <p class="text-sm text-gray-600 mb-4">Lưu ý: Tỉ lệ HLV = 100% - Tỉ lệ HBA.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="splitHbaPercent" class="block text-sm font-medium text-gray-700">Tỉ lệ HBA Nhận (%)</label>
+                            <input type="number" id="splitHbaPercent" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm" value="60">
+                        </div>
+                        <div>
+                            <label for="splitTaxPercent" class="block text-sm font-medium text-gray-700">Thuế TNCN (%) (Tính trên hoa hồng HLV)</label>
+                            <input type="number" id="splitTaxPercent" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm" value="10">
+                        </div>
+                        <button id="saveSplitButton" class="w-full bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-green-700">
+                            Lưu Cài đặt Tỉ lệ
                         </button>
                     </div>
                 </div>
@@ -777,6 +797,9 @@
             let dailyReportCache = []; 
             let unsubscribeHocVien = null; // (MỚI) Biến để giữ listener
             let messageTimer; 
+            
+            // (MỚI) Biến cho cài đặt tỉ lệ
+            let REVENUE_SPLIT_SETTINGS = {}; 
 
             // (SỬA) Lấy DOM elements (chỉ những cái cần ngay lập tức)
             const loginView = document.getElementById('loginView');
@@ -806,6 +829,10 @@
             const hocVienCollectionPath = `hoc_vien_db`;
             const hlvCollectionPath = `hlv_settings`;
             const paymentSettingsDocPath = `app_settings/payment_info`; 
+            
+            // (MỚI) Đường dẫn cho cài đặt tỉ lệ
+            const revenueSplitDocPath = `app_settings/revenue_split`;
+            let dbRevenueSplitDoc;
 
             try {
                 app = initializeApp(firebaseConfig);
@@ -816,6 +843,9 @@
                 dbHocVienCollection = collection(db, hocVienCollectionPath);
                 dbHlvCollection = collection(db, hlvCollectionPath);
                 dbPaymentSettingsDoc = doc(db, paymentSettingsDocPath);
+                
+                // (MỚI) Khởi tạo doc tỉ lệ
+                dbRevenueSplitDoc = doc(db, revenueSplitDocPath);
 
                 // Gán sự kiện cho Message Box (luôn chạy)
                 closeMessageButton.addEventListener('click', () => messageBox.classList.add('hide'));
@@ -970,11 +1000,25 @@
                         await setDoc(dbPaymentSettingsDoc, PAYMENT_SETTINGS, { merge: true });
                     }
 
-                    // 3. Khởi tạo UI (Điền dropdowns, gán sự kiện)
+                    // (MỚI) 3. Load Revenue Split Settings
+                    const splitSnapshot = await getDoc(dbRevenueSplitDoc);
+                    if (splitSnapshot.exists()) {
+                        REVENUE_SPLIT_SETTINGS = splitSnapshot.data();
+                        console.log("Loaded Revenue Split Settings:", REVENUE_SPLIT_SETTINGS);
+                    } else {
+                        console.log("Không tìm thấy revenue split settings, dùng default.");
+                        REVENUE_SPLIT_SETTINGS = {
+                            hba: 60, // HBA nhận 60%
+                            tax: 10  // Thuế 10%
+                        };
+                        await setDoc(dbRevenueSplitDoc, REVENUE_SPLIT_SETTINGS, { merge: true });
+                    }
+
+                    // (SỬA) 4. Khởi tạo UI (Điền dropdowns, gán sự kiện)
                     initializeUI();
                     renderHlvSettingsTable(); 
 
-                    // 4. Bắt đầu lắng nghe dữ liệu học viên (CHỈ KHI SETTINGS ĐÃ SẴN SÀNG)
+                    // (SỬA) 5. Bắt đầu lắng nghe dữ liệu học viên (CHỈ KHI SETTINGS ĐÃ SẴN SÀNG)
                     startRealtimeListener();
 
                 } catch (error) {
@@ -1020,6 +1064,9 @@
                 const saveQrButton = document.getElementById('saveQrButton');
                 const importExcelButton = document.getElementById('importExcelButton'); 
                 
+                // (MỚI) Lấy DOM Cài đặt Tỉ lệ
+                const saveSplitButton = document.getElementById('saveSplitButton');
+                
                 // Modal
                 const editStudentModal = document.getElementById('editStudentModal');
                 const updateStudentButton = document.getElementById('updateStudentButton');
@@ -1051,6 +1098,10 @@
                 document.getElementById('qrBankBin').value = PAYMENT_SETTINGS.bankBin || "";
                 document.getElementById('qrAccountNumber').value = PAYMENT_SETTINGS.accountNumber || "";
                 document.getElementById('qrAccountName').value = PAYMENT_SETTINGS.accountName || "";
+
+                // (MỚI) Điền Revenue Split Settings
+                document.getElementById('splitHbaPercent').value = REVENUE_SPLIT_SETTINGS.hba || 60;
+                document.getElementById('splitTaxPercent').value = REVENUE_SPLIT_SETTINGS.tax || 10;
 
                 // Điền Tháng/Năm cho Report
                 const reportMonthSelect = document.getElementById('reportMonth');
@@ -1088,6 +1139,10 @@
 
                 saveHlvButton.addEventListener('click', handleSaveHlv);
                 saveQrButton.addEventListener('click', handleSaveQr);
+                
+                // (MỚI) Gán sự kiện cho Cài đặt Tỉ lệ
+                saveSplitButton.addEventListener('click', handleSaveRevenueSplit);
+                
                 importExcelButton.addEventListener('click', handleImportExcel); 
                 updateStudentButton.addEventListener('click', handleUpdateStudent);
                 cancelEditButton.addEventListener('click', () => editStudentModal.classList.add('hidden'));
@@ -1511,13 +1566,25 @@
 
                 let total_HV = 0, total_Revenue = 0, total_HBA = 0, total_HLV_Gross = 0, total_Tax = 0, total_HLV_Net = 0;
 
+                // (MỚI) Lấy tỉ lệ từ settings
+                const hbaRate = (REVENUE_SPLIT_SETTINGS.hba || 60) / 100;
+                const hlvRate = 1 - hbaRate; // Tỉ lệ HLV = 100% - Tỉ lệ HBA
+                const taxRate = (REVENUE_SPLIT_SETTINGS.tax || 10) / 100;
+
+                // (MỚI) Cập nhật tiêu đề bảng
+                document.getElementById('hbaPercentHeader').textContent = `HBA Nhận (${(hbaRate * 100).toFixed(0)}%)`;
+                document.getElementById('hlvPercentHeader').textContent = `Tổng Hoa Hồng HLV (${(hlvRate * 100).toFixed(0)}%)`;
+                document.getElementById('taxPercentHeader').textContent = `Thuế TNCN (${(taxRate * 100).toFixed(0)}%)`;
+
                 reportArray.forEach(hlv => {
                     if (hlv.count === 0) return; 
 
                     const revenue = hlv.totalRevenue;
-                    const hbaShare = revenue * 0.6;
-                    const hlvGross = revenue * 0.4;
-                    const tax = hlvGross * 0.1;
+                    
+                    // (SỬA) Dùng tỉ lệ động
+                    const hbaShare = revenue * hbaRate;
+                    const hlvGross = revenue * hlvRate;
+                    const tax = hlvGross * taxRate;
                     const hlvNet = hlvGross - tax;
 
                     total_HV += hlv.count;
@@ -2171,6 +2238,39 @@
                 } catch (error) {
                     console.error("Lỗi xóa HLV:", error);
                     showMessage("Lỗi xóa HLV.", "error");
+                }
+            }
+
+            // (MỚI) Hàm lưu Cài đặt Tỉ lệ
+            async function handleSaveRevenueSplit() {
+                const hbaPercent = parseInt(document.getElementById('splitHbaPercent').value);
+                const taxPercent = parseInt(document.getElementById('splitTaxPercent').value);
+
+                if (isNaN(hbaPercent) || hbaPercent < 0 || hbaPercent > 100) {
+                    showMessage("Tỉ lệ HBA không hợp lệ (phải từ 0-100).", "warning");
+                    return;
+                }
+                if (isNaN(taxPercent) || taxPercent < 0 || taxPercent > 100) {
+                    showMessage("Tỉ lệ Thuế không hợp lệ (phải từ 0-100).", "warning");
+                    return;
+                }
+
+                const splitData = {
+                    hba: hbaPercent,
+                    tax: taxPercent
+                };
+
+                try {
+                    await setDoc(dbRevenueSplitDoc, splitData, { merge: true });
+                    REVENUE_SPLIT_SETTINGS = splitData; // Cập nhật cache
+                    showMessage("Lưu cài đặt tỉ lệ thành công!", "success");
+                    // (MỚI) Tự động chạy lại báo cáo nếu đang xem
+                    if (currentReportCache.data && currentReportCache.data.length > 0) {
+                        renderReportTable(currentReportCache.data);
+                    }
+                } catch (error) {
+                    console.error("Lỗi lưu tỉ lệ:", error);
+                    showMessage("Lỗi lưu cài đặt tỉ lệ.", "error");
                 }
             }
 
