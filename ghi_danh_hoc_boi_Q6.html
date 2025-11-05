@@ -461,12 +461,13 @@
 
                         <div class="relative inline-block text-left self-end group">
                             <button class="bg-gray-700 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                                <span>Tác vụ khác...</span>
-                                <svg class="inline w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                            </button>
-                            <div class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
-                                <div class="py-1" role="menu" aria-orientation="vertical">
-                                    <a href="#" id="printReportButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">In Báo Cáo (Đang xem)</a>
+                            <span>Tác vụ khác...</span>
+                            <svg class="inline w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <!-- (SỬA) Thay mt-2 (margin) bằng mt-0 pt-2 (padding) để "bắt" con trỏ chuột -->
+                        <div class="absolute right-0 mt-0 pt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
+                            <div class="py-1" role="menu" aria-orientation="vertical">
+                                <a href="#" id="printReportButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">In Báo Cáo (Đang xem)</a>
                                     <a href="#" id="exportExcelButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Export Excel (Toàn bộ DB)</a>
                                 </div>
                             </div>
