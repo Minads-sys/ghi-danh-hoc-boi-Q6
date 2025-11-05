@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HBA Booking App</title>
+    <title>LỚP BƠI QUẬN 6</title>
     <!-- Tải Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Tải thư viện SheetJS (Excel Export) -->
@@ -151,15 +151,15 @@
         <header class="bg-white shadow-md no-print">
             <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
                 <div>
-                    <h1 class="text-2xl font-bold text-blue-700">HBA Q6 Booking</h1>
+                    <h1 class="text-2xl font-bold text-blue-700">ĐĂNG KÝ LỚP BƠI QUẬN 6</h1>
                     <p class="text-sm text-gray-500">Chào, <span id="userIdDisplay" class="font-medium">...</span></p>
                 </div>
                 <div class="flex items-center">
                     <!-- (SỬA) Ẩn mặc định, chỉ admin mới thấy -->
                     <div id="roleSwitcherWrapper" class="relative hidden">
                         <select id="roleSwitcher" class="appearance-none block w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500">
-                            <option value="leTan">View: Lễ Tân</option>
-                            <option value="admin">View: Quản Lý</option>
+                            <option value="leTan">Giao diện: Lễ Tân</option>
+                            <option value="admin">Giao diện: Quản Lý</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                             <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
@@ -183,13 +183,13 @@
                     <!-- Cột 1: Form Ghi Danh -->
                     <div class="lg:col-span-2">
                         <div class="bg-white p-8 rounded-xl shadow-lg">
-                            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Phiếu Ghi Danh Học Viên Mới</h2>
+                            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Phiếu Ghi Danh Học Viên</h2>
                             
                             <!-- Form nhập liệu -->
                             <div class="space-y-4 mb-6">
                                 <div>
-                                    <label for="tenHV" class="block text-sm font-medium text-gray-700">Tên Học Viên</label>
-                                    <input type="text" id="tenHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <label for="tenHV" class="block text-sm font-medium text-gray-700">Họ tên học viên</label>
+                                    <input type="text" id="tenHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nhập đầy đủ họ và tên">
                                 </div>
                                 
                                 <!-- Hàng Điện thoại + Mã thẻ -->
@@ -200,14 +200,14 @@
                                     </div>
                                     <div>
                                         <label for="maTheHV" class="block text-sm font-medium text-gray-700">Mã Thẻ HV</label>
-                                        <input type="text" id="maTheHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: HBA001">
+                                        <input type="text" id="maTheHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="nhập Mã QR trên thẻ màu xanh">
                                     </div>
                                 </div>
                                 
                                 <!-- Hàng Số Phiếu Thu -->
                                 <div>
                                     <label for="soPhieuThu" class="block text-sm font-medium text-gray-700">Số Phiếu Thu</label>
-                                    <input type="text" id="soPhieuThu" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: PT001">
+                                    <input type="text" id="soPhieuThu" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nhập số phiếu thu">
                                 </div>
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -272,7 +272,7 @@
                     <div class="space-y-6">
                         <!-- Thống Kê Nhanh -->
                         <div class="bg-white p-6 rounded-xl shadow-lg">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Thống Kê Nhanh (Real-time)</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Thống Kê Nhanh</h3>
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
                                     <span class="text-sm font-medium text-blue-700">HV Mới Hôm Nay:</span>
@@ -327,7 +327,7 @@
                 
                 <!-- 1. Form Thêm HĐ Chỉ Định -->
                 <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto">
-                    <h2 class="text-2xl font-semibold text-red-700 mb-6">Thêm Hợp Đồng (Admin Override)</h2>
+                    <h2 class="text-2xl font-semibold text-red-700 mb-6">Thêm Hợp Đồng</h2>
                     <div class="space-y-4">
                         <div>
                             <label for="adminTenHV" class="block text-sm font-medium text-gray-700">Tên Học Viên</label>
@@ -2296,3 +2296,4 @@
     </script>
 </body>
 </html>
+
