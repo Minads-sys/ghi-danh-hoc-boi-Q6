@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BƠI QUẬN 6</title>
+    <title>HBA Booking App</title>
     <!-- Tải Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Tải thư viện SheetJS (Excel Export) -->
@@ -35,13 +35,20 @@
             transition: transform 0.25s ease;
         }
 
-        /* (MỚI) CSS để ẩn/hiện các mục chỉ dành cho Admin */
+        /* CSS để ẩn/hiện các mục chỉ dành cho Admin */
         .admin-only {
             display: none; /* Ẩn các nút Sửa/Xóa mặc định */
         }
-        /* (MỚI) Khi body có class 'admin-view', hiện các mục này */
         body.admin-view .admin-only {
             display: table-cell; /* Hiện trong bảng */
+        }
+        /* (MỚI) CSS cho các nút admin không nằm trong bảng */
+        body.admin-view .admin-only-inline {
+            display: inline-block;
+        }
+        /* Class riêng cho nút gạt role */
+        body.admin-view .admin-only-flex {
+            display: flex;
         }
 
         /* CSS cho bản in */
@@ -103,7 +110,7 @@
 </head>
 <body class="bg-gray-100 font-sans min-h-screen no-print">
 
-    <!-- (MỚI) Màn hình đăng nhập -->
+    <!-- Màn hình đăng nhập -->
     <div id="loginView" class="fixed inset-0 bg-gray-100 flex items-center justify-center z-50">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">HBA Q6 Login</h2>
@@ -112,9 +119,24 @@
                     <label for="loginEmail" class="block text-sm font-medium text-gray-700">Email</label>
                     <input type="email" id="loginEmail" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
+                <!-- (SỬA) Thêm wrapper cho Mật khẩu + Icon -->
                 <div>
                     <label for="loginPassword" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
-                    <input type="password" id="loginPassword" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="relative mt-1">
+                        <input type="password" id="loginPassword" class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10">
+                        <button id="togglePassword" type="button" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700">
+                            <!-- Icon Mắt (SVG) -->
+                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                              <path fill-rule="evenodd" d="M.458 10C1.73 5.943 5.522 3 10 3s8.27 2.943 9.542 7c-1.27 4.057-5.064 7-9.542 7S1.73 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                            </svg>
+                            <!-- Icon Mắt Gạch (SVG) - Mặc định ẩn -->
+                            <svg id="eyeOffIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.27 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074L3.707 2.293zM10 12a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                              <path d="M2 10s3.939-7 8-7 8 7 8 7-3.939 7-8 7-8-7-8-7zm7.886-3.074A4.008 4.008 0 0114 10a4 4 0 01-4 4 3.987 3.987 0 01-3.232-1.678l9.118-9.118zM10 14a4 4 0 100-8 4 4 0 000 8z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <button id="loginButton" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
                     Đăng Nhập
@@ -123,29 +145,27 @@
         </div>
     </div>
 
-    <!-- (MỚI) Wrapper cho nội dung chính của App (ẩn khi chưa login) -->
+    <!-- Wrapper cho nội dung chính của App (ẩn khi chưa login) -->
     <div id="appWrapper" class="hidden">
         <!-- Thanh Header -->
         <header class="bg-white shadow-md no-print">
             <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-                <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-blue-600">GHI DANH LỚP BƠI HBA QUẬN 6</h1>
-                    <div class="ml-6 hidden" id="roleSwitcherWrapper">
-                        <span class="text-sm font-medium text-gray-700 mr-2">Giao diện:</span>
-                        <div class="relative inline-block w-40">
-                            <select id="roleSwitcher" class="block appearance-none w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500">
-                                <option value="leTan">Lễ Tân</option>
-                                <option value="admin">Quản Lý</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-blue-700">HBA Q6 Booking</h1>
+                    <p class="text-sm text-gray-500">Chào, <span id="userIdDisplay" class="font-medium">...</span></p>
                 </div>
                 <div class="flex items-center">
-                    <span class="text-sm text-gray-600 mr-3 hidden md:block">User: <span id="userIdDisplay" class="font-medium">Loading...</span></span>
-                    <!-- (MỚI) Nút Đăng xuất -->
+                    <!-- (SỬA) Ẩn mặc định, chỉ admin mới thấy -->
+                    <div id="roleSwitcherWrapper" class="relative hidden">
+                        <select id="roleSwitcher" class="appearance-none block w-full bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500">
+                            <option value="leTan">View: Lễ Tân</option>
+                            <option value="admin">View: Quản Lý</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                        </div>
+                    </div>
+                    <!-- Nút Đăng xuất -->
                     <button id="logoutButton" class="ml-4 bg-red-500 text-white py-2 px-4 rounded-lg shadow-md text-sm font-semibold hover:bg-red-600">
                         Đăng Xuất
                     </button>
@@ -172,34 +192,29 @@
                                     <input type="text" id="tenHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
                                 
-                                <!-- (MỚI) Thêm SĐT và Mã Thẻ -->
+                                <!-- Hàng Điện thoại + Mã thẻ -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label for="maTheHV" class="block text-sm font-medium text-gray-700">Mã Thẻ HV</label>
-                                        <input type="text" id="maTheHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Vd: 1234 (Nếu có)">
+                                        <label for="dienThoai" class="block text-sm font-medium text-gray-700">Điện thoại</label>
+                                        <input type="tel" id="dienThoai" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="SĐT Ba/Mẹ hoặc HV">
                                     </div>
                                     <div>
-                                        <label for="sdtHV" class="block text-sm font-medium text-gray-700">Điện thoại</label>
-                                        <input type="tel" id="sdtHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Vd: 090xxxxxxx">
+                                        <label for="maTheHV" class="block text-sm font-medium text-gray-700">Mã Thẻ HV</label>
+                                        <input type="text" id="maTheHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: HBA001">
                                     </div>
                                 </div>
-                                <!-- (MỚI) Thêm Loại SĐT -->
+                                
+                                <!-- Hàng Số Phiếu Thu -->
                                 <div>
-                                    <label for="loaiSdtHV" class="block text-sm font-medium text-gray-700">Loại SĐT (của ai?)</label>
-                                    <select id="loaiSdtHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="">-- Chọn loại SĐT (tùy chọn) --</option>
-                                        <option value="HV">Học Viên</option>
-                                        <option value="Ba">Ba</option>
-                                        <option value="Mẹ">Mẹ</option>
-                                        <option value="Khác">Khác</option>
-                                    </select>
+                                    <label for="soPhieuThu" class="block text-sm font-medium text-gray-700">Số Phiếu Thu</label>
+                                    <input type="text" id="soPhieuThu" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="VD: PT001">
                                 </div>
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label for="goiHoc" class="block text-sm font-medium text-gray-700">Gói Học</label>
                                         <select id="goiHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <!-- JS load options -->
+                                            <option value="">-- Chọn gói học --</option>
                                         </select>
                                     </div>
                                     <div>
@@ -221,14 +236,29 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Ô Nhập học phí tùy chỉnh -->
                                 <div>
-                                    <label for="thanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
-                                    <select id="thanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="">-- Chọn hình thức --</option>
-                                        <option value="Tiền mặt">Tiền mặt</option>
-                                        <option value="Chuyển khoản">Chuyển khoản</option>
-                                    </select>
+                                    <label for="hocPhiTuyChinh" class="block text-sm font-medium text-gray-700">Nhập Học Phí (Gói Khác)</label>
+                                    <input type="number" id="hocPhiTuyChinh" class="mt-1 block w-full px-4 py-3 border border-orange-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 hidden" placeholder="Nhập số tiền...">
                                 </div>
+
+                                <!-- Lý do thu khác -->
+                                <div id="lyDoThuKhacWrapper" class="hidden">
+                                    <label for="lyDoThuKhac" class="block text-sm font-medium text-gray-700">Lý do thu khác</label>
+                                    <input type="text" id="lyDoThuKhac" class="mt-1 block w-full px-4 py-3 border border-orange-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="VD: Thu 1 buổi, thu 6 buổi...">
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="thanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
+                                        <select id="thanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">-- Chọn hình thức --</option>
+                                            <option value="Tiền mặt">Tiền mặt</option>
+                                            <option value="Chuyển khoản">Chuyển khoản</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                             </div>
                             
                             <button id="ghiDanhButton" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
@@ -240,7 +270,7 @@
 
                     <!-- Cột 2: Thống kê (Lễ Tân) -->
                     <div class="space-y-6">
-                        <!-- (MỚI) Thống Kê Nhanh -->
+                        <!-- Thống Kê Nhanh -->
                         <div class="bg-white p-6 rounded-xl shadow-lg">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4">Thống Kê Nhanh (Real-time)</h3>
                             <div class="space-y-3">
@@ -256,14 +286,15 @@
                                     <span class="text-sm font-medium text-indigo-700">HV Mới Tháng Này:</span>
                                     <span id="statMonthCount" class="text-lg font-bold text-indigo-800">0</span>
                                 </div>
-                                <div class="flex justify-between items-center bg-purple-50 p-3 rounded-lg">
-                                    <span class="text-sm font-medium text-purple-700">Doanh Thu Hôm Nay:</span>
-                                    <span id="todayRevenueHeader" class="text-lg font-bold text-purple-800">0 VNĐ</span>
+                                <!-- (MỚI) Doanh thu hôm nay -->
+                                <div class="flex justify-between items-center bg-yellow-50 p-3 rounded-lg">
+                                    <span class="text-sm font-medium text-yellow-700">Doanh Thu Hôm Nay:</span>
+                                    <span id="todayRevenueHeader" class="text-lg font-bold text-yellow-800">0 VNĐ</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- (MỚI) Báo Cáo Trong Ngày (Lễ Tân) -->
+                        <!-- Báo Cáo Trong Ngày (Lễ Tân) -->
                         <div class="bg-white p-6 rounded-xl shadow-lg">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-semibold text-gray-800">Ghi Danh Trong Ngày</h3>
@@ -303,26 +334,41 @@
                             <input type="text" id="adminTenHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
                         </div>
                         
-                        <!-- (MỚI) Thêm SĐT và Mã Thẻ (Admin) -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="adminDienThoai" class="block text-sm font-medium text-gray-700">Điện thoại</label>
+                                <input type="tel" id="adminDienThoai" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                            </div>
                             <div>
                                 <label for="adminMaTheHV" class="block text-sm font-medium text-gray-700">Mã Thẻ HV</label>
                                 <input type="text" id="adminMaTheHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
                             </div>
+                        </div>
+
+                        <div>
+                            <label for="adminSoPhieuThu" class="block text-sm font-medium text-gray-700">Số Phiếu Thu</label>
+                            <input type="text" id="adminSoPhieuThu" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="adminSdtHV" class="block text-sm font-medium text-gray-700">Điện thoại</label>
-                                <input type="tel" id="adminSdtHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                                <label for="adminGoiHoc" class="block text-sm font-medium text-gray-700">Gói Học</label>
+                                <select id="adminGoiHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"></select>
+                            </div>
+                            <div>
+                                <label for="adminCaHoc" class="block text-sm font-medium text-gray-700">Ca Học</label>
+                                <select id="adminCaHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500"></select>
                             </div>
                         </div>
+
                         <div>
-                            <label for="adminLoaiSdtHV" class="block text-sm font-medium text-gray-700">Loại SĐT</label>
-                            <select id="adminLoaiSdtHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                                <option value="">-- Chọn loại SĐT (tùy chọn) --</option>
-                                <option value="HV">Học Viên</option>
-                                <option value="Ba">Ba</option>
-                                <option value="Mẹ">Mẹ</option>
-                                <option value="Khác">Khác</option>
-                            </select>
+                            <label for="adminHocPhiTuyChinh" class="block text-sm font-medium text-gray-700">Nhập Học Phí (Gói Khác)</label>
+                            <input type="number" id="adminHocPhiTuyChinh" class="mt-1 block w-full px-4 py-3 border border-orange-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 hidden" placeholder="Nhập số tiền...">
+                        </div>
+
+                        <div id="adminLyDoThuKhacWrapper" class="hidden">
+                            <label for="adminLyDoThuKhac" class="block text-sm font-medium text-gray-700">Lý do thu khác</label>
+                            <input type="text" id="adminLyDoThuKhac" class="mt-1 block w-full px-4 py-3 border border-orange-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -339,12 +385,14 @@
                             </div>
                         </div>
 
-                        <div>
-                            <label for="adminThanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
-                            <select id="adminThanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                                <option value="Tiền mặt">Tiền mặt</option>
-                                <option value="Chuyển khoản">Chuyển khoản</option>
-                            </select>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="adminThanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
+                                <select id="adminThanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                                    <option value="Tiền mặt">Tiền mặt</option>
+                                    <option value="Chuyển khoản">Chuyển khoản</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div>
@@ -362,10 +410,8 @@
                 <div class="bg-white p-8 rounded-xl shadow-lg">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Báo Cáo Doanh Thu (Admin)</h2>
                     
-                    <!-- (MỚI) Bộ lọc Nâng cao -->
-                    <div class="flex flex-wrap items-end space-x-0 sm:space-x-4 mb-6">
-                        <!-- Chọn loại lọc -->
-                        <div class="w-full sm:w-auto mb-4 sm:mb-0">
+                    <div class="flex flex-wrap items-end space-x-4 mb-6">
+                        <div>
                             <label for="reportFilterType" class="block text-sm font-medium text-gray-700">Loại Báo Cáo</label>
                             <select id="reportFilterType" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="month">Theo Tháng</option>
@@ -375,65 +421,58 @@
                             </select>
                         </div>
 
-                        <!-- Lọc theo tháng -->
-                        <div id="filterMonthControls" class="w-full sm:w-auto mb-4 sm:mb-0">
+                        <div id="filterMonthControls">
                             <div class="flex space-x-4">
-                                <div class="flex-1">
+                                <div>
                                     <label for="reportMonth" class="block text-sm font-medium text-gray-700">Tháng</label>
                                     <select id="reportMonth" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <!-- JS sẽ điền các tháng -->
                                     </select>
                                 </div>
-                                <div class="flex-1">
+                                <div>
                                     <label for="reportYear" class="block text-sm font-medium text-gray-700">Năm</label>
                                     <input type="number" id="reportYear" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" min="2020" max="2030">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Lọc theo ngày cụ thể -->
-                        <div id="filterDateControls" class="hidden w-full sm:w-auto mb-4 sm:mb-0">
+                        <div id="filterDateControls" class="hidden">
                             <div>
                                 <label for="reportDate" class="block text-sm font-medium text-gray-700">Chọn Ngày</label>
                                 <input type="date" id="reportDate" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
 
-                        <!-- Lọc theo khoảng thời gian -->
-                        <div id="filterRangeControls" class="hidden w-full sm:w-auto mb-4 sm:mb-0">
+                        <div id="filterRangeControls" class="hidden">
                             <div class="flex space-x-4">
-                                <div class="flex-1">
+                                <div>
                                     <label for="reportDateStart" class="block text-sm font-medium text-gray-700">Từ Ngày</label>
                                     <input type="date" id="reportDateStart" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
-                                <div class="flex-1">
+                                <div>
                                     <label for="reportDateEnd" class="block text-sm font-medium text-gray-700">Đến Ngày</label>
                                     <input type="date" id="reportDateEnd" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Nút Xem Báo Cáo -->
-                        <button id="viewReportButton" class="self-end bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 w-full sm:w-auto mb-4 sm:mb-0">
+                        <button id="viewReportButton" class="self-end bg-green-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                             Xem Báo Cáo
                         </button>
 
-                        <!-- (MỚI) Menu Dropdown cho các nút In/Export -->
-                        <div class="relative inline-block text-left self-end group w-full sm:w-auto">
-                            <button class="w-full bg-gray-700 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        <div class="relative inline-block text-left self-end group">
+                            <button class="bg-gray-700 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500">
                                 <span>Tác vụ khác...</span>
                                 <svg class="inline w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                             </button>
                             <div class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
                                 <div class="py-1" role="menu" aria-orientation="vertical">
                                     <a href="#" id="printReportButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">In Báo Cáo (Đang xem)</a>
-                                    <a href="#" id="exportExcelButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Export Excel (Toàn bộ)</a>
+                                    <a href="#" id="exportExcelButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Export Excel (Toàn bộ DB)</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Bảng Báo Cáo -->
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -448,12 +487,10 @@
                                 </tr>
                             </thead>
                             <tbody id="reportTableBody" class="bg-white divide-y divide-gray-200">
-                                <!-- Dữ liệu báo cáo sẽ được chèn vào đây -->
                                 <tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Chưa có dữ liệu. Vui lòng chọn tháng/năm và nhấn xem.</td></tr>
                             </tbody>
                             <tfoot class="bg-gray-100 font-bold">
                                 <tr id="reportTableFooter" class="hidden">
-                                    <!-- Dữ liệu tổng cộng sẽ được chèn vào đây -->
                                 </tr>
                             </tfoot>
                         </table>
@@ -462,27 +499,32 @@
 
                 <!-- 3. Lịch sử Ghi Danh (DATABASE) -->
                 <div class="bg-white p-8 rounded-xl shadow-lg">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Lịch sử Ghi Danh (Real-time)</h2>
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Lịch sử Ghi Danh (Real-time)</h2>
+                        <button id="exportHistoryExcelButton" class="bg-emerald-500 text-white py-2 px-4 rounded-lg shadow-md text-sm font-semibold hover:bg-emerald-600 admin-only-inline" style="display: none;">
+                            Export Excel (Lịch sử)
+                        </button>
+                    </div>
                     <div class="overflow-x-auto max-h-[600px]">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50 sticky top-0">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thời gian</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Học Viên</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã Thẻ HV</th> <!-- (MỚI) -->
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Điện thoại</th> <!-- (MỚI) -->
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Phụ Trách</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gói Học</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số Phiếu Thu</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mã Thẻ HV</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Học Viên</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Điện thoại</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HLV Phụ Trách</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gói Học</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Học Phí</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại HĐ</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thanh Toán</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lý Do Thu Khác</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ghi Chú</th>
-                                    <!-- (MỚI) Thêm class 'admin-only' và 'hidden' -->
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider admin-only">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="historyTableBody" class="bg-white divide-y divide-gray-200">
-                                <!-- Dữ liệu lịch sử sẽ được chèn vào đây -->
                             </tbody>
                         </table>
                     </div>
@@ -492,7 +534,6 @@
                 <div class="bg-white p-8 rounded-xl shadow-lg">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Quản lý HLV (Settings)</h2>
                     
-                    <!-- Form thêm HLV -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-4 border rounded-lg">
                         <div>
                             <label for="hlvTen" class="block text-sm font-medium text-gray-700">Tên HLV</label>
@@ -515,7 +556,6 @@
                         <input type="hidden" id="hlvEditId">
                     </div>
 
-                    <!-- Bảng danh sách HLV -->
                     <div class="overflow-x-auto max-h-[400px]">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50 sticky top-0">
@@ -527,13 +567,12 @@
                                 </tr>
                             </thead>
                             <tbody id="hlvSettingsTableBody" class="bg-white divide-y divide-gray-200">
-                                <!-- HLV settings list -->
                             </tbody>
                         </table>
                     </div>
                 </div>
                 
-                <!-- (MỚI) 6. Import Excel (Admin) -->
+                <!-- 5. Import Excel (Admin) -->
                 <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Import Dữ Liệu (Admin)</h2>
                     <div class="space-y-4">
@@ -550,7 +589,7 @@
                         <p class="text-xs text-gray-600">
                             <strong>Lưu ý:</strong> Dữ liệu import sẽ bỏ qua luật chia lượt.
                             Các cột bắt buộc: <strong>tenHV, goiHoc, hocPhi, caHoc, hlvPhuTrach, loaiHD, thanhToan</strong>.
-                            Các cột tùy chọn: <strong>ghiChu, maTheHV, sdtHV, loaiSdtHV</strong>.
+                            Các cột tùy chọn: <strong>ghiChu, dienThoai, maTheHV, soPhieuThu, lyDoThuKhac</strong>.
                         </p>
                         <button id="importExcelButton" class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg shadow-lg font-semibold text-lg hover:bg-purple-700">
                             <span id="importExcelText">Bắt đầu Import</span>
@@ -559,7 +598,7 @@
                     </div>
                 </div>
 
-                <!-- 5. Cài đặt Thanh toán QR (SETTINGS) -->
+                <!-- 6. Cài đặt Thanh toán QR (SETTINGS) -->
                 <div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6">Cài đặt Thanh toán QR (Admin)</h2>
                     <div class="space-y-4">
@@ -586,9 +625,8 @@
                 </div>
 
             </div> <!-- Kết thúc adminView -->
-
         </main>
-    </div> <!-- Kết thúc App Wrapper -->
+    </div> <!-- Kết thúc appWrapper -->
 
     <!-- Modal Sửa Học Viên -->
     <div id="editStudentModal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center hidden" style="z-index: 100;">
@@ -602,26 +640,41 @@
                     <input type="text" id="editTenHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
                 </div>
                 
-                <!-- (MỚI) Thêm SĐT và Mã Thẻ (Edit Modal) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="editDienThoai" class="block text-sm font-medium text-gray-700">Điện thoại</label>
+                        <input type="tel" id="editDienThoai" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
+                    </div>
                     <div>
                         <label for="editMaTheHV" class="block text-sm font-medium text-gray-700">Mã Thẻ HV</label>
                         <input type="text" id="editMaTheHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
                     </div>
+                </div>
+
+                <div>
+                    <label for="editSoPhieuThu" class="block text-sm font-medium text-gray-700">Số Phiếu Thu</label>
+                    <input type="text" id="editSoPhieuThu" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="editSdtHV" class="block text-sm font-medium text-gray-700">Điện thoại</label>
-                        <input type="tel" id="editSdtHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
+                        <label for="editGoiHoc" class="block text-sm font-medium text-gray-700">Gói Học</label>
+                        <select id="editGoiHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm"></select>
+                    </div>
+                    <div>
+                        <label for="editCaHoc" class="block text-sm font-medium text-gray-700">Ca Học</label>
+                        <select id="editCaHoc" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm"></select>
                     </div>
                 </div>
+
                 <div>
-                    <label for="editLoaiSdtHV" class="block text-sm font-medium text-gray-700">Loại SĐT</label>
-                    <select id="editLoaiSdtHV" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
-                        <option value="">-- Chọn loại SĐT (tùy chọn) --</option>
-                        <option value="HV">Học Viên</option>
-                        <option value="Ba">Ba</option>
-                        <option value="Mẹ">Mẹ</option>
-                        <option value="Khác">Khác</option>
-                    </select>
+                    <label for="editHocPhiTuyChinh" class="block text-sm font-medium text-gray-700">Học Phí (Nếu là Gói Khác)</label>
+                    <input type="number" id="editHocPhiTuyChinh" class="mt-1 block w-full px-4 py-3 border border-orange-400 rounded-lg shadow-sm hidden" placeholder="Nhập học phí tùy chỉnh...">
+                </div>
+
+                <div id="editLyDoThuKhacWrapper" class="hidden">
+                    <label for="editLyDoThuKhac" class="block text-sm font-medium text-gray-700">Lý do thu khác</label>
+                    <input type="text" id="editLyDoThuKhac" class="mt-1 block w-full px-4 py-3 border border-orange-400 rounded-lg shadow-sm">
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -634,17 +687,18 @@
                         <select id="editLoaiHD" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
                             <option value="Chỉ Định">Chỉ Định</option>
                             <option value="Thường">Thường</option>
-                            <option value="Thường (Admin)">Thường (Admin)</option>
                         </select>
                     </div>
                 </div>
 
-                <div>
-                    <label for="editThanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
-                    <select id="editThanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
-                        <option value="Tiền mặt">Tiền mặt</option>
-                        <option value="Chuyển khoản">Chuyển khoản</option>
-                    </select>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="editThanhToan" class="block text-sm font-medium text-gray-700">Hình thức Thanh toán</label>
+                        <select id="editThanhToan" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm">
+                            <option value="Tiền mặt">Tiền mặt</option>
+                            <option value="Chuyển khoản">Chuyển khoản</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div>
@@ -679,8 +733,8 @@
             signInAnonymously, 
             signInWithCustomToken, 
             onAuthStateChanged,
-            signInWithEmailAndPassword, // (MỚI) Thêm
-            signOut // (MỚI) Thêm
+            signInWithEmailAndPassword, // Thêm
+            signOut // Thêm
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { 
             getFirestore, 
@@ -696,881 +750,1160 @@
             where, 
             Timestamp, 
             onSnapshot,
-            setLogLevel // Thêm setLogLevel
+            setLogLevel 
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // (MỚI) DANH SÁCH ADMIN (Dựa trên UserID anh cung cấp)
-        const ADMIN_USER_ID_LIST = ["EQ2omFVthCXieS6VzfzdZ13fWwX2"]; // (SỬA) Cập nhật UID Admin của bạn
-        
-        /* ===== 2. CÀI ĐẶT CỐ ĐỊNH (từ file HuongDan_HeThong_HBA.md) ===== */
-        
-        let HLV_SETTINGS_LIST = []; // Biến global để cache
-        let PAYMENT_SETTINGS = {}; // Biến global để cache QR info
+        // (SỬA) Bọc toàn bộ code trong DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
 
-        // Danh sách Gói Học (SETTINGS)
-        const GOI_HOC_SETTINGS = [
-            { ten: "12 buổi (1.500.000)", hocPhi: 1500000 },
-            { ten: "24 buổi (3.000.000)", hocPhi: 3000000 }
-            // (MỚI) Thêm các gói khác nếu cần
-        ];
+            /* ===== 2. CÀI ĐẶT CỐ ĐỊNH ===== */
+            const ADMIN_USER_ID_LIST = ["EQ2omFVthCXieS6VzfzdZ13fWwX2"]; 
+            let HLV_SETTINGS_LIST = []; 
+            let PAYMENT_SETTINGS = {}; 
 
-        // Danh sách Ca Học (SETTINGS)
-        const CA_HOC_SETTINGS = ["Sáng", "Chiều"];
+            const GOI_HOC_SETTINGS = [
+                { ten: "12 buổi (1.500.000)", hocPhi: 1500000 },
+                { ten: "24 buổi (3.000.000)", hocPhi: 3000000 },
+                { ten: "Gói khác (Tùy chỉnh)", hocPhi: 0 } // (MỚI) Thêm gói tùy chỉnh
+            ];
+            const CA_HOC_SETTINGS = ["Sáng", "Chiều"];
 
-        /* ===== 3. KHỞI TẠO FIREBASE & AUTH ===== */
-        
-        // Biến toàn cục cho Firebase
-        let app, auth, db, dbHocVienCollection, dbHlvCollection, dbPaymentSettingsDoc;
-        let currentUserId = null;
-        let isAdmin = false; // (MỚI) Biến toàn cục để check quyền Admin
-        let allStudentsCache = []; // Cache cho Excel export
-        let currentReportCache = []; // Cache cho Report print
-        let dailyReportCache = []; // (MỚI) Cache cho Lễ tân export
+            /* ===== 3. BIẾN TOÀN CỤC VÀ KHỞI TẠO FIREBASE ===== */
+            let app, auth, db, dbHocVienCollection, dbHlvCollection, dbPaymentSettingsDoc;
+            let currentUserId = null;
+            let isAdmin = false; 
+            let allStudentsCache = []; 
+            let currentReportCache = []; 
+            let dailyReportCache = []; 
+            let unsubscribeHocVien = null; // (MỚI) Biến để giữ listener
+            let messageTimer; // (SỬA) Di chuyển khai báo messageTimer ra ngoài
 
-        // (MỚI) Dán trực tiếp config của bạn vào đây
-        const firebaseConfig = {
-          apiKey: "AIzaSyB_a8W1Qc0aEmKFILX3IZGjnTsYoEVjKGI",
-          authDomain: "ghi-danh-hoc-boi-q6.firebaseapp.com",
-          projectId: "ghi-danh-hoc-boi-q6",
-          storageBucket: "ghi-danh-hoc-boi-q6.firebasestorage.app",
-          messagingSenderId: "32346881439",
-          appId: "1:32346881439:web:b7b60da3cf510ec7a291aa",
-          measurementId: "G-B43NG2KHD1"
-        };
+            // (SỬA) Lấy DOM elements (chỉ những cái cần ngay lập tức)
+            const loginView = document.getElementById('loginView');
+            const appWrapper = document.getElementById('appWrapper');
+            const loginEmailInput = document.getElementById('loginEmail');
+            const loginPasswordInput = document.getElementById('loginPassword');
+            const loginButton = document.getElementById('loginButton');
+            const togglePasswordButton = document.getElementById('togglePassword');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const eyeOffIcon = document.getElementById('eyeOffIcon');
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+            const closeMessageButton = document.getElementById('closeMessage');
 
-        // Lấy thông tin config từ Canvas (hoặc dùng default)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hba-default-app';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        
-        // (SỬA) Đường dẫn collection trên Firestore
-        const hocVienCollectionPath = `hoc_vien_db`;
-        const hlvCollectionPath = `hlv_settings`;
-        const paymentSettingsDocPath = `app_settings/payment_info`; // (Doc 'payment_info' trong collection 'app_settings')
+            // Config Firebase
+            const firebaseConfig = {
+              apiKey: "AIzaSyB_a8W1Qc0aEmKFILX3IZGjnTsYoEVjKGI",
+              authDomain: "ghi-danh-hoc-boi-q6.firebaseapp.com",
+              projectId: "ghi-danh-hoc-boi-q6",
+              storageBucket: "ghi-danh-hoc-boi-q6.firebasestorage.app",
+              messagingSenderId: "32346881439",
+              appId: "1:32346881439:web:b7b60da3cf510ec7a291aa",
+              measurementId: "G-B43NG2KHD1"
+            };
 
-        try {
-            if (!firebaseConfig.apiKey) {
-                throw new Error("Firebase config không hợp lệ.");
-            }
+            // Đường dẫn collection
+            const hocVienCollectionPath = `hoc_vien_db`;
+            const hlvCollectionPath = `hlv_settings`;
+            const paymentSettingsDocPath = `app_settings/payment_info`; 
 
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            setLogLevel('debug'); // Bật log debug cho Firestore
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                setLogLevel('debug'); 
 
-            // Định nghĩa collection
-            dbHocVienCollection = collection(db, hocVienCollectionPath);
-            dbHlvCollection = collection(db, hlvCollectionPath);
-            dbPaymentSettingsDoc = doc(db, paymentSettingsDocPath);
+                dbHocVienCollection = collection(db, hocVienCollectionPath);
+                dbHlvCollection = collection(db, hlvCollectionPath);
+                dbPaymentSettingsDoc = doc(db, paymentSettingsDocPath);
 
-            // Xác thực người dùng
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    console.log("User đã đăng nhập:", user.uid, user.email);
-                    currentUserId = user.uid;
-                    document.getElementById('userIdDisplay').textContent = user.email || user.uid; // Hiển thị Email
-                    
-                    if (ADMIN_USER_ID_LIST.includes(currentUserId)) {
-                        isAdmin = true;
-                        document.getElementById('roleSwitcherWrapper').classList.remove('hidden');
-                        console.log("Quyền Admin được cấp (UserID hợp lệ).");
+                // Gán sự kiện cho Message Box (luôn chạy)
+                closeMessageButton.addEventListener('click', () => messageBox.classList.add('hide'));
+
+                // (SỬA) Gán sự kiện cho màn hình Login (luôn chạy)
+                loginButton.addEventListener('click', handleLogin);
+                togglePasswordButton.addEventListener('click', togglePasswordVisibility);
+                // (MỚI) Thêm sự kiện Enter
+                loginEmailInput.addEventListener('keydown', handleLoginKeyDown);
+                loginPasswordInput.addEventListener('keydown', handleLoginKeyDown);
+
+                // Lắng nghe thay đổi trạng thái Auth
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        // === USER ĐÃ ĐĂNG NHẬP ===
+                        console.log("User đã đăng nhập:", user.uid, user.email);
+                        currentUserId = user.uid;
+                        
+                        // Hiển thị App, Ẩn Login
+                        appWrapper.classList.remove('hidden');
+                        loginView.classList.add('hidden');
+                        
+                        // Kiểm tra Admin
+                        if (ADMIN_USER_ID_LIST.includes(currentUserId)) {
+                            isAdmin = true;
+                            document.getElementById('roleSwitcherWrapper').classList.remove('hidden');
+                            console.log("Quyền Admin được cấp.");
+                        } else {
+                            isAdmin = false;
+                            document.getElementById('roleSwitcherWrapper').classList.add('hidden');
+                            console.log("Quyền Lễ tân.");
+                        }
+                        
+                        document.getElementById('userIdDisplay').textContent = user.email;
+                        
+                        // Thiết lập giao diện (Lễ tân/Admin)
+                        setupInitialView();
+                        
+                        // Tải settings và bắt đầu nghe real-time
+                        loadAppSettingsAndListeners();
+
                     } else {
+                        // === USER CHƯA ĐĂNG NHẬP ===
+                        console.log("User chưa đăng nhập. Hiển thị màn hình Login.");
+                        appWrapper.classList.add('hidden');
+                        loginView.classList.remove('hidden');
+                        
+                        // (MỚI) Dọn dẹp
+                        currentUserId = null;
                         isAdmin = false;
-                        document.getElementById('roleSwitcherWrapper').classList.add('hidden');
-                        console.log("Quyền Lễ tân (tiêu chuẩn).");
+                        
+                        // (MỚI) Tắt listener cũ nếu có
+                        if (unsubscribeHocVien) {
+                            unsubscribeHocVien();
+                            unsubscribeHocVien = null;
+                            console.log("Đã tắt listener real-time.");
+                        }
                     }
-                    
-                    document.getElementById('appWrapper').classList.remove('hidden');
-                    document.getElementById('loginView').classList.add('hidden');
-
-                    setupInitialView();
-                    
-                    loadAppSettings(); // Load settings và bắt đầu listeners
-                } else {
-                    console.log("User chưa đăng nhập. Hiển thị màn hình Login.");
-                    document.getElementById('appWrapper').classList.add('hidden');
-                    document.getElementById('loginView').classList.remove('hidden');
-                    
-                    // (SỬA) Gắn listener cho nút Đăng Nhập ngay tại đây
-                    // Vì initializeUI() chưa được gọi
-                    if (loginButton) {
-                        loginButton.removeEventListener('click', handleLogin); // Xóa listener cũ (nếu có)
-                        loginButton.addEventListener('click', handleLogin);
-                    }
-                }
-            });
-
-        } catch (error) {
-            console.error("Lỗi khởi tạo Firebase:", error);
-            showMessage("Lỗi khởi tạo hệ thống. Vui lòng tải lại trang.", "error");
-        }
-
-        // (MỚI) Hàm load settings (HLV + QR) từ Firestore
-        async function loadAppSettings() {
-            try {
-                // 1. Load HLV Settings
-                const hlvSnapshot = await getDocs(query(dbHlvCollection));
-                HLV_SETTINGS_LIST = []; // Xóa cache cũ
-                hlvSnapshot.forEach((doc) => {
-                    HLV_SETTINGS_LIST.push({ id: doc.id, ...doc.data() });
-                });
-                console.log("Loaded HLV Settings:", HLV_SETTINGS_LIST);
-                HLV_SETTINGS_LIST.sort((a, b) => a.ca.localeCompare(b.ca) || a.uuTien - b.uuTien);
-
-                // 2. Load Payment Settings
-                const paymentSnapshot = await getDoc(dbPaymentSettingsDoc);
-                if (paymentSnapshot.exists()) {
-                    PAYMENT_SETTINGS = paymentSnapshot.data();
-                    console.log("Loaded Payment Settings:", PAYMENT_SETTINGS);
-                } else {
-                    console.log("Không tìm thấy payment settings, dùng default.");
-                    PAYMENT_SETTINGS = {
-                        bankName: "Vietinbank",
-                        bankBin: "970415",
-                        accountNumber: "0938099675",
-                        accountName: "TRUONG HY MINH"
-                    };
-                    await setDoc(dbPaymentSettingsDoc, PAYMENT_SETTINGS, { merge: true });
-                }
-
-                // 3. Khởi tạo UI (SAU KHI đã load xong)
-                initializeUI();
-                renderHlvSettingsTable(); // Render bảng HLV settings
-
-                // 4. Bắt đầu lắng nghe dữ liệu học viên
-                startRealtimeListener();
-
-            } catch (error) {
-                console.error("Lỗi nghiêm trọng khi tải settings:", error);
-                showMessage("Lỗi tải cấu hình HLV/Thanh toán. App không thể chạy.", "error");
-            }
-        }
-
-
-        /* ===== 4. LẮNG NGHE SỰ KIỆN & UI LOGIC ===== */
-
-        // Lấy các element DOM
-        const roleSwitcher = document.getElementById('roleSwitcher');
-        const leTanView = document.getElementById('leTanView');
-        const adminView = document.getElementById('adminView');
-
-        // Lễ tân form
-        const goiHocSelect = document.getElementById('goiHoc');
-        const caHocSelect = document.getElementById('caHoc');
-        const tenHVInput = document.getElementById('tenHV');
-        const hlvDuocGanSpan = document.getElementById('hlvDuocGan');
-        const hocPhiTuDongSpan = document.getElementById('hocPhiTuDong');
-        const ghiDanhButton = document.getElementById('ghiDanhButton');
-
-        // Admin form
-        const adminGoiHocSelect = document.getElementById('adminGoiHoc');
-        const adminCaHocSelect = document.getElementById('adminCaHoc');
-        const adminHlvChonSelect = document.getElementById('adminHlvChon');
-        const adminAddButton = document.getElementById('adminAddButton');
-        const adminThanhToan = document.getElementById('adminThanhToan');
-
-        // Login/Logout
-        const loginButton = document.getElementById('loginButton');
-        const logoutButton = document.getElementById('logoutButton');
-
-        // Lễ Tân Stats
-        const todayRevenueHeader = document.getElementById('todayRevenueHeader');
-        const statTodayCount = document.getElementById('statTodayCount');
-        const statWeekCount = document.getElementById('statWeekCount');
-        const statMonthCount = document.getElementById('statMonthCount');
-        const dailyReportTableBody = document.getElementById('dailyReportTableBody');
-        const exportDailyExcelButton = document.getElementById('exportDailyExcelButton');
-
-        // Report
-        const reportMonthSelect = document.getElementById('reportMonth');
-        const reportYearInput = document.getElementById('reportYear');
-        const viewReportButton = document.getElementById('viewReportButton');
-        const printReportButton = document.getElementById('printReportButton');
-        const exportExcelButton = document.getElementById('exportExcelButton');
-        const reportTableBody = document.getElementById('reportTableBody');
-        const reportTableFooter = document.getElementById('reportTableFooter');
-        // Report Filters
-        const reportFilterType = document.getElementById('reportFilterType');
-        const filterMonthControls = document.getElementById('filterMonthControls');
-        const filterDateControls = document.getElementById('filterDateControls');
-        const filterRangeControls = document.getElementById('filterRangeControls');
-        const reportDate = document.getElementById('reportDate');
-        const reportDateStart = document.getElementById('reportDateStart');
-        const reportDateEnd = document.getElementById('reportDateEnd');
-
-        // History
-        const historyTableBody = document.getElementById('historyTableBody');
-        
-        // HLV Settings form
-        const hlvSettingsTableBody = document.getElementById('hlvSettingsTableBody');
-        const saveHlvButton = document.getElementById('saveHlvButton');
-        
-        // QR Settings form
-        const saveQrButton = document.getElementById('saveQrButton');
-        
-        // Excel Import
-        const excelImportFile = document.getElementById('excelImportFile');
-        const importExcelButton = document.getElementById('importExcelButton');
-        
-        // Edit Modal
-        const editStudentModal = document.getElementById('editStudentModal');
-        const updateStudentButton = document.getElementById('updateStudentButton');
-        const cancelEditButton = document.getElementById('cancelEditButton');
-        const editGoiHocSelect = document.getElementById('editGoiHoc');
-        const editCaHocSelect = document.getElementById('editCaHoc');
-        const editHlvChonSelect = document.getElementById('editHlvChon');
-
-        // Message box
-        const messageBox = document.getElementById('messageBox');
-        const messageText = document.getElementById('messageText');
-        const closeMessage = document.getElementById('closeMessage');
-
-        // Hàm khởi tạo: Điền các dropdowns
-        function initializeUI() {
-            // Xóa dropdowns cũ
-            [goiHocSelect, adminGoiHocSelect, editGoiHocSelect].forEach(sel => sel.innerHTML = '<option value="">-- Chọn gói học --</option>');
-            GOI_HOC_SETTINGS.forEach(goi => {
-                const option = `<option value="${goi.ten}" data-hocphi="${goi.hocPhi}">${goi.ten}</option>`;
-                [goiHocSelect, adminGoiHocSelect, editGoiHocSelect].forEach(sel => sel.innerHTML += option);
-            });
-
-            // Xóa dropdowns cũ
-            [caHocSelect, adminCaHocSelect, editCaHocSelect].forEach(sel => sel.innerHTML = '<option value="">-- Chọn ca học --</option>');
-            CA_HOC_SETTINGS.forEach(ca => {
-                const option = `<option value="${ca}">${ca}</option>`;
-                [caHocSelect, adminCaHocSelect, editCaHocSelect].forEach(sel => sel.innerHTML += option);
-            });
-
-            // Xóa dropdowns cũ
-            [adminHlvChonSelect, editHlvChonSelect].forEach(sel => sel.innerHTML = '<option value="">-- Chọn HLV --</option>');
-            HLV_SETTINGS_LIST.forEach(hlv => {
-                const option = `<option value="${hlv.ten}">${hlv.ten}</option>`;
-                [adminHlvChonSelect, editHlvChonSelect].forEach(sel => sel.innerHTML += option);
-            });
-
-            // Điền QR Settings
-            document.getElementById('qrBankName').value = PAYMENT_SETTINGS.bankName || "";
-            document.getElementById('qrBankBin').value = PAYMENT_SETTINGS.bankBin || "";
-            document.getElementById('qrAccountNumber').value = PAYMENT_SETTINGS.accountNumber || "";
-            document.getElementById('qrAccountName').value = PAYMENT_SETTINGS.accountName || "";
-
-            // Điền Tháng/Năm cho Report
-            const currentMonth = new Date().getMonth() + 1;
-            const currentYear = new Date().getFullYear();
-            reportMonthSelect.innerHTML = "";
-            for (let i = 1; i <= 12; i++) {
-                reportMonthSelect.innerHTML += `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>Tháng ${i}</option>`;
-            }
-            reportYearInput.value = currentYear;
-
-            // Lắng nghe sự kiện (chỉ gán 1 lần)
-            // (Xóa các listener cũ nếu có để tránh gán đè)
-            const removeListeners = (el, event, handler) => {
-                el.removeEventListener(event, handler);
-                el.addEventListener(event, handler);
-            };
-            
-            removeListeners(roleSwitcher, 'change', toggleView);
-            removeListeners(goiHocSelect, 'change', updateHocPhi);
-            removeListeners(caHocSelect, 'change', updateHocPhi);
-            removeListeners(ghiDanhButton, 'click', handleGhiDanhAndPrint);
-            removeListeners(adminAddButton, 'click', handleAdminAdd);
-            removeListeners(viewReportButton, 'click', handleViewReport);
-            removeListeners(closeMessage, 'click', () => messageBox.classList.add('hide'));
-            removeListeners(printReportButton, 'click', handlePrintReport);
-            removeListeners(exportExcelButton, 'click', handleExportExcel);
-            removeListeners(exportDailyExcelButton, 'click', handleExportDailyExcel);
-            removeListeners(saveHlvButton, 'click', handleSaveHlv);
-            removeListeners(saveQrButton, 'click', handleSaveQr);
-            removeListeners(importExcelButton, 'click', handleImportExcel);
-            removeListeners(updateStudentButton, 'click', handleUpdateStudent);
-            removeListeners(cancelEditButton, 'click', () => editStudentModal.classList.add('hidden'));
-            removeListeners(reportFilterType, 'change', toggleReportFilter);
-            // removeListeners(loginButton, 'click', handleLogin); // (SỬA) Xóa dòng này, đã chuyển vào onAuthStateChanged
-            removeListeners(logoutButton, 'click', handleLogout);
-
-            // Event Delegation (gán 1 lần)
-            historyTableBody.onclick = (e) => {
-                const target = e.target.closest('button');
-                if (!target) return;
-                const id = target.dataset.id;
-                if (target.classList.contains('edit-btn')) handleShowEditModal(id);
-                else if (target.classList.contains('delete-btn')) handleDeleteStudent(id, target.dataset.name);
-            };
-
-            hlvSettingsTableBody.onclick = (e) => {
-                const target = e.target.closest('button');
-                if (!target) return;
-                const id = target.dataset.id;
-                if (target.classList.contains('edit-hlv-btn')) handleEditHlv(id);
-                else if (target.classList.contains('delete-hlv-btn')) handleDeleteHlv(id);
-            };
-        }
-
-        // (MỚI) Các hàm xử lý Đăng nhập / Đăng xuất
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value.trim(); // (SỬA) Thêm .trim()
-            const password = document.getElementById('loginPassword').value.trim(); // (SỬA) Thêm .trim()
-
-            if (!email || !password) {
-                showMessage("Vui lòng nhập Email và Mật khẩu.", "warning");
-                return;
-            }
-
-            try {
-                loginButton.disabled = true;
-                loginButton.textContent = "Đang đăng nhập...";
-                await signInWithEmailAndPassword(auth, email, password);
-                showMessage("Đăng nhập thành công!", "success");
-            } catch (error) {
-                // (SỬA) Ghi log chi tiết hơn để debug
-                console.error("--- LỖI ĐĂNG NHẬP CHI TIẾT ---");
-                console.error("Error Code:", error.code);
-                console.error("Error Message:", error.message);
-                console.error("Full Error Object:", error);
-                
-                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                    showMessage("Sai Email hoặc Mật khẩu.", "error");
-                } else if (error.code === 'auth/network-request-failed') {
-                    showMessage("Lỗi mạng. Vui lòng kiểm tra kết nối internet.", "error");
-                } else if (error.code === 'auth/too-many-requests') {
-                    showMessage("Quá nhiều lần thử. Vui lòng thử lại sau.", "error");
-                } else {
-                    // Hiển thị lỗi chung cho các trường hợp khác
-                    showMessage("Lỗi: " + error.code, "error");
-                }
-            } finally {
-                loginButton.disabled = false;
-                loginButton.textContent = "Đăng Nhập";
-            }
-        }
-
-        async function handleLogout() {
-            try {
-                await signOut(auth);
-                // onAuthStateChanged sẽ tự động xử lý việc hiển thị màn hình login
-                showMessage("Đã đăng xuất.", "success");
-            } catch (error) {
-                console.error("Lỗi đăng xuất:", error);
-                showMessage("Lỗi khi đăng xuất.", "error");
-            }
-        }
-
-        // (MỚI) Hàm thiết lập View (thay thế toggleView)
-        function setupInitialView() {
-            let currentRole = 'leTan'; // Mặc định là Lễ tân
-            if (isAdmin) {
-                currentRole = roleSwitcher.value; // Đọc giá trị từ nút gạt
-            }
-
-            if (currentRole === 'admin') {
-                leTanView.classList.add('hidden');
-                adminView.classList.remove('hidden');
-                document.body.classList.add('admin-view');
-                document.body.classList.remove('le-tan-view');
-            } else {
-                leTanView.classList.remove('hidden');
-                adminView.classList.add('hidden');
-                document.body.classList.remove('admin-view');
-                document.body.classList.add('le-tan-view');
-            }
-            
-            const todayISO = new Date().toISOString().split('T')[0];
-            reportDate.value = todayISO;
-            reportDateStart.value = todayISO;
-            reportDateEnd.value = todayISO;
-        }
-
-        function toggleView() {
-            setupInitialView();
-        }
-
-        function updateHocPhi() {
-            const selectedGoiOption = goiHocSelect.options[goiHocSelect.selectedIndex];
-            let hocPhi = 0;
-            if (selectedGoiOption && selectedGoiOption.dataset.hocphi) {
-                hocPhi = Number(selectedGoiOption.dataset.hocphi);
-            }
-            
-            const formatter = new Intl.NumberFormat('vi-VN');
-            hocPhiTuDongSpan.textContent = `${formatter.format(hocPhi)} VNĐ`;
-            
-            updateAutoAssignment(); // Gọi gán HLV
-        }
-
-        /* ===== 5. LOGIC NGHIỆP VỤ CHÍNH (GÁN HLV) ===== */
-
-        async function getNextHlv(caHoc) {
-            if (!caHoc) return "Vui lòng chọn Ca Học";
-            if (HLV_SETTINGS_LIST.length === 0) return "Chưa có HLV nào được cài đặt.";
-
-            try {
-                const hlvInCa = HLV_SETTINGS_LIST.filter(hlv => hlv.ca === caHoc);
-                if (hlvInCa.length === 0) return "Không có HLV cho ca này";
-
-                const q = query(dbHocVienCollection, where("loaiHD", "==", "Thường"), where("caHoc", "==", caHoc));
-                const querySnapshot = await getDocs(q);
-                const thuongRegistrations = querySnapshot.docs.map(doc => doc.data());
-
-                let hlvCounts = hlvInCa.map(hlv => ({ ...hlv, count: 0 }));
-                thuongRegistrations.forEach(reg => {
-                    const hlvIndex = hlvCounts.findIndex(hlv => hlv.ten === reg.hlvPhuTrach);
-                    if (hlvIndex > -1) hlvCounts[hlvIndex].count++;
                 });
 
-                const minCount = Math.min(...hlvCounts.map(hlv => hlv.count));
-                const candidates = hlvCounts.filter(hlv => hlv.count === minCount);
-                candidates.sort((a, b) => a.uuTien - b.uuTien);
-
-                return candidates[0].ten;
             } catch (error) {
-                console.error("Lỗi khi lấy HLV tiếp theo:", error);
-                showMessage("Lỗi khi tính toán HLV. Vui lòng thử lại.", "error");
-                return "Lỗi... Thử lại";
-            }
-        }
-
-        async function updateAutoAssignment() {
-            const selectedCa = caHocSelect.value;
-            hlvDuocGanSpan.textContent = "Đang tính toán...";
-            const nextHlv = await getNextHlv(selectedCa);
-            hlvDuocGanSpan.textContent = nextHlv;
-        }
-
-        async function handleGhiDanhAndPrint() {
-            if (!currentUserId) {
-                showMessage("Lỗi xác thực. Vui lòng tải lại trang.", "error");
-                return;
+                console.error("Lỗi khởi tạo Firebase:", error);
+                showMessage("Lỗi khởi tạo hệ thống. Vui lòng tải lại trang.", "error");
             }
 
-            const tenHV = tenHVInput.value.trim();
-            const selectedGoiOption = goiHocSelect.options[goiHocSelect.selectedIndex];
-            const goiHoc = selectedGoiOption.value;
-            const hocPhi = Number(selectedGoiOption.dataset.hocphi);
-            const caHoc = caHocSelect.value;
-            const hlvDuocGan = hlvDuocGanSpan.textContent;
-            const thanhToan = document.getElementById('thanhToan').value;
-            const maTheHV = document.getElementById('maTheHV').value.trim(); // (MỚI)
-            const sdtHV = document.getElementById('sdtHV').value.trim(); // (MỚI)
-            const loaiSdtHV = document.getElementById('loaiSdtHV').value; // (MỚI)
+            /* ===== 4. HÀM XỬ LÝ AUTH (Đăng nhập/thoát) ===== */
 
-            if (!tenHV || !goiHoc || !caHoc || !thanhToan || hlvDuocGan.includes("Vui lòng") || hlvDuocGan.includes("Lỗi") || hlvDuocGan.includes("Chưa có")) {
-                showMessage("Vui lòng nhập đầy đủ thông tin (Tên, Gói, Ca, Thanh toán) và đảm bảo HLV đã được gán.", "warning");
-                return;
+            function handleLoginKeyDown(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
             }
 
-            ghiDanhButton.disabled = true;
-            document.getElementById('ghiDanhText').classList.add('hidden');
-            document.getElementById('ghiDanhLoading').classList.remove('hidden');
-
-            const newRegistration = {
-                timestamp: Timestamp.now(),
-                tenHV: tenHV,
-                goiHoc: goiHoc,
-                caHoc: caHoc,
-                hlvPhuTrach: hlvDuocGan,
-                loaiHD: "Thường",
-                ghiChu: "",
-                hocPhi: hocPhi,
-                thanhToan: thanhToan,
-                maTheHV: maTheHV, // (MỚI)
-                sdtHV: sdtHV, // (MỚI)
-                loaiSdtHV: loaiSdtHV, // (MỚI)
-                addedByUserId: currentUserId,
-                addedByEmail: auth.currentUser.email // (MỚI) Lưu email người thêm
-            };
-
-            try {
-                const docRef = await addDoc(dbHocVienCollection, newRegistration);
-                showMessage("Ghi danh thành công! Đang chuẩn bị phiếu...", "success");
-                
-                printRegistrationSlip({ ...newRegistration, id: docRef.id });
-
-                tenHVInput.value = "";
-                goiHocSelect.selectedIndex = 0;
-                caHocSelect.selectedIndex = 0;
-                document.getElementById('thanhToan').selectedIndex = 0;
-                document.getElementById('maTheHV').value = ""; // (MỚI)
-                document.getElementById('sdtHV').value = ""; // (MỚI)
-                document.getElementById('loaiSdtHV').selectedIndex = 0; // (MỚI)
-                hlvDuocGanSpan.textContent = "Vui lòng chọn Ca Học";
-                hocPhiTuDongSpan.textContent = "0 VNĐ";
-            } catch (error) {
-                console.error("Lỗi ghi danh:", error);
-                showMessage("Lỗi khi lưu dữ liệu. Vui lòng thử lại.", "error");
-            } finally {
-                ghiDanhButton.disabled = false;
-                document.getElementById('ghiDanhText').classList.remove('hidden');
-                document.getElementById('ghiDanhLoading').classList.add('hidden');
+            function togglePasswordVisibility() {
+                const isPassword = loginPasswordInput.type === 'password';
+                loginPasswordInput.type = isPassword ? 'text' : 'password';
+                eyeIcon.classList.toggle('hidden', isPassword);
+                eyeOffIcon.classList.toggle('hidden', !isPassword);
             }
-        }
-        
-        /* ===== 6. LOGIC ADMIN (GHI ĐÈ & BÁO CÁO) ===== */
 
-        async function handleAdminAdd() {
-            if (!currentUserId) {
-                showMessage("Lỗi xác thực. Vui lòng tải lại trang.", "error");
-                return;
-            }
-            
-            const tenHV = document.getElementById('adminTenHV').value.trim();
-            const selectedGoiOption = adminGoiHocSelect.options[adminGoiHocSelect.selectedIndex];
-            const goiHoc = selectedGoiOption.value;
-            const hocPhi = Number(selectedGoiOption.dataset.hocphi);
-            const caHoc = adminCaHocSelect.value;
-            const hlvPhuTrach = adminHlvChonSelect.value;
-            const loaiHD = document.getElementById('adminLoaiHD').value;
-            const ghiChu = document.getElementById('adminGhiChu').value.trim();
-            const thanhToan = document.getElementById('adminThanhToan').value;
-            const maTheHV = document.getElementById('adminMaTheHV').value.trim(); // (MỚI)
-            const sdtHV = document.getElementById('adminSdtHV').value.trim(); // (MỚI)
-            const loaiSdtHV = document.getElementById('adminLoaiSdtHV').value; // (MỚI)
+            async function handleLogin() {
+                const email = loginEmailInput.value.trim();
+                const password = loginPasswordInput.value.trim(); 
 
-            if (!tenHV || !goiHoc || !caHoc || !hlvPhuTrach || !thanhToan) {
-                showMessage("Vui lòng nhập đầy đủ thông tin (Tên, Gói, Ca, HLV, Thanh toán).", "warning");
-                return;
-            }
-            
-            const newRegistration = {
-                timestamp: Timestamp.now(),
-                tenHV: tenHV,
-                goiHoc: goiHoc,
-                caHoc: caHoc,
-                hlvPhuTrach: hlvPhuTrach,
-                loaiHD: loaiHD,
-                ghiChu: ghiChu,
-                hocPhi: hocPhi,
-                thanhToan: thanhToan,
-                maTheHV: maTheHV, // (MỚI)
-                sdtHV: sdtHV, // (MỚI)
-                loaiSdtHV: loaiSdtHV, // (MỚI)
-                addedByUserId: currentUserId,
-                addedByEmail: auth.currentUser.email // (MỚI) Lưu email người thêm
-            };
-            
-            try {
-                await addDoc(dbHocVienCollection, newRegistration);
-                showMessage("Admin đã thêm HĐ thành công!", "success");
-                document.getElementById('adminTenHV').value = "";
-                adminGoiHocSelect.selectedIndex = 0;
-                adminCaHocSelect.selectedIndex = 0;
-                adminHlvChonSelect.selectedIndex = 0;
-                document.getElementById('adminGhiChu').value = "";
-                document.getElementById('adminThanhToan').selectedIndex = 0;
-                document.getElementById('adminMaTheHV').value = ""; // (MỚI)
-                document.getElementById('adminSdtHV').value = ""; // (MỚI)
-                document.getElementById('adminLoaiSdtHV').selectedIndex = 0; // (MỚI)
-            } catch (error) {
-                console.error("Lỗi admin thêm HĐ:", error);
-                showMessage("Lỗi khi lưu dữ liệu. Vui lòng thử lại.", "error");
-            }
-        }
-
-        function toggleReportFilter() {
-            const filterType = reportFilterType.value;
-            filterMonthControls.classList.toggle('hidden', filterType !== 'month');
-            filterDateControls.classList.toggle('hidden', filterType !== 'date');
-            filterRangeControls.classList.toggle('hidden', filterType !== 'range');
-        }
-
-        async function handleViewReport() {
-            const filterType = reportFilterType.value;
-            let startOfPeriod, endOfPeriod;
-            let reportTitle = "";
-
-            try {
-                if (filterType === 'month') {
-                    const month = parseInt(reportMonthSelect.value);
-                    const year = parseInt(reportYearInput.value);
-                    if (!month || !year) throw new Error("Tháng hoặc Năm không hợp lệ.");
-                    startOfPeriod = Timestamp.fromDate(new Date(year, month - 1, 1, 0, 0, 0));
-                    endOfPeriod = Timestamp.fromDate(new Date(year, month, 0, 23, 59, 59, 999)); // Lấy ngày cuối cùng của tháng
-                    reportTitle = `Tháng ${month}/${year}`;
-                } else if (filterType === 'today') {
-                    const now = new Date();
-                    startOfPeriod = Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0));
-                    endOfPeriod = Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
-                    reportTitle = `Hôm Nay (${now.toLocaleDateString('vi-VN')})`;
-                } else if (filterType === 'date') {
-                    if (!reportDate.value) throw new Error("Vui lòng chọn ngày.");
-                    const date = new Date(reportDate.value);
-                    date.setHours(date.getHours() + 7); // (FIX) Chuyển sang múi giờ VN
-                    startOfPeriod = Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0));
-                    endOfPeriod = Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999));
-                    reportTitle = `Ngày ${date.toLocaleDateString('vi-VN')}`;
-                } else if (filterType === 'range') {
-                    if (!reportDateStart.value || !reportDateEnd.value) throw new Error("Vui lòng chọn ngày bắt đầu và kết thúc.");
-                    const start = new Date(reportDateStart.value);
-                    const end = new Date(reportDateEnd.value);
-                    start.setHours(start.getHours() + 7); // (FIX)
-                    end.setHours(end.getHours() + 7); // (FIX)
-                    
-                    startOfPeriod = Timestamp.fromDate(new Date(start.getFullYear(), start.getMonth(), start.getDate(), 0, 0, 0));
-                    endOfPeriod = Timestamp.fromDate(new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999));
-                    reportTitle = `Từ ${start.toLocaleDateString('vi-VN')} đến ${end.toLocaleDateString('vi-VN')}`;
+                if (!email || !password) {
+                    showMessage("Vui lòng nhập Email và Mật khẩu.", "warning");
+                    return;
                 }
 
-                const q = query(dbHocVienCollection, 
-                    where("timestamp", ">=", startOfPeriod), 
-                    where("timestamp", "<=", endOfPeriod)
-                );
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    // onAuthStateChanged sẽ tự động xử lý việc hiển thị app
+                    showMessage("Đăng nhập thành công!", "success");
+                } catch (error) {
+                    console.error("--- LỖI ĐĂNG NHẬP CHI TIẾT ---", error);
+                    let msg = "Lỗi đăng nhập không xác định.";
+                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                        msg = "Sai Email hoặc Mật khẩu.";
+                    } else if (error.code === 'auth/network-request-failed') {
+                        msg = "Lỗi mạng, không thể kết nối đến server.";
+                    } else if (error.code === 'auth/operation-not-allowed') {
+                        msg = "Phương thức đăng nhập Email/Pass chưa được bật trên Firebase.";
+                    }
+                    showMessage(msg, "error");
+                }
+            }
+
+            async function handleLogout() {
+                // (SỬA) Tắt listener trước khi logout
+                if (unsubscribeHocVien) {
+                    unsubscribeHocVien();
+                    unsubscribeHocVien = null;
+                    console.log("Đã tắt listener real-time trước khi logout.");
+                }
+
+                try {
+                    await signOut(auth);
+                    // onAuthStateChanged sẽ tự động xử lý việc hiển thị màn hình login
+                    showMessage("Đã đăng xuất.", "success");
+                } catch (error) {
+                    console.error("Lỗi đăng xuất:", error);
+                    showMessage("Lỗi khi đăng xuất.", "error");
+                }
+            }
+
+            /* ===== 5. HÀM KHỞI TẠO APP (Sau khi login) ===== */
+
+            // (MỚI) Hàm này chỉ chạy 1 lần sau khi login
+            async function loadAppSettingsAndListeners() {
+                try {
+                    // 1. Load HLV Settings
+                    const hlvSnapshot = await getDocs(query(dbHlvCollection));
+                    HLV_SETTINGS_LIST = []; 
+                    hlvSnapshot.forEach((doc) => {
+                        HLV_SETTINGS_LIST.push({ id: doc.id, ...doc.data() });
+                    });
+                    console.log("Loaded HLV Settings:", HLV_SETTINGS_LIST);
+                    HLV_SETTINGS_LIST.sort((a, b) => a.ca.localeCompare(b.ca) || a.uuTien - b.uuTien);
+
+                    // 2. Load Payment Settings
+                    const paymentSnapshot = await getDoc(dbPaymentSettingsDoc);
+                    if (paymentSnapshot.exists()) {
+                        PAYMENT_SETTINGS = paymentSnapshot.data();
+                        console.log("Loaded Payment Settings:", PAYMENT_SETTINGS);
+                    } else {
+                        console.log("Không tìm thấy payment settings, dùng default.");
+                        PAYMENT_SETTINGS = {
+                            bankName: "Vietinbank",
+                            bankBin: "970415",
+                            accountNumber: "0938099675",
+                            accountName: "TRUONG HY MINH"
+                        };
+                        await setDoc(dbPaymentSettingsDoc, PAYMENT_SETTINGS, { merge: true });
+                    }
+
+                    // 3. Khởi tạo UI (Điền dropdowns, gán sự kiện)
+                    initializeUI();
+                    renderHlvSettingsTable(); 
+
+                    // 4. Bắt đầu lắng nghe dữ liệu học viên (CHỈ KHI SETTINGS ĐÃ SẴN SÀNG)
+                    startRealtimeListener();
+
+                } catch (error) {
+                    console.error("Lỗi nghiêm trọng khi tải settings:", error);
+                    showMessage("Lỗi tải cấu hình HLV/Thanh toán. App không thể chạy.", "error");
+                }
+            }
+
+            // (SỬA) Hàm này gán các sự kiện cho App
+            function initializeUI() {
+                // (SỬA) THÊM DÒNG NÀY VÀO ĐẦU HÀM
+                document.getElementById('logoutButton').addEventListener('click', handleLogout);
+
+                // Lấy DOM elements (của App)
+                const roleSwitcher = document.getElementById('roleSwitcher');
                 
-                const querySnapshot = await getDocs(q);
-                const registrations = querySnapshot.docs.map(doc => doc.data());
+                // Lễ tân
+                const goiHocSelect = document.getElementById('goiHoc');
+                const caHocSelect = document.getElementById('caHoc');
+                const hocPhiTuyChinhInput = document.getElementById('hocPhiTuyChinh');
+                const ghiDanhButton = document.getElementById('ghiDanhButton');
+                const exportDailyExcelButton = document.getElementById('exportDailyExcelButton');
+
+                // Admin
+                const adminGoiHocSelect = document.getElementById('adminGoiHoc');
+                const adminHocPhiTuyChinhInput = document.getElementById('adminHocPhiTuyChinh');
+                const adminAddButton = document.getElementById('adminAddButton');
+                const reportFilterType = document.getElementById('reportFilterType');
+                const viewReportButton = document.getElementById('viewReportButton');
+                const printReportButton = document.getElementById('printReportButton'); 
+                const exportExcelButton = document.getElementById('exportExcelButton'); 
                 
-                if (registrations.length === 0) {
-                    reportTableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Không tìm thấy dữ liệu cho: ${reportTitle}.</td></tr>`;
-                    reportTableFooter.classList.add('hidden');
-                    currentReportCache = [];
+                // (MỚI) Thêm nút export history
+                const exportHistoryExcelButton = document.getElementById('exportHistoryExcelButton');
+                
+                // Settings
+                const historyTableBody = document.getElementById('historyTableBody');
+                const hlvSettingsTableBody = document.getElementById('hlvSettingsTableBody');
+                const saveHlvButton = document.getElementById('saveHlvButton');
+                const saveQrButton = document.getElementById('saveQrButton');
+                const importExcelButton = document.getElementById('importExcelButton'); 
+                
+                // Modal
+                const editStudentModal = document.getElementById('editStudentModal');
+                const updateStudentButton = document.getElementById('updateStudentButton');
+                const cancelEditButton = document.getElementById('cancelEditButton');
+                const editGoiHocSelect = document.getElementById('editGoiHoc');
+                const editCaHocSelect = document.getElementById('editCaHoc');
+                const editHlvChonSelect = document.getElementById('editHlvChon');
+                const editHocPhiTuyChinhInput = document.getElementById('editHocPhiTuyChinh');
+
+                // --- Điền Dropdowns ---
+                const goiHocOptions = GOI_HOC_SETTINGS.map(goi => 
+                    `<option value="${goi.ten}" data-hocphi="${goi.hocPhi}">${goi.ten}</option>`
+                ).join('');
+                goiHocSelect.innerHTML = '<option value="">-- Chọn gói học --</option>' + goiHocOptions;
+                adminGoiHocSelect.innerHTML = '<option value="">-- Chọn gói học --</option>' + goiHocOptions;
+                editGoiHocSelect.innerHTML = '<option value="">-- Chọn gói học --</option>' + goiHocOptions;
+
+                const caHocOptions = CA_HOC_SETTINGS.map(ca => `<option value="${ca}">${ca}</option>`).join('');
+                caHocSelect.innerHTML = '<option value="">-- Chọn ca học --</option>' + caHocOptions;
+                document.getElementById('adminCaHoc').innerHTML = '<option value="">-- Chọn ca học --</option>' + caHocOptions;
+                editCaHocSelect.innerHTML = '<option value="">-- Chọn ca học --</option>' + caHocOptions;
+
+                const hlvOptions = HLV_SETTINGS_LIST.map(hlv => `<option value="${hlv.ten}">${hlv.ten}</option>`).join('');
+                document.getElementById('adminHlvChon').innerHTML = '<option value="">-- Chọn HLV --</option>' + hlvOptions;
+                editHlvChonSelect.innerHTML = '<option value="">-- Chọn HLV --</option>' + hlvOptions;
+
+                // Điền QR Settings
+                document.getElementById('qrBankName').value = PAYMENT_SETTINGS.bankName || "";
+                document.getElementById('qrBankBin').value = PAYMENT_SETTINGS.bankBin || "";
+                document.getElementById('qrAccountNumber').value = PAYMENT_SETTINGS.accountNumber || "";
+                document.getElementById('qrAccountName').value = PAYMENT_SETTINGS.accountName || "";
+
+                // Điền Tháng/Năm cho Report
+                const reportMonthSelect = document.getElementById('reportMonth');
+                const reportYearInput = document.getElementById('reportYear');
+                const currentMonth = new Date().getMonth() + 1;
+                const currentYear = new Date().getFullYear();
+                reportMonthSelect.innerHTML = ""; // Xóa cũ
+                for (let i = 1; i <= 12; i++) {
+                    reportMonthSelect.innerHTML += `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>Tháng ${i}</option>`;
+                }
+                reportYearInput.value = currentYear;
+
+                // --- Gán sự kiện ---
+                roleSwitcher.addEventListener('change', toggleView);
+                goiHocSelect.addEventListener('change', updateHocPhi);
+                caHocSelect.addEventListener('change', updateHocPhi);
+                ghiDanhButton.addEventListener('click', handleGhiDanhAndPrint); 
+                exportDailyExcelButton.addEventListener('click', handleExportDailyExcel);
+
+                adminGoiHocSelect.addEventListener('change', updateAdminHocPhi);
+                adminAddButton.addEventListener('click', handleAdminAdd);
+                viewReportButton.addEventListener('click', handleViewReport);
+                printReportButton.addEventListener('click', handlePrintReport);
+                exportExcelButton.addEventListener('click', handleExportExcel);
+                exportHistoryExcelButton.addEventListener('click', handleExportExcel); // (MỚI) Gán sự kiện
+                reportFilterType.addEventListener('change', toggleReportFilter); 
+
+                saveHlvButton.addEventListener('click', handleSaveHlv);
+                saveQrButton.addEventListener('click', handleSaveQr);
+                importExcelButton.addEventListener('click', handleImportExcel); 
+                updateStudentButton.addEventListener('click', handleUpdateStudent);
+                cancelEditButton.addEventListener('click', () => editStudentModal.classList.add('hidden'));
+
+                // (MỚI) Sự kiện click cho bảng (Event Delegation)
+                historyTableBody.addEventListener('click', (e) => {
+                    const target = e.target.closest('button');
+                    if (!target) return;
+                    const id = target.dataset.id;
+                    if (target.classList.contains('edit-btn')) handleShowEditModal(id);
+                    else if (target.classList.contains('delete-btn')) handleDeleteStudent(id, target.dataset.name);
+                });
+
+                hlvSettingsTableBody.addEventListener('click', (e) => {
+                    const target = e.target.closest('button');
+                    if (!target) return;
+                    const id = target.dataset.id;
+                    if (target.classList.contains('edit-hlv-btn')) handleEditHlv(id);
+                    else if (target.classList.contains('delete-hlv-btn')) handleDeleteHlv(id);
+                });
+
+                // (MỚI) Sự kiện Gói Khác (Edit Modal)
+                editGoiHocSelect.addEventListener('change', () => {
+                    const selectedGoi = editGoiHocSelect.options[editGoiHocSelect.selectedIndex];
+                    const hocPhi = Number(selectedGoi.dataset.hocphi);
+                    const editLyDoThuKhacWrapper = document.getElementById('editLyDoThuKhacWrapper');
+                    // Nếu chọn "Gói Khác", hiển thị ô nhập tùy chỉnh
+                    if (hocPhi === 0) {
+                        editHocPhiTuyChinhInput.classList.remove('hidden');
+                        editLyDoThuKhacWrapper.classList.remove('hidden');
+                    } else {
+                        editHocPhiTuyChinhInput.classList.add('hidden');
+                        editHocPhiTuyChinhInput.value = ""; // Xóa giá trị cũ
+                        editLyDoThuKhacWrapper.classList.add('hidden');
+                        document.getElementById('editLyDoThuKhac').value = "";
+                    }
+                });
+            }
+
+            function setupInitialView() {
+                let currentRole = 'leTan'; 
+                if (isAdmin) {
+                    currentRole = document.getElementById('roleSwitcher').value;
+                }
+
+                if (currentRole === 'admin') {
+                    document.getElementById('leTanView').classList.add('hidden');
+                    document.getElementById('adminView').classList.remove('hidden');
+                    document.body.classList.add('admin-view'); 
+                    document.body.classList.remove('le-tan-view');
+                } else {
+                    document.getElementById('leTanView').classList.remove('hidden');
+                    document.getElementById('adminView').classList.add('hidden');
+                    document.body.classList.remove('admin-view');
+                    document.body.classList.add('le-tan-view'); 
+                }
+                
+                const todayISO = new Date().toISOString().split('T')[0];
+                document.getElementById('reportDate').value = todayISO;
+                document.getElementById('reportDateStart').value = todayISO;
+                document.getElementById('reportDateEnd').value = todayISO;
+            }
+
+            function toggleView() {
+                setupInitialView();
+            }
+
+            /* ===== 6. LOGIC NGHIỆP VỤ (GHI DANH, TÍNH HLV) ===== */
+
+            function updateHocPhi() {
+                const goiHocSelect = document.getElementById('goiHoc');
+                const hocPhiTuDongSpan = document.getElementById('hocPhiTuDong');
+                const hocPhiTuyChinhInput = document.getElementById('hocPhiTuyChinh');
+                const lyDoThuKhacWrapper = document.getElementById('lyDoThuKhacWrapper'); // (MỚI)
+                
+                const selectedGoiOption = goiHocSelect.options[goiHocSelect.selectedIndex];
+                let hocPhi = 0;
+                if (selectedGoiOption && selectedGoiOption.dataset.hocphi) {
+                    hocPhi = Number(selectedGoiOption.dataset.hocphi);
+                }
+                
+                // (MỚI) Xử lý Gói Khác
+                if (hocPhi === 0) {
+                    hocPhiTuDongSpan.textContent = "0 VNĐ (Tùy chỉnh)";
+                    hocPhiTuyChinhInput.classList.remove('hidden');
+                    lyDoThuKhacWrapper.classList.remove('hidden'); // (MỚI)
+                } else {
+                    hocPhiTuDongSpan.textContent = `${new Intl.NumberFormat('vi-VN').format(hocPhi)} VNĐ`;
+                    hocPhiTuyChinhInput.classList.add('hidden');
+                    hocPhiTuyChinhInput.value = ""; // Xóa giá trị cũ
+                    lyDoThuKhacWrapper.classList.add('hidden'); // (MỚI)
+                    document.getElementById('lyDoThuKhac').value = ""; // (MỚI)
+                }
+                
+                updateAutoAssignment();
+            }
+
+            // (MỚI) Hàm cho Admin form
+            function updateAdminHocPhi() {
+                const adminGoiHocSelect = document.getElementById('adminGoiHoc');
+                const adminHocPhiTuyChinhInput = document.getElementById('adminHocPhiTuyChinh');
+                const adminLyDoThuKhacWrapper = document.getElementById('adminLyDoThuKhacWrapper'); // (MỚI)
+                const selectedGoiOption = adminGoiHocSelect.options[adminGoiHocSelect.selectedIndex];
+                let hocPhi = 0;
+                if (selectedGoiOption && selectedGoiOption.dataset.hocphi) {
+                    hocPhi = Number(selectedGoiOption.dataset.hocphi);
+                }
+                
+                if (hocPhi === 0) {
+                    adminHocPhiTuyChinhInput.classList.remove('hidden');
+                    adminLyDoThuKhacWrapper.classList.remove('hidden'); // (MỚI)
+                } else {
+                    adminHocPhiTuyChinhInput.classList.add('hidden');
+                    adminHocPhiTuyChinhInput.value = ""; 
+                    adminLyDoThuKhacWrapper.classList.add('hidden'); // (MỚI)
+                    document.getElementById('adminLyDoThuKhac').value = ""; // (MỚI)
+                }
+            }
+
+            async function getNextHlv(caHoc) {
+                if (!caHoc) return "Vui lòng chọn Ca Học";
+                if (HLV_SETTINGS_LIST.length === 0) return "Lỗi: Chưa có HLV";
+
+                try {
+                    const hlvInCa = HLV_SETTINGS_LIST.filter(hlv => hlv.ca === caHoc);
+                    if (hlvInCa.length === 0) return "Không có HLV cho ca này";
+
+                    const q = query(dbHocVienCollection, where("loaiHD", "==", "Thường"), where("caHoc", "==", caHoc));
+                    const querySnapshot = await getDocs(q);
+                    const thuongRegistrations = querySnapshot.docs.map(doc => doc.data());
+
+                    let hlvCounts = hlvInCa.map(hlv => ({ ...hlv, count: 0 }));
+
+                    thuongRegistrations.forEach(reg => {
+                        const hlvIndex = hlvCounts.findIndex(hlv => hlv.ten === reg.hlvPhuTrach);
+                        if (hlvIndex > -1) hlvCounts[hlvIndex].count++;
+                    });
+
+                    const minCount = Math.min(...hlvCounts.map(hlv => hlv.count));
+                    const candidates = hlvCounts.filter(hlv => hlv.count === minCount);
+                    candidates.sort((a, b) => a.uuTien - b.uuTien);
+
+                    return candidates[0].ten;
+
+                } catch (error) {
+                    console.error("Lỗi khi lấy HLV tiếp theo:", error);
+                    showMessage("Lỗi khi tính toán HLV. Vui lòng thử lại.", "error");
+                    return "Lỗi... Thử lại";
+                }
+            }
+
+            async function updateAutoAssignment() {
+                const selectedCa = document.getElementById('caHoc').value;
+                const hlvDuocGanSpan = document.getElementById('hlvDuocGan');
+                hlvDuocGanSpan.textContent = "Đang tính toán...";
+                const nextHlv = await getNextHlv(selectedCa);
+                hlvDuocGanSpan.textContent = nextHlv;
+            }
+
+            async function handleGhiDanhAndPrint() {
+                if (!currentUserId) {
+                    showMessage("Lỗi xác thực. Vui lòng tải lại trang.", "error");
+                    return;
+                }
+
+                // Lấy dữ liệu
+                const tenHV = document.getElementById('tenHV').value;
+                const dienThoai = document.getElementById('dienThoai').value;
+                const maTheHV = document.getElementById('maTheHV').value;
+                const soPhieuThu = document.getElementById('soPhieuThu').value; // (MỚI)
+                const selectedGoiOption = document.getElementById('goiHoc').options[document.getElementById('goiHoc').selectedIndex];
+                const goiHoc = selectedGoiOption.value;
+                let hocPhi = Number(selectedGoiOption.dataset.hocphi);
+                let lyDoThuKhac = ""; // (MỚI)
+                
+                // (MỚI) Kiểm tra học phí tùy chỉnh
+                if (hocPhi === 0) {
+                    hocPhi = Number(document.getElementById('hocPhiTuyChinh').value);
+                    if (hocPhi <= 0) {
+                        showMessage("Vui lòng nhập học phí cho Gói Khác.", "warning");
+                        return;
+                    }
+                    lyDoThuKhac = document.getElementById('lyDoThuKhac').value; // (MỚI)
+                }
+
+                const caHoc = document.getElementById('caHoc').value;
+                const hlvDuocGan = document.getElementById('hlvDuocGan').textContent;
+                const thanhToan = document.getElementById('thanhToan').value; 
+
+                if (!tenHV || !goiHoc || !caHoc || !thanhToan || hlvDuocGan.includes("Vui lòng") || hlvDuocGan.includes("Lỗi")) {
+                    showMessage("Vui lòng nhập đầy đủ thông tin (Tên, Gói, Ca, Thanh toán).", "warning");
+                    return;
+                }
+
+                const ghiDanhButton = document.getElementById('ghiDanhButton');
+                ghiDanhButton.disabled = true;
+                document.getElementById('ghiDanhText').classList.add('hidden');
+                document.getElementById('ghiDanhLoading').classList.remove('hidden');
+
+                const newRegistration = {
+                    timestamp: Timestamp.now(),
+                    tenHV: tenHV,
+                    dienThoai: dienThoai,
+                    maTheHV: maTheHV,
+                    soPhieuThu: soPhieuThu, // (MỚI)
+                    goiHoc: goiHoc,
+                    caHoc: caHoc,
+                    hlvPhuTrach: hlvDuocGan,
+                    loaiHD: "Thường",
+                    ghiChu: "",
+                    hocPhi: hocPhi,
+                    thanhToan: thanhToan, 
+                    lyDoThuKhac: lyDoThuKhac, // (SỬA)
+                    addedByUserId: currentUserId
+                };
+
+                try {
+                    const docRef = await addDoc(dbHocVienCollection, newRegistration);
+                    showMessage("Ghi danh thành công! Đang chuẩn bị phiếu...", "success");
+                    
+                    printRegistrationSlip({ ...newRegistration, id: docRef.id });
+
+                    // Xóa form
+                    document.getElementById('tenHV').value = "";
+                    document.getElementById('dienThoai').value = "";
+                    document.getElementById('maTheHV').value = "";
+                    document.getElementById('soPhieuThu').value = ""; // (MỚI)
+                    document.getElementById('goiHoc').selectedIndex = 0;
+                    document.getElementById('caHoc').selectedIndex = 0;
+                    document.getElementById('thanhToan').selectedIndex = 0;
+                    document.getElementById('hocPhiTuyChinh').value = "";
+                    document.getElementById('hocPhiTuyChinh').classList.add('hidden');
+                    document.getElementById('lyDoThuKhacWrapper').classList.add('hidden'); // (MỚI)
+                    document.getElementById('lyDoThuKhac').value = ""; // (MỚI)
+                    document.getElementById('hlvDuocGan').textContent = "Vui lòng chọn Ca Học";
+                    document.getElementById('hocPhiTuDong').textContent = "0 VNĐ";
+                } catch (error) {
+                    console.error("Lỗi ghi danh:", error);
+                    showMessage("Lỗi khi lưu dữ liệu. Vui lòng thử lại.", "error");
+                } finally {
+                    ghiDanhButton.disabled = false;
+                    document.getElementById('ghiDanhText').classList.remove('hidden');
+                    document.getElementById('ghiDanhLoading').classList.add('hidden');
+                }
+            }
+            
+            /* ===== 7. LOGIC ADMIN (GHI ĐÈ & BÁO CÁO) ===== */
+
+            async function handleAdminAdd() {
+                if (!currentUserId) {
+                    showMessage("Lỗi xác thực. Vui lòng tải lại trang.", "error");
                     return;
                 }
                 
-                let reportData = {};
-                HLV_SETTINGS_LIST.forEach(hlv => {
-                    reportData[hlv.ten] = { ten: hlv.ten, count: 0, totalRevenue: 0 };
-                });
-                
-                registrations.forEach(reg => {
-                    if (!reportData[reg.hlvPhuTrach]) {
-                        // (MỚI) Xử lý HLV đã bị xóa nhưng vẫn còn HĐ
-                        reportData[reg.hlvPhuTrach] = { ten: reg.hlvPhuTrach + " (Đã xóa)", count: 0, totalRevenue: 0 };
+                const tenHV = document.getElementById('adminTenHV').value;
+                const dienThoai = document.getElementById('adminDienThoai').value;
+                const maTheHV = document.getElementById('adminMaTheHV').value;
+                const soPhieuThu = document.getElementById('adminSoPhieuThu').value; // (MỚI)
+                const adminGoiHocSelect = document.getElementById('adminGoiHoc');
+                const selectedGoiOption = adminGoiHocSelect.options[adminGoiHocSelect.selectedIndex];
+                const goiHoc = selectedGoiOption.value;
+                let hocPhi = Number(selectedGoiOption.dataset.hocphi);
+                let lyDoThuKhac = ""; // (MỚI)
+
+                // (MỚI) Kiểm tra học phí tùy chỉnh (Admin)
+                if (hocPhi === 0) {
+                    hocPhi = Number(document.getElementById('adminHocPhiTuyChinh').value);
+                    if (hocPhi <= 0) {
+                        showMessage("Vui lòng nhập học phí cho Gói Khác.", "warning");
+                        return;
                     }
-                    reportData[reg.hlvPhuTrach].count++;
-                    reportData[reg.hlvPhuTrach].totalRevenue += reg.hocPhi;
-                });
-
-                let reportArray = Object.values(reportData).sort((a, b) => b.totalRevenue - a.totalRevenue);
-                
-                currentReportCache = { title: reportTitle, data: reportArray };
-                renderReportTable(reportArray);
-
-            } catch (error) {
-                console.error("Lỗi khi xem báo cáo:", error);
-                showMessage(error.message || "Lỗi khi tải dữ liệu báo cáo.", "error");
-            }
-        }
-        
-        function renderReportTable(reportArray) {
-            reportTableBody.innerHTML = "";
-            const formatter = new Intl.NumberFormat('vi-VN');
-
-            let totals = { hv: 0, revenue: 0, hba: 0, hlvGross: 0, tax: 0, hlvNet: 0 };
-
-            reportArray.forEach(hlv => {
-                if (hlv.count === 0) return;
-
-                const revenue = hlv.totalRevenue;
-                const hbaShare = revenue * 0.6;
-                const hlvGross = revenue * 0.4;
-                const tax = hlvGross * 0.1;
-                const hlvNet = hlvGross - tax;
-
-                totals.hv += hlv.count;
-                totals.revenue += revenue;
-                totals.hba += hbaShare;
-                totals.hlvGross += hlvGross;
-                totals.tax += tax;
-                totals.hlvNet += hlvNet;
-
-                const row = `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${hlv.ten}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${hlv.count}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">${formatter.format(revenue)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatter.format(hbaShare)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatter.format(hlvGross)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">(${formatter.format(tax)})</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-bold">${formatter.format(hlvNet)}</td>
-                    </tr>
-                `;
-                reportTableBody.innerHTML += row;
-            });
-
-            reportTableFooter.innerHTML = `
-                <td class="px-6 py-3 text-left">TỔNG CỘNG</td>
-                <td class="px-6 py-3 text-left">${totals.hv}</td>
-                <td class="px-6 py-3 text-left">${formatter.format(totals.revenue)}</td>
-                <td class="px-6 py-3 text-left">${formatter.format(totals.hba)}</td>
-                <td class="px-6 py-3 text-left">${formatter.format(totals.hlvGross)}</td>
-                <td class="px-6 py-3 text-left text-red-600">(${formatter.format(totals.tax)})</td>
-                <td class="px-6 py-3 text-left text-green-700">${formatter.format(totals.hlvNet)}</td>
-            `;
-            reportTableFooter.classList.remove('hidden');
-        }
-        
-        /* ===== 7. LẮNG NGHE REALTIME (DATABASE HISTORY) ===== */
-        
-        let unsubscribeListener = null; // Biến để giữ hàm unsub
-        function startRealtimeListener() {
-            if (unsubscribeListener) {
-                unsubscribeListener(); // Hủy listener cũ
-                console.log("Hủy listener cũ.");
-            }
-            if (!dbHocVienCollection) return;
-            
-            console.log("Bắt đầu listener mới...");
-            const q = query(dbHocVienCollection); 
-
-            unsubscribeListener = onSnapshot(q, (querySnapshot) => {
-                console.log("Nhận dữ liệu realtime...");
-                let allDocs = [];
-                querySnapshot.forEach((doc) => {
-                    allDocs.push({ id: doc.id, ...doc.data() });
-                });
-
-                allDocs.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
-                
-                allStudentsCache = allDocs; 
-
-                updateDashboardStats(allDocs);
-                renderHistoryTable(allDocs);
-                
-                if (leTanView.offsetParent !== null) {
-                    updateAutoAssignment();
+                    lyDoThuKhac = document.getElementById('adminLyDoThuKhac').value; // (MỚI)
                 }
 
-            }, (error) => {
-                console.error("Lỗi khi lắng nghe real-time:", error);
-                showMessage("Mất kết nối real-time.", "error");
-            });
-        }
-        
-        function renderHistoryTable(data) {
-            historyTableBody.innerHTML = "";
-            const formatter = new Intl.NumberFormat('vi-VN');
+                const caHoc = document.getElementById('adminCaHoc').value;
+                const hlvPhuTrach = document.getElementById('adminHlvChon').value;
+                const loaiHD = document.getElementById('adminLoaiHD').value;
+                const ghiChu = document.getElementById('adminGhiChu').value;
+                const thanhToan = document.getElementById('adminThanhToan').value; 
 
-            if (data.length === 0) {
-                historyTableBody.innerHTML = `<tr><td colspan="11" class="px-6 py-4 text-center text-gray-500">Chưa có dữ liệu.</td></tr>`; // (SỬA) Colspan 11
-                return;
-            }
-
-            data.forEach(item => {
-                // (FIX) Đảm bảo item.timestamp tồn tại trước khi gọi toDate()
-                const timestampStr = item.timestamp ? item.timestamp.toDate().toLocaleString('vi-VN', { 
-                    day: '2-digit', month: '2-digit', year: 'numeric', 
-                    hour: '2-digit', minute: '2-digit' 
-                }) : "Không rõ";
-                
-                const loaiHDClass = item.loaiHD === 'Chỉ Định' ? 'text-red-600 font-bold' : 'text-gray-500';
-
-                const row = `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestampStr}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.tenHV}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.maTheHV || ''}</td> <!-- (MỚI) -->
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.sdtHV || ''} ${item.loaiSdtHV ? `(${item.loaiSdtHV})` : ''}</td> <!-- (MỚI) -->
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.hlvPhuTrach}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.goiHoc}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatter.format(item.hocPhi)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm ${loaiHDClass}">${item.loaiHD}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.thanhToan || ''}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" title="${item.addedByEmail || ''}">${item.ghiChu}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium admin-only">
-                            <button class="text-blue-600 hover:text-blue-900 edit-btn" data-id="${item.id}">Sửa</button>
-                            <button class="text-red-600 hover:text-red-900 ml-4 delete-btn" data-id="${item.id}" data-name="${item.tenHV}">Xóa</button>
-                        </td>
-                    </tr>
-                `;
-                historyTableBody.innerHTML += row;
-            });
-        }
-        
-        /* ===== 8. HÀM TIỆN ÍCH (MESSAGE BOX) ===== */
-        
-        let messageTimer;
-        function showMessage(text, type = 'success') {
-            messageText.textContent = text;
-            
-            messageBox.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-400', 'text-white', 'text-gray-800', 'hide');
-
-            if (type === 'success') messageBox.classList.add('bg-green-500', 'text-white');
-            else if (type === 'error') messageBox.classList.add('bg-red-500', 'text-white');
-            else if (type === 'warning') messageBox.classList.add('bg-yellow-400', 'text-gray-800');
-
-            messageBox.classList.remove('hidden');
-
-            clearTimeout(messageTimer);
-            messageTimer = setTimeout(() => {
-                messageBox.classList.add('hide');
-            }, 3000);
-        }
-
-        /* ===== 10. (MỚI) CÁC HÀM CRUD (SỬA/XÓA) VÀ IN ẤN ===== */
-
-        function updateDashboardStats(allDocs) {
-            const now = new Date();
-            const formatter = new Intl.NumberFormat('vi-VN');
-
-            const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-            const endToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-            
-            const firstDayOfWeek = new Date(now);
-            firstDayOfWeek.setDate(now.getDate() - now.getDay());
-            firstDayOfWeek.setHours(0, 0, 0, 0);
-            
-            const startMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
-            
-            let todayRevenue = 0, todayCount = 0, weekCount = 0, monthCount = 0;
-            let todayDocs = [];
-
-            for (const doc of allDocs) {
-                // (FIX) Đảm bảo timestamp tồn tại
-                if (!doc.timestamp) continue; 
-                const docTime = doc.timestamp.toDate();
-                
-                if (docTime >= startToday && docTime <= endToday) {
-                    todayRevenue += doc.hocPhi;
-                    todayCount++;
-                    todayDocs.push(doc);
+                if (!tenHV || !goiHoc || !caHoc || !hlvPhuTrach || !thanhToan) {
+                    showMessage("Vui lòng nhập đầy đủ thông tin (Tên, Gói, Ca, HLV, Thanh toán).", "warning");
+                    return;
                 }
-                if (docTime >= firstDayOfWeek) weekCount++;
-                if (docTime >= startMonth) monthCount++;
+                
+                const newRegistration = {
+                    timestamp: Timestamp.now(),
+                    tenHV: tenHV,
+                    dienThoai: dienThoai,
+                    maTheHV: maTheHV,
+                    soPhieuThu: soPhieuThu, // (MỚI)
+                    goiHoc: goiHoc,
+                    caHoc: caHoc,
+                    hlvPhuTrach: hlvPhuTrach,
+                    loaiHD: loaiHD,
+                    ghiChu: ghiChu,
+                    hocPhi: hocPhi,
+                    thanhToan: thanhToan, 
+                    lyDoThuKhac: lyDoThuKhac, // (SỬA)
+                    addedByUserId: currentUserId
+                };
+                
+                try {
+                    await addDoc(dbHocVienCollection, newRegistration);
+                    showMessage("Admin đã thêm HĐ thành công!", "success");
+                    // Xóa form
+                    document.getElementById('adminTenHV').value = "";
+                    document.getElementById('adminDienThoai').value = "";
+                    document.getElementById('adminMaTheHV').value = "";
+                    document.getElementById('adminSoPhieuThu').value = ""; // (MỚI)
+                    adminGoiHocSelect.selectedIndex = 0;
+                    document.getElementById('adminCaHoc').selectedIndex = 0;
+                    document.getElementById('adminHlvChon').selectedIndex = 0;
+                    document.getElementById('adminGhiChu').value = "";
+                    document.getElementById('adminHocPhiTuyChinh').value = "";
+                    document.getElementById('adminHocPhiTuyChinh').classList.add('hidden');
+                    document.getElementById('adminLyDoThuKhacWrapper').classList.add('hidden'); // (MỚI)
+                    document.getElementById('adminLyDoThuKhac').value = ""; // (MỚI)
+                } catch (error) {
+                    console.error("Lỗi admin thêm HĐ:", error);
+                    showMessage("Lỗi khi lưu dữ liệu. Vui lòng thử lại.", "error");
+                }
             }
-            
-            todayRevenueHeader.textContent = `${formatter.format(todayRevenue)} VNĐ`;
-            statTodayCount.textContent = todayCount;
-            statWeekCount.textContent = weekCount;
-            statMonthCount.textContent = monthCount;
 
-            renderDailyReportTable(todayDocs);
-            dailyReportCache = todayDocs;
-        }
-        
-        function renderDailyReportTable(todayDocs) {
-            dailyReportTableBody.innerHTML = "";
-            const formatter = new Intl.NumberFormat('vi-VN');
-            if (todayDocs.length === 0) {
-                dailyReportTableBody.innerHTML = `<tr><td colspan="3" class="px-4 py-3 text-center text-gray-500">Chưa có HV mới hôm nay.</td></tr>`;
-                return;
+            function toggleReportFilter() {
+                const filterType = document.getElementById('reportFilterType').value;
+                document.getElementById('filterMonthControls').classList.toggle('hidden', filterType !== 'month');
+                document.getElementById('filterDateControls').classList.toggle('hidden', filterType !== 'date');
+                document.getElementById('filterRangeControls').classList.toggle('hidden', filterType !== 'range');
             }
-            todayDocs.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+
+            async function handleViewReport() {
+                const reportFilterType = document.getElementById('reportFilterType').value;
+                let startOfPeriod, endOfPeriod;
+                let reportTitle = "";
+
+                try {
+                    if (reportFilterType === 'month') {
+                        const month = parseInt(document.getElementById('reportMonth').value);
+                        const year = parseInt(document.getElementById('reportYear').value);
+                        if (!month || !year) throw new Error("Tháng hoặc Năm không hợp lệ.");
+                        startOfPeriod = Timestamp.fromDate(new Date(year, month - 1, 1, 0, 0, 0));
+                        endOfPeriod = Timestamp.fromDate(new Date(new Date(year, month, 1).getTime() - 1));
+                        reportTitle = `Tháng ${month}/${year}`;
+                    } else if (reportFilterType === 'today') {
+                        const now = new Date();
+                        startOfPeriod = Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0));
+                        endOfPeriod = Timestamp.fromDate(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
+                        reportTitle = `Hôm Nay (${now.toLocaleDateString('vi-VN')})`;
+                    } else if (reportFilterType === 'date') {
+                        const reportDate = document.getElementById('reportDate').value;
+                        if (!reportDate) throw new Error("Vui lòng chọn ngày.");
+                        const date = new Date(reportDate);
+                        startOfPeriod = Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0));
+                        endOfPeriod = Timestamp.fromDate(new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999));
+                        reportTitle = `Ngày ${date.toLocaleDateString('vi-VN')}`;
+                    } else if (reportFilterType === 'range') {
+                        const reportDateStart = document.getElementById('reportDateStart').value;
+                        const reportDateEnd = document.getElementById('reportDateEnd').value;
+                        if (!reportDateStart || !reportDateEnd) throw new Error("Vui lòng chọn ngày bắt đầu và kết thúc.");
+                        const start = new Date(reportDateStart);
+                        const end = new Date(reportDateEnd);
+                        startOfPeriod = Timestamp.fromDate(new Date(start.getFullYear(), start.getMonth(), start.getDate(), 0, 0, 0));
+                        endOfPeriod = Timestamp.fromDate(new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999));
+                        reportTitle = `Từ ${start.toLocaleDateString('vi-VN')} đến ${end.toLocaleDateString('vi-VN')}`;
+                    }
+
+                    const q = query(dbHocVienCollection, 
+                        where("timestamp", ">=", startOfPeriod), 
+                        where("timestamp", "<=", endOfPeriod)
+                    );
+                    
+                    const querySnapshot = await getDocs(q);
+                    const registrations = querySnapshot.docs.map(doc => doc.data());
+                    const reportTableBody = document.getElementById('reportTableBody');
+                    
+                    if (registrations.length === 0) {
+                        reportTableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Không tìm thấy dữ liệu cho: ${reportTitle}.</td></tr>`;
+                        document.getElementById('reportTableFooter').classList.add('hidden');
+                        currentReportCache = []; 
+                        return;
+                    }
+                    
+                    let reportData = {};
+                    HLV_SETTINGS_LIST.forEach(hlv => {
+                        reportData[hlv.ten] = { ten: hlv.ten, count: 0, totalRevenue: 0 };
+                    });
+                    
+                    registrations.forEach(reg => {
+                        if (reportData[reg.hlvPhuTrach]) {
+                            reportData[reg.hlvPhuTrach].count++;
+                            reportData[reg.hlvPhuTrach].totalRevenue += reg.hocPhi;
+                        }
+                    });
+
+                    let reportArray = Object.values(reportData).sort((a, b) => b.totalRevenue - a.totalRevenue);
+                    
+                    currentReportCache = { title: reportTitle, data: reportArray }; 
+                    renderReportTable(reportArray);
+
+                } catch (error) {
+                    console.error("Lỗi khi xem báo cáo:", error);
+                    showMessage(error.message || "Lỗi khi tải dữ liệu báo cáo.", "error");
+                }
+            }
             
-            todayDocs.forEach(item => { 
-                const row = `
-                    <tr>
-                        <td class="px-4 py-3 text-sm font-medium text-gray-900">${item.tenHV}</td>
-                        <td class="px-4 py-3 text-sm text-gray-500">${formatter.format(item.hocPhi)}</td>
-                        <td class="px-4 py-3 text-sm text-gray-500">${item.hlvPhuTrach}</td>
-                    </tr>
+            function renderReportTable(reportArray) {
+                const reportTableBody = document.getElementById('reportTableBody');
+                const reportTableFooter = document.getElementById('reportTableFooter');
+                reportTableBody.innerHTML = "";
+                const formatter = new Intl.NumberFormat('vi-VN');
+
+                let total_HV = 0, total_Revenue = 0, total_HBA = 0, total_HLV_Gross = 0, total_Tax = 0, total_HLV_Net = 0;
+
+                reportArray.forEach(hlv => {
+                    if (hlv.count === 0) return; 
+
+                    const revenue = hlv.totalRevenue;
+                    const hbaShare = revenue * 0.6;
+                    const hlvGross = revenue * 0.4;
+                    const tax = hlvGross * 0.1;
+                    const hlvNet = hlvGross - tax;
+
+                    total_HV += hlv.count;
+                    total_Revenue += revenue;
+                    total_HBA += hbaShare;
+                    total_HLV_Gross += hlvGross;
+                    total_Tax += tax;
+                    total_HLV_Net += hlvNet;
+
+                    reportTableBody.innerHTML += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${hlv.ten}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${hlv.count}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">${formatter.format(revenue)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatter.format(hbaShare)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatter.format(hlvGross)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-500">(${formatter.format(tax)})</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-bold">${formatter.format(hlvNet)}</td>
+                        </tr>
+                    `;
+                });
+
+                reportTableFooter.innerHTML = `
+                    <td class="px-6 py-3 text-left">TỔNG CỘNG</td>
+                    <td class="px-6 py-3 text-left">${total_HV}</td>
+                    <td class="px-6 py-3 text-left">${formatter.format(total_Revenue)}</td>
+                    <td class="px-6 py-3 text-left">${formatter.format(total_HBA)}</td>
+                    <td class="px-6 py-3 text-left">${formatter.format(total_HLV_Gross)}</td>
+                    <td class="px-6 py-3 text-left text-red-600">(${formatter.format(total_Tax)})</td>
+                    <td class="px-6 py-3 text-left text-green-700">${formatter.format(total_HLV_Net)}</td>
                 `;
-                dailyReportTableBody.innerHTML += row;
-            });
-        }
-
-        function printRegistrationSlip(regData) {
-            const printWindow = window.open('', '_blank', 'width=800,height=600');
-            const formatter = new Intl.NumberFormat('vi-VN');
-            const now = new Date().toLocaleString('vi-VN');
-
-            // (MỚI) Tạo VietQR String
-            const tenHVRutGon = regData.tenHV.split(' ').pop();
-            const qrText = `https://api.vietqr.io/image/${PAYMENT_SETTINGS.bankBin}-${PAYMENT_SETTINGS.accountNumber}-compact.png?amount=${regData.hocPhi}&addInfo=HBA Q6 ${tenHVRutGon}`;
+                reportTableFooter.classList.remove('hidden');
+            }
             
-            const content = `
-                <html>
-                <head>
-                    <title>Phiếu Ghi Danh ${regData.tenHV}</title>
+            /* ===== 8. LẮNG NGHE REALTIME & RENDER BẢNG ===== */
+            
+            function startRealtimeListener() {
+                if (!dbHocVienCollection) return;
+                
+                // (MỚI) Tắt listener cũ (nếu có) trước khi tạo listener mới
+                if (unsubscribeHocVien) {
+                    unsubscribeHocVien();
+                    console.log("Đã tắt listener cũ.");
+                }
+
+                console.log("Bắt đầu listener real-time mới...");
+                const q = query(dbHocVienCollection); 
+
+                unsubscribeHocVien = onSnapshot(q, (querySnapshot) => {
+                    let allDocs = [];
+                    querySnapshot.forEach((doc) => {
+                        allDocs.push({ id: doc.id, ...doc.data() }); 
+                    });
+
+                    allDocs.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+                    allStudentsCache = allDocs; 
+
+                    updateDashboardStats(allDocs);
+                    renderHistoryTable(allDocs);
+                    
+                    // Cập nhật HLV (nếu đang ở view Lễ Tân)
+                    if (document.getElementById('leTanView').offsetParent !== null) { 
+                        updateAutoAssignment();
+                    }
+
+                }, (error) => {
+                    console.error("Lỗi khi lắng nghe real-time:", error);
+                    // (SỬA) Chỉ báo lỗi nếu user đang đăng nhập
+                    if (auth.currentUser) {
+                        showMessage("Mất kết nối real-time.", "error");
+                    }
+                });
+            }
+            
+            function renderHistoryTable(data) {
+                const historyTableBody = document.getElementById('historyTableBody');
+                historyTableBody.innerHTML = "";
+                const formatter = new Intl.NumberFormat('vi-VN');
+
+                if (data.length === 0) {
+                    historyTableBody.innerHTML = `<tr><td colspan="13" class="px-6 py-4 text-center text-gray-500">Chưa có dữ liệu.</td></tr>`;
+                    return;
+                }
+
+                data.forEach(item => {
+                    const timestamp = item.timestamp.toDate().toLocaleString('vi-VN', { 
+                        day: '2-digit', month: '2-digit', year: 'numeric', 
+                        hour: '2-digit', minute: '2-digit' 
+                    });
+                    const loaiHDClass = item.loaiHD === 'Chỉ Định' ? 'text-red-600 font-bold' : 'text-gray-500';
+
+                    historyTableBody.innerHTML += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.soPhieuThu || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.maTheHV || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.tenHV}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.dienThoai || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.hlvPhuTrach}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.goiHoc}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatter.format(item.hocPhi)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm ${loaiHDClass}">${item.loaiHD}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.thanhToan || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.lyDoThuKhac || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.ghiChu || ''}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium admin-only">
+                                <button class="text-blue-600 hover:text-blue-900 edit-btn" data-id="${item.id}">Sửa</button>
+                                <button class="text-red-600 hover:text-red-900 ml-4 delete-btn" data-id="${item.id}" data-name="${item.tenHV}">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            /* ===== 9. HÀM TIỆN ÍCH (MESSAGE BOX, STATS, IN ẤN) ===== */
+            
+            // (SỬA) Bỏ 'let messageTimer' bên trong hàm
+            function showMessage(text, type = 'success') {
+                messageText.textContent = text;
+                messageBox.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-400', 'text-white', 'text-gray-800', 'hide');
+
+                if (type === 'success') messageBox.classList.add('bg-green-500', 'text-white');
+                else if (type === 'error') messageBox.classList.add('bg-red-500', 'text-white');
+                else if (type === 'warning') messageBox.classList.add('bg-yellow-400', 'text-gray-800');
+
+                messageBox.classList.remove('hidden');
+
+                clearTimeout(messageTimer);
+                messageTimer = setTimeout(() => {
+                    messageBox.classList.add('hide');
+                }, 3000);
+            }
+
+            function updateDashboardStats(allDocs) {
+                const now = new Date();
+                const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+                const endToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+                const firstDayOfWeek = new Date(now);
+                firstDayOfWeek.setDate(now.getDate() - now.getDay());
+                firstDayOfWeek.setHours(0, 0, 0, 0);
+                const startMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+                
+                let todayCount = 0, weekCount = 0, monthCount = 0, todayRevenue = 0;
+                let todayDocs = [];
+
+                for (const doc of allDocs) {
+                    const docTime = doc.timestamp.toDate();
+                    if (docTime >= startToday && docTime <= endToday) {
+                        todayCount++;
+                        todayRevenue += doc.hocPhi; // (SỬA) Thêm tính doanh thu
+                        todayDocs.push(doc); 
+                    }
+                    if (docTime >= firstDayOfWeek) weekCount++;
+                    if (docTime >= startMonth) monthCount++;
+                }
+                
+                document.getElementById('statTodayCount').textContent = todayCount;
+                document.getElementById('statWeekCount').textContent = weekCount;
+                document.getElementById('statMonthCount').textContent = monthCount;
+                document.getElementById('todayRevenueHeader').textContent = `${new Intl.NumberFormat('vi-VN').format(todayRevenue)} VNĐ`; // (SỬA) Hiển thị doanh thu
+
+                renderDailyReportTable(todayDocs);
+                dailyReportCache = todayDocs; 
+            }
+            
+            function renderDailyReportTable(todayDocs) {
+                const dailyReportTableBody = document.getElementById('dailyReportTableBody');
+                dailyReportTableBody.innerHTML = "";
+                const formatter = new Intl.NumberFormat('vi-VN');
+                if (todayDocs.length === 0) {
+                    dailyReportTableBody.innerHTML = `<tr><td colspan="3" class="px-4 py-3 text-center text-gray-500">Chưa có HV mới hôm nay.</td></tr>`;
+                    return;
+                }
+                todayDocs.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+                
+                todayDocs.forEach(item => { 
+                    dailyReportTableBody.innerHTML += `
+                        <tr>
+                            <td class="px-4 py-3 text-sm font-medium text-gray-900">${item.tenHV}</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">${formatter.format(item.hocPhi)}</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">${item.hlvPhuTrach}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+
+            // ----- Chức năng In Phiếu Ghi Danh -----
+            function printRegistrationSlip(regData) {
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                const formatter = new Intl.NumberFormat('vi-VN');
+                const now = new Date().toLocaleString('vi-VN');
+                
+                // Rút gọn tên HV (lấy tên cuối)
+                const tenHVRutGon = regData.tenHV.split(' ').pop();
+                const qrText = `https://api.vietqr.io/image/${PAYMENT_SETTINGS.bankBin}-${PAYMENT_SETTINGS.accountNumber}-compact.png?amount=${regData.hocPhi}&addInfo=HBA Q6 ${tenHVRutGon}`;
+                
+                const content = `
+                    <html>
+                    <head>
+                        <title>Phiếu Ghi Danh ${regData.tenHV}</title>
+                        <style>
+                            ${Array.from(document.styleSheets)
+                                .filter(sheet => sheet.href === null)
+                                .map(sheet => Array.from(sheet.cssRules)
+                                    .map(rule => rule.cssText)
+                                    .join('\n'))
+                                .join('\n')}
+                            
+                            body { background-color: #fff; font-family: 'Arial', sans-serif; }
+                            .print-container { display: block; }
+                            .no-print { display: none !important; }
+                             @media print {
+                                body { margin: 0; padding: 0; }
+                                .print-container { padding: 20px; max-width: 800px; margin: 0 auto; }
+                                .print-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                                .print-table th, .print-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                                .print-table th { background-color: #f4f4f4; }
+                                .print-header { text-align: center; margin-bottom: 30px; }
+                                .print-header h1 { margin: 0; font-size: 24px; }
+                                .print-header p { margin: 5px 0; font-size: 14px; }
+                                .print-qr { text-align: center; margin-top: 20px; }
+                                .print-qr img { width: 200px; height: 200px; }
+                                .print-footer { margin-top: 50px; display: flex; justify-content: space-between; font-size: 14px; }
+                            }
+                        </style>
+                    </head>
+                    <body class="print-container">
+                        <div class="print-header">
+                            <h1>HỒ BƠI HBA QUẬN 6</h1>
+                            <p>Phiếu Ghi Danh & Thu Phí</p>
+                            <p>Ngày giờ: ${now}</p>
+                            ${regData.lyDoThuKhac ? `<p style="font-style: italic;">Lý do thu: ${regData.lyDoThuKhac}</p>` : ''}
+                        </div>
+
+                        <table class="print-table">
+                            <tr><td style="width: 200px;">Học viên:</td><td><strong>${regData.tenHV}</strong></td></tr>
+                            <tr><td>Số Phiếu Thu:</td><td>${regData.soPhieuThu || ''}</td></tr>
+                            <tr><td>Mã Thẻ HV:</td><td>${regData.maTheHV || ''}</td></tr>
+                            <tr><td>Điện thoại:</td><td>${regData.dienThoai || ''}</td></tr>
+                            <tr><td>Gói học:</td><td>${regData.goiHoc}</td></tr>
+                            <tr><td>Học phí:</td><td><strong>${formatter.format(regData.hocPhi)} VNĐ</strong></td></tr>
+                            <tr><td>HLV Phụ trách:</td><td>${regData.hlvPhuTrach}</td></tr>
+                            <tr><td>Hình thức:</td><td>${regData.thanhToan}</td></tr>
+                        </table>
+
+                        ${regData.thanhToan === 'Chuyển khoản' ? `
+                        <div class="print-qr">
+                            <p>Quét mã QR để thanh toán (App Ngân hàng)</p>
+                            <img src="${qrText}" alt="QR Code Thanh toán" />
+                            <p style="font-size: 14px; margin-top: 10px;">
+                                Ngân hàng: <strong>${PAYMENT_SETTINGS.bankName}</strong><br>
+                                STK: <strong>${PAYMENT_SETTINGS.accountNumber}</strong><br>
+                                Chủ TK: <strong>${PAYMENT_SETTINGS.accountName}</strong><br>
+                                Nội dung: HBA Q6 ${tenHVRutGon}
+                            </p>
+                        </div>
+                        ` : '<p style="margin-top: 20px;">Vui lòng thu tiền mặt.</p>'}
+
+                        <div class="print-footer">
+                            <span>Người lập phiếu</span>
+                            <span>Học viên / Phụ huynh</span>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                printWindow.document.write(content);
+                printWindow.document.close(); 
+                printWindow.focus(); 
+                
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 500); 
+            }
+
+            // ----- Chức năng Sửa/Xóa Học viên -----
+            async function handleShowEditModal(docId) {
+                try {
+                    const docRef = doc(dbHocVienCollection, docId);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        document.getElementById('editStudentId').value = docId;
+                        document.getElementById('editTenHV').value = data.tenHV;
+                        document.getElementById('editDienThoai').value = data.dienThoai || '';
+                        document.getElementById('editMaTheHV').value = data.maTheHV || '';
+                        document.getElementById('editSoPhieuThu').value = data.soPhieuThu || ''; // (MỚI)
+                        document.getElementById('editGoiHoc').value = data.goiHoc;
+                        document.getElementById('editCaHoc').value = data.caHoc;
+                        document.getElementById('editHlvChon').value = data.hlvPhuTrach;
+                        document.getElementById('editLoaiHD').value = data.loaiHD;
+                        document.getElementById('editThanhToan').value = data.thanhToan || 'Tiền mặt';
+                        document.getElementById('editGhiChu').value = data.ghiChu || '';
+
+                        // (MỚI) Xử lý học phí tùy chỉnh
+                        const editGoiHocSelect = document.getElementById('editGoiHoc');
+                        const editHocPhiTuyChinhInput = document.getElementById('editHocPhiTuyChinh');
+                        const selectedGoiOption = editGoiHocSelect.options[editGoiHocSelect.selectedIndex];
+                        let hocPhiChuan = Number(selectedGoiOption.dataset.hocphi);
+
+                        const editLyDoThuKhacWrapper = document.getElementById('editLyDoThuKhacWrapper');
+                        const editLyDoThuKhacInput = document.getElementById('editLyDoThuKhac');
+
+                        if (hocPhiChuan === 0 || data.hocPhi !== hocPhiChuan) {
+                            editHocPhiTuyChinhInput.classList.remove('hidden');
+                            editHocPhiTuyChinhInput.value = data.hocPhi;
+                            editLyDoThuKhacWrapper.classList.remove('hidden'); 
+                            editLyDoThuKhacInput.value = data.lyDoThuKhac || ''; 
+                        } else {
+                            editHocPhiTuyChinhInput.classList.add('hidden');
+                            editHocPhiTuyChinhInput.value = "";
+                            editLyDoThuKhacWrapper.classList.add('hidden'); 
+                            editLyDoThuKhacInput.value = ""; 
+                        }
+                        
+                        document.getElementById('editStudentModal').classList.remove('hidden');
+                    } else {
+                        showMessage("Không tìm thấy học viên.", "error");
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi lấy thông tin sửa:", error);
+                    showMessage("Lỗi tải dữ liệu để sửa.", "error");
+                }
+            }
+
+            async function handleUpdateStudent() {
+                const docId = document.getElementById('editStudentId').value;
+                if (!docId) return;
+
+                const editGoiHocSelect = document.getElementById('editGoiHoc');
+                const selectedGoiOption = editGoiHocSelect.options[editGoiHocSelect.selectedIndex];
+                let hocPhi = Number(selectedGoiOption.dataset.hocphi);
+                let lyDoThuKhac = ""; // (MỚI)
+
+                // (MỚI) Kiểm tra học phí tùy chỉnh
+                if (hocPhi === 0) {
+                    hocPhi = Number(document.getElementById('editHocPhiTuyChinh').value);
+                    if (hocPhi <= 0) {
+                        showMessage("Vui lòng nhập học phí.", "warning");
+                        return;
+                    }
+                    lyDoThuKhac = document.getElementById('editLyDoThuKhac').value; // (MỚI)
+                } else {
+                    const hocPhiTuyChinhInput = document.getElementById('editHocPhiTuyChinh');
+                    if (!hocPhiTuyChinhInput.classList.contains('hidden') && hocPhiTuyChinhInput.value) {
+                         hocPhi = Number(hocPhiTuyChinhInput.value);
+                         lyDoThuKhac = document.getElementById('editLyDoThuKhac').value; // (MỚI)
+                    }
+                }
+
+                const updatedData = {
+                    tenHV: document.getElementById('editTenHV').value,
+                    dienThoai: document.getElementById('editDienThoai').value,
+                    maTheHV: document.getElementById('editMaTheHV').value,
+                    soPhieuThu: document.getElementById('editSoPhieuThu').value, // (MỚI)
+                    goiHoc: document.getElementById('editGoiHoc').value,
+                    caHoc: document.getElementById('editCaHoc').value,
+                    hlvPhuTrach: document.getElementById('editHlvChon').value,
+                    loaiHD: document.getElementById('editLoaiHD').value,
+                    thanhToan: document.getElementById('editThanhToan').value,
+                    lyDoThuKhac: lyDoThuKhac, // (MỚI)
+                    ghiChu: document.getElementById('editGhiChu').value,
+                    hocPhi: hocPhi
+                };
+
+                try {
+                    const docRef = doc(dbHocVienCollection, docId);
+                    await updateDoc(docRef, updatedData);
+                    showMessage("Cập nhật học viên thành công!", "success");
+                    document.getElementById('editStudentModal').classList.add('hidden');
+                } catch (error) {
+                    console.error("Lỗi khi cập nhật:", error);
+                    showMessage("Lỗi lưu thay đổi.", "error");
+                }
+            }
+
+            async function handleDeleteStudent(docId, tenHV) {
+                // Tạm thời bỏ qua confirm()
+                try {
+                    await deleteDoc(doc(dbHocVienCollection, docId));
+                    showMessage(`Đã xóa học viên ${tenHV}.`, "success");
+                } catch (error) {
+                    console.error("Lỗi khi xóa:", error);
+                    showMessage("Lỗi khi xóa học viên.", "error");
+                }
+            }
+
+            // ----- Chức năng In/Export Báo Cáo -----
+            function handlePrintReport() {
+                if (!currentReportCache.data || currentReportCache.data.length === 0) {
+                    showMessage("Không có dữ liệu báo cáo để in.", "warning");
+                    return;
+                }
+                
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                const title = currentReportCache.title || "Báo Cáo Doanh Thu";
+                const reportHtml = document.getElementById('reportTableBody').innerHTML;
+                const footerHtml = document.getElementById('reportTableFooter').innerHTML;
+                const headerHtml = document.querySelector('#adminView table thead').innerHTML;
+
+                const content = `
+                    <html><head><title>Báo Cáo Doanh Thu HBA</title>
                     <style>
-                        /* Lấy style từ thẻ <style> trong document chính */
                         ${Array.from(document.styleSheets)
                             .filter(sheet => sheet.href === null)
                             .map(sheet => Array.from(sheet.cssRules)
@@ -1578,10 +1911,10 @@
                                 .join('\n'))
                             .join('\n')}
                         
-                        /* Ghi đè style cho bản in */
                         body { background-color: #fff; font-family: 'Arial', sans-serif; }
                         .print-container { display: block; }
                         .no-print { display: none !important; }
+                        .print-table th, .print-table td { font-size: 12px; }
                          @media print {
                             body { margin: 0; padding: 0; }
                             .print-container { padding: 20px; max-width: 800px; margin: 0 auto; }
@@ -1591,268 +1924,107 @@
                             .print-header { text-align: center; margin-bottom: 30px; }
                             .print-header h1 { margin: 0; font-size: 24px; }
                             .print-header p { margin: 5px 0; font-size: 14px; }
-                            .print-qr { text-align: center; margin-top: 20px; }
-                            .print-qr img { width: 200px; height: 200px; }
                             .print-footer { margin-top: 50px; display: flex; justify-content: space-between; font-size: 14px; }
                         }
                     </style>
-                </head>
-                <body class="print-container">
-                    <div class="print-header">
-                        <h1>HỒ BƠI HBA QUẬN 6</h1>
-                        <p>Phiếu Ghi Danh & Thu Phí</p>
-                        <p>Ngày giờ: ${now}</p>
-                    </div>
-                    <table class="print-table">
-                        <tr><td style="width: 200px;">Học viên:</td><td><strong>${regData.tenHV}</strong></td></tr>
-                        <tr><td>Mã Thẻ HV:</td><td>${regData.maTheHV || ''}</td></tr> <!-- (MỚI) -->
-                        <tr><td>Điện thoại:</td><td>${regData.sdtHV || ''} ${regData.loaiSdtHV ? `(${regData.loaiSdtHV})` : ''}</td></tr> <!-- (MỚI) -->
-                        <tr><td>Gói học:</td><td>${regData.goiHoc}</td></tr>
-                        <tr><td>Học phí:</td><td><strong>${formatter.format(regData.hocPhi)} VNĐ</strong></td></tr>
-                        <tr><td>HLV Phụ trách:</td><td>${regData.hlvPhuTrach}</td></tr>
-                        <tr><td>Hình thức:</td><td>${regData.thanhToan}</td></tr>
-                    </table>
-                    ${regData.thanhToan === 'Chuyển khoản' ? `
-                    <div class="print-qr">
-                        <p>Quét mã QR để thanh toán (App Ngân hàng)</p>
-                        <img src="${qrText}" alt="QR Code Thanh toán" />
-                        <p style="font-size: 14px; margin-top: 10px;">
-                            Ngân hàng: <strong>${PAYMENT_SETTINGS.bankName}</strong><br>
-                            STK: <strong>${PAYMENT_SETTINGS.accountNumber}</strong><br>
-                            Chủ TK: <strong>${PAYMENT_SETTINGS.accountName}</strong><br>
-                            Nội dung: <strong>HBA Q6 ${tenHVRutGon}</strong>
-                        </p>
-                    </div>
-                    ` : '<p style="margin-top: 20px;">Vui lòng thu tiền mặt.</p>'}
-                    <div class="print-footer">
-                        <span>Người lập phiếu</span>
-                        <span>Học viên / Phụ huynh</span>
-                    </div>
-                </body>
-                </html>
-            `;
-            
-            printWindow.document.write(content);
-            printWindow.document.close();
-            printWindow.focus();
-            
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 500);
-        }
+                    </head>
+                    <body class="print-container">
+                        <div class="print-header">
+                            <h1>Báo Cáo Doanh Thu</h1>
+                            <p>Thời gian: ${title}</p>
+                        </div>
+                        <table class="print-table">
+                            <thead>${headerHtml}</thead>
+                            <tbody>${reportHtml}</tbody>
+                            <tfoot style="background-color: #f4f4f4; font-weight: bold;">${footerHtml}</tfoot>
+                        </table>
+                    </body></html>
+                `;
+                
+                printWindow.document.write(content);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 250);
+            }
 
-        async function handleShowEditModal(docId) {
-            try {
-                const docRef = doc(dbHocVienCollection, docId);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById('editStudentId').value = docId;
-                    document.getElementById('editTenHV').value = data.tenHV;
-                    document.getElementById('editMaTheHV').value = data.maTheHV || ''; // (MỚI)
-                    document.getElementById('editSdtHV').value = data.sdtHV || ''; // (MỚI)
-                    document.getElementById('editLoaiSdtHV').value = data.loaiSdtHV || ''; // (MỚI)
-                    document.getElementById('editGoiHoc').value = data.goiHoc;
-                    document.getElementById('editCaHoc').value = data.caHoc;
-                    document.getElementById('editHlvChon').value = data.hlvPhuTrach;
-                    document.getElementById('editLoaiHD').value = data.loaiHD;
-                    document.getElementById('editThanhToan').value = data.thanhToan || 'Tiền mặt';
-                    document.getElementById('editGhiChu').value = data.ghiChu;
-                    
-                    editStudentModal.classList.remove('hidden');
-                } else {
-                    showMessage("Không tìm thấy học viên.", "error");
+            function handleExportExcel() {
+                if (allStudentsCache.length === 0) {
+                    showMessage("Không có dữ liệu để export.", "warning");
+                    return;
                 }
-            } catch (error) {
-                console.error("Lỗi khi lấy thông tin sửa:", error);
-                showMessage("Lỗi tải dữ liệu để sửa.", "error");
-            }
-        }
 
-        async function handleUpdateStudent() {
-            const docId = document.getElementById('editStudentId').value;
-            if (!docId) return;
+                const dataToExport = allStudentsCache.map(item => ({
+                    'Thời gian': item.timestamp.toDate().toLocaleString('vi-VN'),
+                    'Tên Học Viên': item.tenHV,
+                    'Mã Thẻ HV': item.maTheHV,
+                    'Số Phiếu Thu': item.soPhieuThu, // (MỚI)
+                    'Điện thoại': item.dienThoai,
+                    'HLV Phụ Trách': item.hlvPhuTrach,
+                    'Gói Học': item.goiHoc,
+                    'Học Phí': item.hocPhi,
+                    'Loại HĐ': item.loaiHD,
+                    'Thanh Toán': item.thanhToan,
+                    'Lý Do Thu Khác': item.lyDoThuKhac, // (SỬA)
+                    'Ghi Chú': item.ghiChu,
+                    'Ca Học': item.caHoc
+                }));
 
-            const selectedGoiOption = editGoiHocSelect.options[editGoiHocSelect.selectedIndex];
-            const hocPhi = Number(selectedGoiOption.dataset.hocphi);
-
-            const updatedData = {
-                tenHV: document.getElementById('editTenHV').value.trim(),
-                maTheHV: document.getElementById('editMaTheHV').value.trim(), // (MỚI)
-                sdtHV: document.getElementById('editSdtHV').value.trim(), // (MỚI)
-                loaiSdtHV: document.getElementById('editLoaiSdtHV').value, // (MỚI)
-                goiHoc: document.getElementById('editGoiHoc').value,
-                hocPhi: hocPhi, // (FIX) Cập nhật học phí khi gói thay đổi
-                caHoc: document.getElementById('editCaHoc').value,
-                hlvPhuTrach: document.getElementById('editHlvChon').value,
-                loaiHD: document.getElementById('editLoaiHD').value,
-                thanhToan: document.getElementById('editThanhToan').value,
-                ghiChu: document.getElementById('editGhiChu').value.trim()
-            };
-
-            try {
-                const docRef = doc(dbHocVienCollection, docId);
-                await updateDoc(docRef, updatedData);
-                showMessage("Cập nhật học viên thành công!", "success");
-                editStudentModal.classList.add('hidden');
-            } catch (error) {
-                console.error("Lỗi khi cập nhật:", error);
-                showMessage("Lỗi lưu thay đổi.", "error");
-            }
-        }
-
-        async function handleDeleteStudent(docId, tenHV) {
-            // (FIX) Vì không dùng confirm, ta hiển thị tên trong thông báo
-            // Trong một app thực tế, nên dùng modal confirm tùy chỉnh
-            showMessage(`Đang xóa ${tenHV}...`, 'warning');
-            
-            try {
-                await deleteDoc(doc(dbHocVienCollection, docId));
-                showMessage(`Đã xóa học viên ${tenHV}.`, "success");
-            } catch (error) {
-                console.error("Lỗi khi xóa:", error);
-                showMessage("Lỗi khi xóa học viên.", "error");
-            }
-        }
-
-        function handlePrintReport() {
-            if (!currentReportCache.data || currentReportCache.data.length === 0) {
-                showMessage("Không có dữ liệu báo cáo để in.", "warning");
-                return;
+                const ws = XLSX.utils.json_to_sheet(dataToExport);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "DanhSachHocVien");
+                XLSX.writeFile(wb, `HBA_DanhSachHocVien_Full_${new Date().toISOString().split('T')[0]}.xlsx`);
+                showMessage("Đang tải file Excel...", "success");
             }
             
-            const printWindow = window.open('', '_blank', 'width=1000,height=700');
-            const title = currentReportCache.title || "Báo Cáo Doanh Thu";
-            const reportHtml = document.getElementById('reportTableBody').innerHTML;
-            const footerHtml = document.getElementById('reportTableFooter').innerHTML;
-            const headerHtml = document.querySelector('#adminView table thead').innerHTML;
+            function handleExportDailyExcel() {
+                if (dailyReportCache.length === 0) {
+                    showMessage("Không có dữ liệu hôm nay để export.", "warning");
+                    return;
+                }
 
-            const content = `
-                <html><head><title>Báo Cáo Doanh Thu HBA</title>
-                <style>
-                    /* Lấy style từ thẻ <style> trong document chính */
-                    ${Array.from(document.styleSheets)
-                        .filter(sheet => sheet.href === null)
-                        .map(sheet => Array.from(sheet.cssRules)
-                            .map(rule => rule.cssText)
-                            .join('\n'))
-                        .join('\n')}
-                    
-                    /* Ghi đè style cho bản in */
-                    body { background-color: #fff; font-family: 'Arial', sans-serif; }
-                    .print-container { display: block; }
-                    .no-print { display: none !important; }
-                    .print-table th, .print-table td { font-size: 11px; padding: 6px; }
-                     @media print {
-                        body { margin: 0; padding: 0; }
-                        .print-container { padding: 20px; max-width: 1000px; margin: 0 auto; }
-                        .print-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        .print-table th, .print-table td { border: 1px solid #ccc; padding: 6px; text-align: left; }
-                        .print-table th { background-color: #f4f4f4; }
-                        .print-header { text-align: center; margin-bottom: 20px; }
-                        .print-header h1 { margin: 0; font-size: 22px; }
-                        .print-header p { margin: 5px 0; font-size: 14px; }
-                    }
-                </style>
-                </head>
-                <body class="print-container">
-                    <div class="print-header">
-                        <h1>Báo Cáo Doanh Thu HBA Q6</h1>
-                        <p>Thời gian: ${title}</p>
-                    </div>
-                    <table class="print-table">
-                        <thead>${headerHtml}</thead>
-                        <tbody>${reportHtml}</tbody>
-                        <tfoot style="background-color: #f4f4f4; font-weight: bold;">${footerHtml}</tfoot>
-                    </table>
-                </body></html>
-            `;
+                const dataToExport = dailyReportCache.map(item => ({
+                    'Thời gian': item.timestamp.toDate().toLocaleString('vi-VN'),
+                    'Tên Học Viên': item.tenHV,
+                    'Mã Thẻ HV': item.maTheHV,
+                    'Số Phiếu Thu': item.soPhieuThu, // (MỚI)
+                    'Điện thoại': item.dienThoai,
+                    'HLV Phụ Trách': item.hlvPhuTrach,
+                    'Gói Học': item.goiHoc,
+                    'Học Phí': item.hocPhi,
+                    'Loại HĐ': item.loaiHD,
+                    'Thanh Toán': item.thanhToan,
+                    'Lý Do Thu Khác': item.lyDoThuKhac, // (SỬA)
+                }));
+
+                const ws = XLSX.utils.json_to_sheet(dataToExport);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "BaoCaoHomNay");
+                XLSX.writeFile(wb, `HBA_BaoCaoNgay_${new Date().toISOString().split('T')[0]}.xlsx`);
+                showMessage("Đang tải file Excel (Hôm nay)...", "success");
+            }
             
-            printWindow.document.write(content);
-            printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 250);
-        }
+            async function handleImportExcel() {
+                const excelImportFile = document.getElementById('excelImportFile');
+                const file = excelImportFile.files[0];
+                if (!file) {
+                    showMessage("Vui lòng chọn một file Excel.", "warning");
+                    return;
+                }
 
-        function handleExportExcel() {
-            if (allStudentsCache.length === 0) {
-                showMessage("Không có dữ liệu để export.", "warning");
-                return;
-            }
+                const importButton = document.getElementById('importExcelButton');
+                const importText = document.getElementById('importExcelText');
+                const importLoading = document.getElementById('importExcelLoading');
 
-            const dataToExport = allStudentsCache.map(item => ({
-                'Thời gian': item.timestamp ? item.timestamp.toDate().toLocaleString('vi-VN') : "",
-                'Tên Học Viên': item.tenHV,
-                'Mã Thẻ HV': item.maTheHV || '', // (MỚI)
-                'Điện thoại': item.sdtHV || '', // (MỚI)
-                'Loại SĐT': item.loaiSdtHV || '', // (MỚI)
-                'HLV Phụ Trách': item.hlvPhuTrach,
-                'Gói Học': item.goiHoc,
-                'Học Phí': item.hocPhi,
-                'Loại HĐ': item.loaiHD,
-                'Thanh Toán': item.thanhToan,
-                'Ghi Chú': item.ghiChu,
-                'Ca Học': item.caHoc,
-                'Người Ghi Danh': item.addedByEmail || item.addedByUserId
-            }));
+                importButton.disabled = true;
+                importText.classList.add('hidden');
+                importLoading.classList.remove('hidden');
 
-            const ws = XLSX.utils.json_to_sheet(dataToExport);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "DanhSachHocVien");
-            XLSX.writeFile(wb, `HBA_DanhSachHocVien_Full_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showMessage("Đang tải file Excel...", "success");
-        }
-        
-        function handleExportDailyExcel() {
-            if (dailyReportCache.length === 0) {
-                showMessage("Không có dữ liệu hôm nay để export.", "warning");
-                return;
-            }
-
-            const dataToExport = dailyReportCache.map(item => ({
-                'Thời gian': item.timestamp.toDate().toLocaleString('vi-VN'),
-                'Tên Học Viên': item.tenHV,
-                'Mã Thẻ HV': item.maTheHV || '', // (MỚI)
-                'Điện thoại': item.sdtHV || '', // (MỚI)
-                'Loại SĐT': item.loaiSdtHV || '', // (MỚI)
-                'HLV Phụ Trách': item.hlvPhuTrach,
-                'Gói Học': item.goiHoc,
-                'Học Phí': item.hocPhi,
-                'Loại HĐ': item.loaiHD,
-                'Thanh Toán': item.thanhToan,
-                'Người Ghi Danh': item.addedByEmail || item.addedByUserId
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(dataToExport);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "BaoCaoHomNay");
-            XLSX.writeFile(wb, `HBA_BaoCaoNgay_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showMessage("Đang tải file Excel (Hôm nay)...", "success");
-        }
-        
-        async function handleImportExcel() {
-            const file = excelImportFile.files[0];
-            if (!file) {
-                showMessage("Vui lòng chọn một file Excel.", "warning");
-                return;
-            }
-
-            const importButton = importExcelButton;
-            const importText = document.getElementById('importExcelText');
-            const importLoading = document.getElementById('importExcelLoading');
-
-            importButton.disabled = true;
-            importText.classList.add('hidden');
-            importLoading.classList.remove('hidden');
-
-            try {
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    try {
+                try {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
                         const data = new Uint8Array(e.target.result);
                         const workbook = XLSX.read(data, { type: 'array' });
                         const sheetName = workbook.SheetNames[0];
@@ -1864,189 +2036,152 @@
                         let importedCount = 0;
                         for (const row of jsonData) {
                             if (!row.tenHV || !row.hlvPhuTrach || !row.hocPhi || !row.caHoc || !row.goiHoc || !row.loaiHD || !row.thanhToan) {
-                                console.warn("Bỏ qua dòng (thiếu dữ liệu):", row);
+                                console.warn("Bỏ qua dòng (thiếu dữ liệu bắt buộc):", row);
                                 continue;
                             }
 
                             const newRegistration = {
-                                timestamp: Timestamp.now(), // (MỚI) Dùng ngày import
+                                timestamp: Timestamp.now(),
                                 tenHV: row.tenHV,
-                                maTheHV: row.maTheHV || '', // (MỚI)
-                                sdtHV: row.sdtHV || '', // (MỚI)
-                                loaiSdtHV: row.loaiSdtHV || '', // (MỚI)
                                 goiHoc: row.goiHoc,
                                 caHoc: row.caHoc,
                                 hlvPhuTrach: row.hlvPhuTrach,
-                                loaiHD: row.loaiHD,
+                                loaiHD: row.loaiHD, 
                                 ghiChu: row.ghiChu || "Imported",
                                 hocPhi: Number(row.hocPhi),
                                 thanhToan: row.thanhToan,
-                                addedByUserId: currentUserId,
-                                addedByEmail: auth.currentUser.email
+                                dienThoai: row.dienThoai || '',
+                                maTheHV: row.maTheHV || '',
+                                soPhieuThu: row.soPhieuThu || '', 
+                                lyDoThuKhac: row.lyDoThuKhac || '', // (MỚI)
+                                addedByUserId: currentUserId
                             };
 
                             await addDoc(dbHocVienCollection, newRegistration);
                             importedCount++;
                         }
                         showMessage(`Import thành công ${importedCount}/${jsonData.length} học viên.`, "success");
-                    } catch (readError) {
-                        console.error("Lỗi khi đọc file Excel:", readError);
-                        showMessage(readError.message || "Lỗi khi đọc file.", "error");
-                    } finally {
-                        importButton.disabled = false;
-                        importText.classList.remove('hidden');
-                        importLoading.classList.add('hidden');
-                        excelImportFile.value = "";
-                    }
-                };
-                
-                reader.onerror = (e) => { 
-                    showMessage("Không thể đọc file.", "error");
+                    };
+                    
+                    reader.onerror = (e) => { throw new Error("Không thể đọc file."); };
+                    reader.readAsArrayBuffer(file);
+                    
+                } catch (error) {
+                    console.error("Lỗi khi import Excel:", error);
+                    showMessage(error.message || "Lỗi khi import file.", "error");
+                } finally {
                     importButton.disabled = false;
                     importText.classList.remove('hidden');
                     importLoading.classList.add('hidden');
-                };
-                reader.readAsArrayBuffer(file);
-                
-            } catch (error) {
-                console.error("Lỗi khi import Excel:", error);
-                showMessage(error.message || "Lỗi khi import file.", "error");
-                importButton.disabled = false;
-                importText.classList.remove('hidden');
-                importLoading.classList.add('hidden');
-            }
-        }
-
-
-        // ----- Chức năng Quản lý HLV & Settings -----
-        function renderHlvSettingsTable() {
-            hlvSettingsTableBody.innerHTML = "";
-            HLV_SETTINGS_LIST.sort((a, b) => a.ca.localeCompare(b.ca) || a.uuTien - b.uuTien);
-            
-            if (HLV_SETTINGS_LIST.length === 0) {
-                hlvSettingsTableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Chưa có HLV nào.</td></tr>`;
-            }
-
-            HLV_SETTINGS_LIST.forEach(hlv => {
-                const row = `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${hlv.ten}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${hlv.ca}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${hlv.uuTien}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button class="text-blue-600 hover:text-blue-900 edit-hlv-btn" data-id="${hlv.id}">Sửa</button>
-                            <button class="text-red-600 hover:text-red-900 ml-4 delete-hlv-btn" data-id="${hlv.id}">Xóa</button>
-                        </td>
-                    </tr>
-                `;
-                hlvSettingsTableBody.innerHTML += row;
-            });
-            updateHlvDropdowns();
-        }
-        
-        function updateHlvDropdowns() {
-            // (FIX) Lưu giá trị đang chọn
-            const adminSelected = adminHlvChonSelect.value;
-            const editSelected = editHlvChonSelect.value;
-            
-            [adminHlvChonSelect, editHlvChonSelect].forEach(sel => sel.innerHTML = '<option value="">-- Chọn HLV --</option>');
-            HLV_SETTINGS_LIST.forEach(hlv => {
-                const option = `<option value="${hlv.ten}">${hlv.ten}</option>`;
-                [adminHlvChonSelect, editHlvChonSelect].forEach(sel => sel.innerHTML += option);
-            });
-
-            // (FIX) Khôi phục giá trị
-            adminHlvChonSelect.value = adminSelected;
-            editHlvChonSelect.value = editSelected;
-        }
-
-        function handleEditHlv(docId) {
-            const hlv = HLV_SETTINGS_LIST.find(h => h.id === docId);
-            if (hlv) {
-                document.getElementById('hlvEditId').value = hlv.id;
-                document.getElementById('hlvTen').value = hlv.ten;
-                document.getElementById('hlvCa').value = hlv.ca;
-                document.getElementById('hlvUuTien').value = hlv.uuTien;
-                saveHlvButton.textContent = "Lưu Thay Đổi"; // (MỚI)
-            }
-        }
-
-        async function handleSaveHlv() {
-            const ten = document.getElementById('hlvTen').value.trim();
-            const ca = document.getElementById('hlvCa').value;
-            const uuTien = parseInt(document.getElementById('hlvUuTien').value);
-            const editId = document.getElementById('hlvEditId').value;
-
-            if (!ten || !ca || isNaN(uuTien)) {
-                showMessage("Vui lòng nhập đủ Tên, Ca, Ưu tiên cho HLV.", "warning");
-                return;
-            }
-
-            const hlvData = { ten, ca, uuTien };
-
-            try {
-                if (editId) {
-                    await updateDoc(doc(dbHlvCollection, editId), hlvData);
-                    showMessage("Cập nhật HLV thành công!", "success");
-                } else {
-                    await addDoc(dbHlvCollection, hlvData);
-                    showMessage("Thêm HLV mới thành công!", "success");
+                    excelImportFile.value = ""; 
                 }
+            }
+
+
+            // ----- Chức năng Quản lý HLV & Settings -----
+            function renderHlvSettingsTable() {
+                const hlvSettingsTableBody = document.getElementById('hlvSettingsTableBody');
+                hlvSettingsTableBody.innerHTML = "";
+                HLV_SETTINGS_LIST.sort((a, b) => a.ca.localeCompare(b.ca) || a.uuTien - b.uuTien);
                 
-                document.getElementById('hlvEditId').value = "";
-                document.getElementById('hlvTen').value = "";
-                document.getElementById('hlvUuTien').value = "";
-                saveHlvButton.textContent = "Thêm/Cập nhật HLV"; // (MỚI)
-                
-                // (FIX) Tải lại settings thay vì cả trang
-                // Phải dùng await để đảm bảo dropdowns được cập nhật
-                await loadAppSettings(); 
-            } catch (error) {
-                console.error("Lỗi lưu HLV:", error);
-                showMessage("Lỗi lưu HLV.", "error");
+                HLV_SETTINGS_LIST.forEach(hlv => {
+                    hlvSettingsTableBody.innerHTML += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${hlv.ten}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${hlv.ca}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${hlv.uuTien}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button class="text-blue-600 hover:text-blue-900 edit-hlv-btn" data-id="${hlv.id}">Sửa</button>
+                                <button class="text-red-600 hover:text-red-900 ml-4 delete-hlv-btn" data-id="${hlv.id}">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                updateHlvDropdowns();
             }
-        }
-
-        async function handleDeleteHlv(docId) {
-            try {
-                await deleteDoc(doc(dbHlvCollection, docId));
-                showMessage("Đã xóa HLV.", "success");
-                // (FIX) Tải lại settings
-                await loadAppSettings(); 
-            } catch (error) {
-                console.error("Lỗi xóa HLV:", error);
-                showMessage("Lỗi xóa HLV.", "error");
-            }
-        }
-
-        async function handleSaveQr() {
-            const qrData = {
-                bankName: document.getElementById('qrBankName').value,
-                bankBin: document.getElementById('qrBankBin').value,
-                accountNumber: document.getElementById('qrAccountNumber').value,
-                accountName: document.getElementById('qrAccountName').value
-            };
-
-            if (!qrData.bankName || !qrData.bankBin || !qrData.accountNumber || !qrData.accountName) {
-                showMessage("Vui lòng nhập đầy đủ thông tin QR.", "warning");
-                return;
+            
+            function updateHlvDropdowns() {
+                const adminHlvChonSelect = document.getElementById('adminHlvChon');
+                const editHlvChonSelect = document.getElementById('editHlvChon');
+                const hlvOptions = HLV_SETTINGS_LIST.map(hlv => `<option value="${hlv.ten}">${hlv.ten}</option>`).join('');
+                adminHlvChonSelect.innerHTML = '<option value="">-- Chọn HLV --</option>' + hlvOptions;
+                editHlvChonSelect.innerHTML = '<option value="">-- Chọn HLV --</option>' + hlvOptions;
             }
 
-            try {
-                await setDoc(dbPaymentSettingsDoc, qrData, { merge: true });
-                PAYMENT_SETTINGS = qrData; // Cập nhật cache
-                showMessage("Lưu cài đặt QR thành công!", "success");
-            } catch (error) {
-                console.error("Lỗi lưu QR settings:", error);
-                showMessage("Lỗi lưu cài đặt QR.", "error");
+            function handleEditHlv(docId) {
+                const hlv = HLV_SETTINGS_LIST.find(h => h.id === docId);
+                if (hlv) {
+                    document.getElementById('hlvEditId').value = hlv.id;
+                    document.getElementById('hlvTen').value = hlv.ten;
+                    document.getElementById('hlvCa').value = hlv.ca;
+                    document.getElementById('hlvUuTien').value = hlv.uuTien;
+                }
             }
-        }
 
+            async function handleSaveHlv() {
+                const ten = document.getElementById('hlvTen').value;
+                const ca = document.getElementById('hlvCa').value;
+                const uuTien = parseInt(document.getElementById('hlvUuTien').value);
+                const editId = document.getElementById('hlvEditId').value;
+
+                if (!ten || !ca || isNaN(uuTien)) {
+                    showMessage("Vui lòng nhập đủ Tên, Ca, Ưu tiên cho HLV.", "warning");
+                    return;
+                }
+
+                const hlvData = { ten, ca, uuTien };
+
+                try {
+                    if (editId) {
+                        await updateDoc(doc(dbHlvCollection, editId), hlvData);
+                        showMessage("Cập nhật HLV thành công!", "success");
+                    } else {
+                        await addDoc(dbHlvCollection, hlvData);
+                        showMessage("Thêm HLV mới thành công!", "success");
+                    }
+                    
+                    document.getElementById('hlvEditId').value = "";
+                    document.getElementById('hlvTen').value = "";
+                    document.getElementById('hlvUuTien').value = "";
+                    
+                    // Tải lại settings (để refresh bảng và dropdowns)
+                    loadAppSettingsAndListeners(); // (SỬA) Gọi hàm tổng
+                } catch (error) {
+                    console.error("Lỗi lưu HLV:", error);
+                    showMessage("Lỗi lưu HLV.", "error");
+                }
+            }
+
+            async function handleDeleteHlv(docId) {
+                try {
+                    await deleteDoc(doc(dbHlvCollection, docId));
+                    showMessage("Đã xóa HLV.", "success");
+                    loadAppSettingsAndListeners(); // (SỬA) Gọi hàm tổng
+                } catch (error) {
+                    console.error("Lỗi xóa HLV:", error);
+                    showMessage("Lỗi xóa HLV.", "error");
+                }
+            }
+
+            async function handleSaveQr() {
+                const qrData = {
+                    bankName: document.getElementById('qrBankName').value,
+                    bankBin: document.getElementById('qrBankBin').value,
+                    accountNumber: document.getElementById('qrAccountNumber').value,
+                    accountName: document.getElementById('qrAccountName').value
+                };
+
+                try {
+                    await setDoc(dbPaymentSettingsDoc, qrData, { merge: true });
+                    PAYMENT_SETTINGS = qrData; // Cập nhật cache
+                    showMessage("Lưu cài đặt QR thành công!", "success");
+                } catch (error) {
+                    console.error("Lỗi lưu QR settings:", error);
+                    showMessage("Lỗi lưu cài đặt QR.", "error");
+                }
+            }
+
+        }); // (SỬA) Kết thúc DOMContentLoaded
     </script>
 </body>
 </html>
-
-
-
-
-
