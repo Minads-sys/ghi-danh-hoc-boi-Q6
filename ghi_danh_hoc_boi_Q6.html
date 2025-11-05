@@ -459,16 +459,15 @@
                             Xem Báo Cáo
                         </button>
 
-                        <div class="relative inline-block text-left self-end group">
-                            <button class="bg-gray-700 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                            <span>Tác vụ khác...</span>
-                            <svg class="inline w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                        </button>
-                        <!-- (SỬA) Thay mt-2 (margin) bằng mt-0 pt-2 (padding) để "bắt" con trỏ chuột -->
-                        <div class="absolute right-0 mt-0 pt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 hidden group-hover:block">
-                            <div class="py-1" role="menu" aria-orientation="vertical">
-                                <a href="#" id="printReportButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">In Báo Cáo (Đang xem)</a>
-                                    <a href="#" id="exportExcelButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Export Excel (Toàn bộ DB)</a>
+                        <div class="relative inline-block text-left self-end">
+                            <button id="tacVuKhacButton" class="bg-gray-700 text-white py-3 px-6 rounded-lg shadow-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                <span>Tác vụ khác...</span>
+                                <svg class="inline w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                            <div id="tacVuKhacMenu" class="absolute right-0 mt-0 pt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 hidden">
+                                <div class="py-1" role="menu" aria-orientation="vertical">
+                                    <a href="#" id="printReportButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">In Báo Cáo (Đang xem)</a>
+                                    <a href="#" id="exportExcelButton" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Export Excel (Báo cáo)</a>
                                 </div>
                             </div>
                         </div>
@@ -777,7 +776,7 @@
             let currentReportCache = []; 
             let dailyReportCache = []; 
             let unsubscribeHocVien = null; // (MỚI) Biến để giữ listener
-            let messageTimer; // (SỬA) Di chuyển khai báo messageTimer ra ngoài
+            let messageTimer; 
 
             // (SỬA) Lấy DOM elements (chỉ những cái cần ngay lập tức)
             const loginView = document.getElementById('loginView');
@@ -824,7 +823,6 @@
                 // (SỬA) Gán sự kiện cho màn hình Login (luôn chạy)
                 loginButton.addEventListener('click', handleLogin);
                 togglePasswordButton.addEventListener('click', togglePasswordVisibility);
-                // (MỚI) Thêm sự kiện Enter
                 loginEmailInput.addEventListener('keydown', handleLoginKeyDown);
                 loginPasswordInput.addEventListener('keydown', handleLoginKeyDown);
 
@@ -1009,8 +1007,11 @@
                 const printReportButton = document.getElementById('printReportButton'); 
                 const exportExcelButton = document.getElementById('exportExcelButton'); 
                 
-                // (MỚI) Thêm nút export history
                 const exportHistoryExcelButton = document.getElementById('exportHistoryExcelButton');
+                
+                /* (SỬA) Thêm nút Tác Vụ Khác */
+                const tacVuKhacButton = document.getElementById('tacVuKhacButton');
+                const tacVuKhacMenu = document.getElementById('tacVuKhacMenu');
                 
                 // Settings
                 const historyTableBody = document.getElementById('historyTableBody');
@@ -1077,6 +1078,14 @@
                 exportHistoryExcelButton.addEventListener('click', handleExportExcel); // (MỚI) Gán sự kiện
                 reportFilterType.addEventListener('change', toggleReportFilter); 
 
+                /* (SỬA) Gán sự kiện click cho Tác Vụ Khác */
+                if (tacVuKhacButton) {
+                    tacVuKhacButton.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Ngăn click lan ra window
+                        tacVuKhacMenu.classList.toggle('hidden');
+                    });
+                }
+
                 saveHlvButton.addEventListener('click', handleSaveHlv);
                 saveQrButton.addEventListener('click', handleSaveQr);
                 importExcelButton.addEventListener('click', handleImportExcel); 
@@ -1114,6 +1123,15 @@
                         editHocPhiTuyChinhInput.value = ""; // Xóa giá trị cũ
                         editLyDoThuKhacWrapper.classList.add('hidden');
                         document.getElementById('editLyDoThuKhac').value = "";
+                    }
+                });
+
+                /* (SỬA) Click outside để đóng menu Tác Vụ Khác */
+                window.addEventListener('click', (e) => {
+                    if (tacVuKhacMenu && !tacVuKhacMenu.classList.contains('hidden')) {
+                        if (!tacVuKhacButton.contains(e.target) && !tacVuKhacMenu.contains(e.target)) {
+                            tacVuKhacMenu.classList.add('hidden');
+                        }
                     }
                 });
             }
@@ -1539,7 +1557,6 @@
             function startRealtimeListener() {
                 if (!dbHocVienCollection) return;
                 
-                // (MỚI) Tắt listener cũ (nếu có) trước khi tạo listener mới
                 if (unsubscribeHocVien) {
                     unsubscribeHocVien();
                     console.log("Đã tắt listener cũ.");
@@ -1560,14 +1577,12 @@
                     updateDashboardStats(allDocs);
                     renderHistoryTable(allDocs);
                     
-                    // Cập nhật HLV (nếu đang ở view Lễ Tân)
                     if (document.getElementById('leTanView').offsetParent !== null) { 
                         updateAutoAssignment();
                     }
 
                 }, (error) => {
                     console.error("Lỗi khi lắng nghe real-time:", error);
-                    // (SỬA) Chỉ báo lỗi nếu user đang đăng nhập
                     if (auth.currentUser) {
                         showMessage("Mất kết nối real-time.", "error");
                     }
@@ -1616,7 +1631,6 @@
             
             /* ===== 9. HÀM TIỆN ÍCH (MESSAGE BOX, STATS, IN ẤN) ===== */
             
-            // (SỬA) Bỏ 'let messageTimer' bên trong hàm
             function showMessage(text, type = 'success') {
                 messageText.textContent = text;
                 messageBox.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-400', 'text-white', 'text-gray-800', 'hide');
@@ -1693,7 +1707,6 @@
                 const formatter = new Intl.NumberFormat('vi-VN');
                 const now = new Date().toLocaleString('vi-VN');
                 
-                // Rút gọn tên HV (lấy tên cuối)
                 const tenHVRutGon = regData.tenHV.split(' ').pop();
                 const qrText = `https://api.vietqr.io/image/${PAYMENT_SETTINGS.bankBin}-${PAYMENT_SETTINGS.accountNumber}-compact.png?amount=${regData.hocPhi}&addInfo=HBA Q6 ${tenHVRutGon}`;
                 
@@ -1796,7 +1809,6 @@
                         document.getElementById('editThanhToan').value = data.thanhToan || 'Tiền mặt';
                         document.getElementById('editGhiChu').value = data.ghiChu || '';
 
-                        // (MỚI) Xử lý học phí tùy chỉnh
                         const editGoiHocSelect = document.getElementById('editGoiHoc');
                         const editHocPhiTuyChinhInput = document.getElementById('editHocPhiTuyChinh');
                         const selectedGoiOption = editGoiHocSelect.options[editGoiHocSelect.selectedIndex];
@@ -1836,7 +1848,6 @@
                 let hocPhi = Number(selectedGoiOption.dataset.hocphi);
                 let lyDoThuKhac = ""; // (MỚI)
 
-                // (MỚI) Kiểm tra học phí tùy chỉnh
                 if (hocPhi === 0) {
                     hocPhi = Number(document.getElementById('editHocPhiTuyChinh').value);
                     if (hocPhi <= 0) {
@@ -1879,7 +1890,6 @@
             }
 
             async function handleDeleteStudent(docId, tenHV) {
-                // Tạm thời bỏ qua confirm()
                 try {
                     await deleteDoc(doc(dbHocVienCollection, docId));
                     showMessage(`Đã xóa học viên ${tenHV}.`, "success");
